@@ -152,8 +152,6 @@ typedef struct N64Waterfall {    /* a waterfall: its track object */
   int obj;
 } N64Waterfall;
 extern N64Waterfall g_adwWaterfallInstances[];
-extern int D_8031B2D8;
-extern int D_8031B2EC;
 extern int g_dwNumViewports;          /* views on screen */
 extern int g_dwRacePhase;          /* the start-light state */
 extern float g_fRacePhaseTimer;        /* its timer */

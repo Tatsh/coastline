@@ -439,8 +439,6 @@ typedef struct N64Season {
     float xe8[16]; /* 0xE8  one per car */
 } N64Season;
 
-extern N64Season D_80324300[2];
-
 /* One championship round's rules (0x1C bytes), a table at 0x8028B944. */
 typedef struct N64Round {
     int x0;                    /* 0x00 */
@@ -478,7 +476,6 @@ typedef struct N64CarKindParams {
     float x38[4];   /* to 0x324.. */
     int x48;        /* to 0xE34 */
 } N64CarKindParams;
-extern N64CarKindParams D_8028B330[];
 
 /* The record a car's +0xED0 points at; only its flags are known. */
 typedef struct N64CarLink {

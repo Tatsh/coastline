@@ -48,45 +48,4 @@
 #define func_80243260 ProcessPaintShopScreen
 #define func_80244D84 DrawPakErrorMessage
 
-#define D_001BF480 _scrollSoundSegmentRomStart
-#define D_001BFEC0 _selectSoundSegmentRomStart
-#define D_802707AC g_abRacePositionPoints
-#define D_802707C0 g_dwSeasonResultMsgLineCount
-#define D_80270850 g_dwContinueFromResults
-#define D_80271D70 g_ArrowLeftTextureDesc
-#define D_80271D84 g_ArrowRightTextureDesc
-#define D_80271FA0 g_dwScreenPlayerIdx
-#define D_80271FE0 g_apszPlaceNames
-#define D_80272030 g_apszEngineLayouts
-#define D_8027203C g_apszDriveTypes
-#define D_80272048 g_BgTextureDesc
-#define D_8027205C g_TitleBarTextureDesc
-#define D_80272070 g_dwIsPaintMode
-#define D_80272074 g_dwIsReviewMode
-#define D_802720B4 g_apHandlingOptions
-#define D_802720C4 g_dwHandlingOptionCount
-#define D_802720F0 g_apTransmissionOptions
-#define D_802720FC g_dwTransmissionOptionCount
-#define D_8027213C g_apTiresOptions
-#define D_8027214C g_dwTiresOptionCount
-#define D_8027218C g_apSuspensionOptions
-#define D_8027219C g_dwSuspensionOptionCount
-#define D_802721DC g_apDecalOptions
-#define D_802721EC g_dwDecalListCount
-#define D_802721F0 g_CameraViewAmbientLight
-#define D_80272238 g_bCarSelectInitialized
-#define D_802722A4 g_apWeatherMenuItems
-#define D_8028A858 gDisplayListPtr
-#define D_8028AA78 g_dwWeatherActive
-#define D_8028AAC0 g_fCameraFovRadians
-#define D_8028AAD4 g_dwElapsedTimeMs
-#define D_8028AE08 g_dwCarCount
-#define D_8028AE0C g_aCarModels
-#define D_8028B904 g_abPlayerColorsRgb
-#define D_8028B944 g_SeasonTable
-#define D_80315DB0 g_apszSeasonResultMsgLines
-#define D_8031AB50 g_afScratchMatrix
-#define D_8031B370 g_aVehicleModelSlots
-#define D_8031C5BC g_pActiveProfile
-
 #endif /* COASTLINE_CARSELECT_ALIASES_H */

@@ -13,11 +13,8 @@
 
 /* -- declarations -- */
 int IsVehicleModelValid(int param_1);
-extern int D_8020C688;
-extern int D_8020C68C;
 extern int g_dwIsPaintMode;
 extern char *g_pActiveProfile;
-extern char D_8028AE24;
 extern Gfx *gDisplayListPtr;
 int sprintf(char *buf, char *fmt, ...);
 /* -- end declarations -- */
@@ -424,7 +421,7 @@ extern unsigned char g_abPlayerColorsRgb[][3];     /* the players' own colours *
 
 /* one player's setup list: the choices, their count, the title */
 #define SETUP(p, list, count, title) \
-  { D_80316270[p] = (list); D_80316288[p] = (count); D_80316290[p] = (title); }
+  { setupItemList[p] = (list); setupChoiceCount[p] = (count); setupListTitle[p] = (title); }
 
 /* WHAT IT DOES: One frame of the car-select screen, which is also the race
  * results (g_dwIsReviewMode) and the paint shop's car select (g_dwIsPaintMode).  The
@@ -450,38 +447,38 @@ extern unsigned char g_abPlayerColorsRgb[][3];     /* the players' own colours *
 void ProcessCarSelectScreen(void)
 {
 #if TGR_REGION_JPN
-  static int D_80316248[2];       /* each player's car is to be repainted */
+  static int repaintPending[2];
 #endif
-  static int D_80316250 TGR_MATCHING_UNUSED;
-  static int D_80316254 TGR_MATCHING_UNUSED;
-  static int D_80316258[2];       /* each player's model slot (0-3; slot ^ 2 is the other) */
-  static float D_80316260[2];     /* each player's car sliding in (-1..1, 0 at rest) */
-  static float D_80316268[2];     /* each player's turntable angle */
-  static MenuItem **D_80316270[2];  /* each player's current setup list */
-  static int D_80316278[2];       /* the choice in it */
-  static int D_80316280[2];       /* the previous choice */
-  static int D_80316288[2];       /* choices in the list */
-  static char *D_80316290[2];     /* the list's title */
-  static int D_80316298;          /* going ahead (not back) */
-  static unsigned char *D_8031629C;  /* the two sound banks for the screen */
-  static int D_803162A0;
-  static unsigned char *D_803162A4;
-  static int D_803162A8;
-  static int D_803162AC;          /* frames the title is still drawn */
-  static int D_803162B0[2];       /* each player's step: 0 car, 1-4 setup, 5 decals, 6 ready */
-  static int D_803162B8;          /* loading decals from the pak */
-  static int D_803162BC;          /* for this player */
-  static int D_803162C0;          /* the load's status */
-  static unsigned char D_803162C4;  /* the load has finished */
-  static int D_803162C8[13] TGR_MATCHING_UNUSED;
-  static int D_803162FC;          /* the season's round, race, state, the track and */
-  static int D_80316300;          /* the difficulty when the results were entered */
-  static int D_80316304;
-  static int D_80316308;
-  static int D_8031630C;
-  static int D_80316310;          /* the season results have been kept */
-  static int D_80316314;          /* the results page */
-  static char D_80316318[80];
+  static int carSelectStartTimeMs TGR_MATCHING_UNUSED;
+  static int unusedCarSelectPadding TGR_MATCHING_UNUSED;
+  static int playerModelSlot[2]; /* Slots 0-3 are used; slot ^ 2 selects the other model. */
+  static float carSlidePosition[2];
+  static float turntableAngle[2];
+  static MenuItem **setupItemList[2];
+  static int setupChoice[2];
+  static int previousSetupChoice[2];
+  static int setupChoiceCount[2];
+  static char *setupListTitle[2];
+  static int advancingFromCarSelect;
+  static unsigned char *scrollSoundData;
+  static int scrollSoundSize;
+  static unsigned char *selectSoundData;
+  static int selectSoundSize;
+  static int titleFramesRemaining;
+  static int playerCarSelectStep[2]; /* Steps are 0 car, 1-4 setup, 5 decals, and 6 ready. */
+  static int decalPakLoadActive;
+  static int decalPakPlayer;
+  static int decalPakLoadStatus;
+  static unsigned char decalPakLoadFinished;
+  static int unusedDecalPakPadding[13] TGR_MATCHING_UNUSED;
+  static int resultsSeasonRound;
+  static int resultsSeasonRace;
+  static int resultsSeasonState;
+  static int resultsTrackId;
+  static int resultsWeather;
+  static int seasonResultsSaved;
+  static int resultsPage;
+  static char resultsText[80];
   int p;
   int n;
   int i TGR_MATCHING_UNUSED;
@@ -523,30 +520,30 @@ void ProcessCarSelectScreen(void)
       FlushDisplayList();
     }
 #endif
-    D_80316250 = g_dwElapsedTimeMs;
+    carSelectStartTimeMs = g_dwElapsedTimeMs;
     SetFadeTarget(1.0f, 0.2f);
     FadeSfxTo(1.0f, 0.2f);
     FadeMusicTo(1.0f, 0.2f);
-    D_803162FC = CAR(0)->season->round;
-    D_80316300 = CAR(0)->season->race;
-    D_80316304 = CAR(0)->season->state;
-    D_80316308 = g_dwSelectedTrackId;
-    D_8031630C = g_dwCurrentWeather;
-    D_80316310 = 0;
+    resultsSeasonRound = CAR(0)->season->round;
+    resultsSeasonRace = CAR(0)->season->race;
+    resultsSeasonState = CAR(0)->season->state;
+    resultsTrackId = g_dwSelectedTrackId;
+    resultsWeather = g_dwCurrentWeather;
+    seasonResultsSaved = 0;
     g_dwVehicleViewModeIndex = 0;
-    D_80316268[0] = 0.0f;
-    D_80316268[1] = 1.0f;
+    turntableAngle[0] = 0.0f;
+    turntableAngle[1] = 1.0f;
     for (p = 0; p < g_dwNumLocalPlayers; p++) {
       if (g_dwIsReviewMode == 0) {
         InitVehicleColor(CAR(p));
         CAR(p)->xed8 = (int)UpdatePhysicsStep;
       }
-      D_80316258[p] = p;
-      D_80316260[p] = 0;
-      D_803162B0[p] = 0;
+      playerModelSlot[p] = p;
+      carSlidePosition[p] = 0;
+      playerCarSelectStep[p] = 0;
       CAR(p)->x2000 = 0;
       *(int *)((char *)CAR(p) + 0x2044) = 0;
-      D_803162B8 = 0;
+      decalPakLoadActive = 0;
     }
     if (g_dwIsReviewMode == 0) {
 #if TGR_REGION_JPN
@@ -626,28 +623,28 @@ void ProcessCarSelectScreen(void)
     LoadAndDecompressAsset(&g_ArrowLeftTextureDesc, AllocHeapAligned);
     LoadAndDecompressAsset(&g_ArrowRightTextureDesc, AllocHeapAligned);
     LoadAndDecompressAsset(&g_TitleBarTextureDesc, AllocHeapAligned);
-    D_803162A0 = DmaReadAssetSize((int)_scrollSoundSegmentRomStart);
-    D_8031629C = AllocHeapAligned(D_803162A0 + 0x100);
-    DecompressFromRom(D_8031629C, (int)_scrollSoundSegmentRomStart, 0);
-    D_803162A8 = DmaReadAssetSize((int)_selectSoundSegmentRomStart);
-    D_803162A4 = AllocHeapAligned(D_803162A8 + 0x100);
-    DecompressFromRom(D_803162A4, (int)_selectSoundSegmentRomStart, 0);
+    scrollSoundSize = DmaReadAssetSize((int)_scrollSoundSegmentRomStart);
+    scrollSoundData = AllocHeapAligned(scrollSoundSize + 0x100);
+    DecompressFromRom(scrollSoundData, (int)_scrollSoundSegmentRomStart, 0);
+    selectSoundSize = DmaReadAssetSize((int)_selectSoundSegmentRomStart);
+    selectSoundData = AllocHeapAligned(selectSoundSize + 0x100);
+    DecompressFromRom(selectSoundData, (int)_selectSoundSegmentRomStart, 0);
     for (p = 0; p != 0x100; p++) {
-      D_8031629C[D_803162A0 + p] = 0;
-      D_803162A4[D_803162A8 + p] = 0;
+      scrollSoundData[scrollSoundSize + p] = 0;
+      selectSoundData[selectSoundSize + p] = 0;
     }
     AllocateEditorBuffers();
-    D_803162AC = 2;
+    titleFramesRemaining = 2;
     g_bCarSelectInitialized = 1;
-    D_80316270[0] = D_80316270[1] = g_apHandlingOptions;
-    D_80316278[0] = D_80316278[1] = 0;
+    setupItemList[0] = setupItemList[1] = g_apHandlingOptions;
+    setupChoice[0] = setupChoice[1] = 0;
 #if TGR_REGION_JPN || TGR_REGION_EUR
     g_dwKeepScreenBlanked = 0;
 #endif
 #if TGR_REGION_JPN
-    D_80316248[0] = D_80316248[1] = 1;
+    repaintPending[0] = repaintPending[1] = 1;
 #endif
-    D_80316314 = 0;
+    resultsPage = 0;
   }
 
   /* ---- every frame: the turntables ---- */
@@ -656,21 +653,21 @@ void ProcessCarSelectScreen(void)
   StartHighResFrame();
 #if TGR_REGION_JPN
   for (p = 0; p < g_dwNumLocalPlayers; p++) {
-    if (D_80316248[p] != 0) {
-      D_80316248[p] = 0;
-      if (D_803162B0[p] == 0) {
-        ExtractVehicleBaseColor(CAR(p), &g_aVehicleModels[D_80316258[p]]);
+    if (repaintPending[p] != 0) {
+      repaintPending[p] = 0;
+      if (playerCarSelectStep[p] == 0) {
+        ExtractVehicleBaseColor(CAR(p), &g_aVehicleModels[playerModelSlot[p]]);
         if (g_dwNumLocalPlayers == 2) {
           CAR(p)->colour[0] = g_abPlayerColorsRgb[p][0];
           CAR(p)->colour[1] = g_abPlayerColorsRgb[p][1];
           CAR(p)->colour[2] = g_abPlayerColorsRgb[p][2];
         }
-        SetMaterialColor((int)&g_aVehicleModels[D_80316258[p]], CAR(p)->colour[0] >> 3, CAR(p)->colour[1] >> 3,
+        SetMaterialColor((int)&g_aVehicleModels[playerModelSlot[p]], CAR(p)->colour[0] >> 3, CAR(p)->colour[1] >> 3,
                           CAR(p)->colour[2] >> 3);
-      } else if (D_803162B0[p] == 5) {
-        ExtractVehicleBaseColor(CAR(p), &g_aVehicleModels[D_80316258[p]]);
+      } else if (playerCarSelectStep[p] == 5) {
+        ExtractVehicleBaseColor(CAR(p), &g_aVehicleModels[playerModelSlot[p]]);
       }
-      SetMaterialColor((int)&g_aVehicleModels[D_80316258[p]], CAR(p)->colour[0] >> 3, CAR(p)->colour[1] >> 3,
+      SetMaterialColor((int)&g_aVehicleModels[playerModelSlot[p]], CAR(p)->colour[0] >> 3, CAR(p)->colour[1] >> 3,
                         CAR(p)->colour[2] >> 3);
     }
   }
@@ -684,106 +681,106 @@ void ProcessCarSelectScreen(void)
   AddTimingMarker(0, 0, 0, 200, 0xFF);
   g_aViewportRects[0].x10 = 0;
   g_aViewportRects[1].x10 = 1;
-  D_803162AC = 2;
+  titleFramesRemaining = 2;
   ClearDepthBuffer();
   if (g_dwIsReviewMode != 0) {
     DrawTexturedRect(&g_BgTextureDesc, 0, 0, 320, 240, 0, 0, 0, 0xFF, 0, 0x82, 0x8C, 0xFF, 4);
   } else {
     DrawTexturedRect(&g_BgTextureDesc, 0, 0, 320, 240, 0, 0, 0, 0xFF, 0x50, 0, 0, 0xFF, 4);
   }
-  if (D_803162AC == 0 && IsFadeComplete() != 0) {
+  if (titleFramesRemaining == 0 && IsFadeComplete() != 0) {
     SetScissorRect(0, 0, g_dwScreenWidth, g_dwScreenHeight);
   }
   spin = 6.2831855f;
   dt = g_fFrameDeltaTime;
-  D_80316268[0] += g_fFrameDeltaTime;
-  D_80316268[1] += 6.2831855f - g_fFrameDeltaTime;
+  turntableAngle[0] += g_fFrameDeltaTime;
+  turntableAngle[1] += 6.2831855f - g_fFrameDeltaTime;
   for (p = 0; p < g_dwNumLocalPlayers; p++) {
-    while (spin < D_80316268[p]) {
-      D_80316268[p] -= spin;
+    while (spin < turntableAngle[p]) {
+      turntableAngle[p] -= spin;
     }
   }
   for (p = 0; p < g_dwNumLocalPlayers; p++) {
-    if (D_80316260[p] < 0.0f) {
+    if (carSlidePosition[p] < 0.0f) {
 #if TGR_REGION_JPN
-      D_80316260[p] = D_80316260[p] + (g_fFrameDeltaTime + g_fFrameDeltaTime);
+      carSlidePosition[p] = carSlidePosition[p] + (g_fFrameDeltaTime + g_fFrameDeltaTime);
 #else
-      D_80316260[p] = D_80316260[p] + (dt + dt);
+      carSlidePosition[p] = carSlidePosition[p] + (dt + dt);
 #endif
-      if (0.0f < D_80316260[p]) {
-        D_80316260[p] = 0.0f;
+      if (0.0f < carSlidePosition[p]) {
+        carSlidePosition[p] = 0.0f;
       }
 #if TGR_REGION_JPN
-      if (D_803162B0[p] == 5 && D_80316278[p] != 1) {
-        D_80316248[p] = 1;
+      if (playerCarSelectStep[p] == 5 && setupChoice[p] != 1) {
+        repaintPending[p] = 1;
       }
 #endif
-    } else if (0.0f < D_80316260[p]) {
+    } else if (0.0f < carSlidePosition[p]) {
 #if TGR_REGION_JPN
-      D_80316260[p] = D_80316260[p] - (g_fFrameDeltaTime + g_fFrameDeltaTime);
+      carSlidePosition[p] = carSlidePosition[p] - (g_fFrameDeltaTime + g_fFrameDeltaTime);
 #else
-      D_80316260[p] = D_80316260[p] - (dt + dt);
+      carSlidePosition[p] = carSlidePosition[p] - (dt + dt);
 #endif
-      if (D_80316260[p] < 0.0f) {
-        D_80316260[p] = 0.0f;
+      if (carSlidePosition[p] < 0.0f) {
+        carSlidePosition[p] = 0.0f;
       }
 #if TGR_REGION_JPN
-      if (D_803162B0[p] == 5 && D_80316278[p] != 1) {
-        D_80316248[p] = 1;
+      if (playerCarSelectStep[p] == 5 && setupChoice[p] != 1) {
+        repaintPending[p] = 1;
       }
 #endif
     }
 #if TGR_REGION_JPN
-    if (D_80316248[p] == 0 && IsVehicleModelLoaded(STREAM(D_80316258[p])) == 0) {
-      D_80316248[p] = -1;
+    if (repaintPending[p] == 0 && IsVehicleModelLoaded(STREAM(playerModelSlot[p])) == 0) {
+      repaintPending[p] = -1;
     }
 #endif
   }
   /* which model slot each player shows */
   for (p = 0; p < g_dwNumLocalPlayers; p++) {
-    if (D_803162B0[p] == 6) {
+    if (playerCarSelectStep[p] == 6) {
       if (g_dwIsPaintMode == 0 && g_dwIsReviewMode == 0) {
-        D_80316258[p] = (CAR(p)->xe58 << 1) ^ (p ^ 2);
+        playerModelSlot[p] = (CAR(p)->xe58 << 1) ^ (p ^ 2);
       }
-    } else if (D_803162B0[p] == 5) {
-      if (D_80316278[p] == 0) {
-        D_80316258[p] = p ^ 2;
-      } else if (D_80316278[p] == 2) {
-        D_80316258[p] = p;
-      } else if (D_80316278[p] == 1) {
-        if (D_80316280[p] == 0) {
-          D_80316258[p] = p;
+    } else if (playerCarSelectStep[p] == 5) {
+      if (setupChoice[p] == 0) {
+        playerModelSlot[p] = p ^ 2;
+      } else if (setupChoice[p] == 2) {
+        playerModelSlot[p] = p;
+      } else if (setupChoice[p] == 1) {
+        if (previousSetupChoice[p] == 0) {
+          playerModelSlot[p] = p;
         } else {
-          D_80316258[p] = p ^ 2;
+          playerModelSlot[p] = p ^ 2;
         }
       }
     }
   }
   g_dwNightMode = g_dwRainMode = g_dwWeatherActive = g_dwSnowMode = 0;
-#define ICON(p, idx) ((D_803162B0[p] == 0 || D_803162B0[p] == 6) ? 0 : D_80316270[p][D_80316278[idx]]->icon)
-#define ICON2(p, idx) ((D_803162B0[p] == 0 || D_803162B0[p] == 6) ? 0 : D_80316270[p][D_80316280[idx]]->icon)
+#define ICON(p, idx) ((playerCarSelectStep[p] == 0 || playerCarSelectStep[p] == 6) ? 0 : setupItemList[p][setupChoice[idx]]->icon)
+#define ICON2(p, idx) ((playerCarSelectStep[p] == 0 || playerCarSelectStep[p] == 6) ? 0 : setupItemList[p][previousSetupChoice[idx]]->icon)
   if (g_dwIsReviewMode != 0) {
-    RenderCameraView(ICON(0, 0), ICON2(0, 0), D_80316314 == 1, 0, 0x3B, g_dwScreenWidth, g_dwScreenHeight,
-                  D_80316260[0], D_803162B0[0] == 6, D_80316258[D_80316314 == 1],
-                  D_80316258[D_80316314 == 1] ^ 2, 12.0f, D_80316268[0]);
+    RenderCameraView(ICON(0, 0), ICON2(0, 0), resultsPage == 1, 0, 0x3B, g_dwScreenWidth, g_dwScreenHeight,
+                  carSlidePosition[0], playerCarSelectStep[0] == 6, playerModelSlot[resultsPage == 1],
+                  playerModelSlot[resultsPage == 1] ^ 2, 12.0f, turntableAngle[0]);
   } else {
     if (g_dwNumLocalPlayers == 1) {
-      RenderCameraView(ICON(0, 0), ICON2(0, 0), 0, 0, 0x2D, g_dwScreenWidth, g_dwScreenHeight, D_80316260[0],
-                    D_803162B0[0] == 6, D_80316258[0], D_80316258[0] ^ 2, 8.0f, D_80316268[0]);
+      RenderCameraView(ICON(0, 0), ICON2(0, 0), 0, 0, 0x2D, g_dwScreenWidth, g_dwScreenHeight, carSlidePosition[0],
+                    playerCarSelectStep[0] == 6, playerModelSlot[0], playerModelSlot[0] ^ 2, 8.0f, turntableAngle[0]);
     } else {
-      RenderCameraView(ICON(0, 0), ICON2(0, 0), 0, 0, 0, g_dwScreenWidth, g_dwScreenHeight - 24, D_80316260[0],
-                    D_803162B0[0] == 6, D_80316258[0], D_80316258[0] ^ 2, 12.0f, D_80316268[0]);
-      RenderCameraView(ICON(1, 1), ICON2(1, 1), 1, 0, 0x47, g_dwScreenWidth, g_dwScreenHeight, D_80316260[1],
-                    D_803162B0[1] == 6, D_80316258[1], D_80316258[1] ^ 2, 12.0f, D_80316268[1]);
+      RenderCameraView(ICON(0, 0), ICON2(0, 0), 0, 0, 0, g_dwScreenWidth, g_dwScreenHeight - 24, carSlidePosition[0],
+                    playerCarSelectStep[0] == 6, playerModelSlot[0], playerModelSlot[0] ^ 2, 12.0f, turntableAngle[0]);
+      RenderCameraView(ICON(1, 1), ICON2(1, 1), 1, 0, 0x47, g_dwScreenWidth, g_dwScreenHeight, carSlidePosition[1],
+                    playerCarSelectStep[1] == 6, playerModelSlot[1], playerModelSlot[1] ^ 2, 12.0f, turntableAngle[1]);
     }
   }
 #if TGR_REGION_JPN
   for (p = 0; p < g_dwNumLocalPlayers; p++) {
-    if (D_80316248[p] == -1) {
-      if (IsVehicleModelLoaded(STREAM(D_80316258[p]))) {
-        D_80316248[p] = 1;
+    if (repaintPending[p] == -1) {
+      if (IsVehicleModelLoaded(STREAM(playerModelSlot[p]))) {
+        repaintPending[p] = 1;
       } else {
-        D_80316248[p] = 0;
+        repaintPending[p] = 0;
       }
     }
   }
@@ -792,7 +789,7 @@ void ProcessCarSelectScreen(void)
   SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
 
   /* ---- the title ---- */
-  if (D_803162AC != 0 || IsFadeComplete() == 0) {
+  if (titleFramesRemaining != 0 || IsFadeComplete() == 0) {
 #if TGR_REGION_JPN
     DrawTexturedRect(&g_TitleBarTextureDesc, 0x19, 0xE, 0x118, 0x20, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 2);
 #else
@@ -802,16 +799,16 @@ void ProcessCarSelectScreen(void)
     SetTextAlignCenter();
     SetTextSize(30);
     if (g_dwIsReviewMode != 0) {
-      if (D_80316314 == 0 || D_80316314 == 1) {
+      if (resultsPage == 0 || resultsPage == 1) {
 #if TGR_REGION_JPN
-        sprintf(buf, "%%ry%s%s %%j%c", D_80316308 >= 5 ? "M-" : "", g_apTrackMenuItems[D_80316308 >= 5 ? D_80316308 - 5 : D_80316308]->item.label, D_8031630C + 0x29);
+        sprintf(buf, "%%ry%s%s %%j%c", resultsTrackId >= 5 ? "M-" : "", g_apTrackMenuItems[resultsTrackId >= 5 ? resultsTrackId - 5 : resultsTrackId]->item.label, resultsWeather + 0x29);
 #else
-        sprintf(buf, "%%ry%s%s/%s", D_80316308 >= 5 ? "M-" : "", g_apTrackMenuItems[D_80316308 >= 5 ? D_80316308 - 5 : D_80316308]->item.label, g_apWeatherMenuItems[D_8031630C]->label);
+        sprintf(buf, "%%ry%s%s/%s", resultsTrackId >= 5 ? "M-" : "", g_apTrackMenuItems[resultsTrackId >= 5 ? resultsTrackId - 5 : resultsTrackId]->item.label, g_apWeatherMenuItems[resultsWeather]->label);
 #endif
 
         DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight / 6 - 2);
       } else {
-        sprintf(buf, "%%ry%s", *(char **)&g_SeasonTable[D_803162FC]);
+        sprintf(buf, "%%ry%s", *(char **)&g_SeasonTable[resultsSeasonRound]);
         DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight / 6 - 2);
       }
     } else if (g_dwIsPaintMode != 0) {
@@ -820,75 +817,75 @@ void ProcessCarSelectScreen(void)
       DrawText("%ryCar Select", g_dwScreenWidth / 2, g_dwScreenHeight / 6 - 2);
     }
     if (IsFadeComplete() != 0) {
-      D_803162AC--;
+      titleFramesRemaining--;
     }
   }
 
   /* ---- each player's panel, or the results ---- */
   if (g_dwIsReviewMode != 0) {
     y = 0x4F;
-    race = D_80316300;
-    round = D_803162FC;
+    race = resultsSeasonRace;
+    round = resultsSeasonRound;
     p = 0;
     SetTextStyleNormal();
     SetTextAlignCenter();
     SetTextSize(20);
-    if (D_80316314 == 0 || D_80316314 == 1) {
+    if (resultsPage == 0 || resultsPage == 1) {
       /* a player's race: the place, then each lap and the race time */
-      pl = D_80316314 == 0 ? 0 : 1;
+      pl = resultsPage == 0 ? 0 : 1;
       if (g_dwNumLocalPlayers >= 2) {
         car = CAR(pl);
         if (car->laps < g_dwTotalLaps) {
 #if TGR_REGION_JPN
-          sprintf(D_80316318, "%%ryP%d:GAME OVER", pl + 1);
+          sprintf(resultsText, "%%ryP%d:GAME OVER", pl + 1);
 #else
-          sprintf(D_80316318, "%%ryP%d: Did not finish", pl + 1);
+          sprintf(resultsText, "%%ryP%d: Did not finish", pl + 1);
 #endif
         } else {
-          sprintf(D_80316318, "%%ryP%d: %s Place", pl + 1, g_apszPlaceNames[car->xfac]);
+          sprintf(resultsText, "%%ryP%d: %s Place", pl + 1, g_apszPlaceNames[car->xfac]);
         }
       } else {
         if (g_dwGameMode == 0) {
           car = CAR(pl);
           k = CAR(pl)->season->place[round][race];
-          sprintf(D_80316318, "%%ry%s Place - %d Point%s", g_apszPlaceNames[k], g_abRacePositionPoints[k],
+          sprintf(resultsText, "%%ry%s Place - %d Point%s", g_apszPlaceNames[k], g_abRacePositionPoints[k],
                   g_abRacePositionPoints[k] == 1 ? "" : "s");
         } else {
           car = CAR(pl);
           if (car->laps < g_dwTotalLaps) {
 #if TGR_REGION_JPN
-            sprintf(D_80316318, "%%ryGAME OVER");
+            sprintf(resultsText, "%%ryGAME OVER");
 #else
-            sprintf(D_80316318, "%%ryDid not finish");
+            sprintf(resultsText, "%%ryDid not finish");
 #endif
           } else {
-            sprintf(D_80316318, "%%ry%s Place", g_apszPlaceNames[car->xfac]);
+            sprintf(resultsText, "%%ry%s Place", g_apszPlaceNames[car->xfac]);
           }
         }
       }
-      DrawText(D_80316318, g_dwScreenWidth / 2, g_dwScreenHeight * 19 / 64 - 4);
+      DrawText(resultsText, g_dwScreenWidth / 2, g_dwScreenHeight * 19 / 64 - 4);
       SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
       SetTextSize(10);
       for (; p <= g_dwTotalLaps; p++) {
         SetTextAlignLeft();
         if (p == g_dwTotalLaps) {
           y += 2;
-          if (car->lapTime == CAR(0)->season->xe8[D_80316308]) {
+          if (car->lapTime == CAR(0)->season->xe8[resultsTrackId]) {
             DrawText("  %yyRECORD TIME!", g_dwScreenWidth * 11 / 16, y);
           }
-          sprintf(D_80316318, "Race time:");
+          sprintf(resultsText, "Race time:");
           FormatLapTime(time, car->lapTime);
         } else {
-          sprintf(D_80316318, "Lap %d time:", p + 1);
+          sprintf(resultsText, "Lap %d time:", p + 1);
           if (p < car->laps) {
             FormatLapTime(time, CAR(pl)->lapTimes[p]);
           } else {
             sprintf(time, "--    ");
           }
         }
-        DrawText(D_80316318, g_dwScreenWidth * 5 / 16, y);
+        DrawText(resultsText, g_dwScreenWidth * 5 / 16, y);
         if (p < car->laps && p == car->xf9c) {
-          if (car->xf98 == CAR(0)->season->x8c[D_80316308]) {
+          if (car->xf98 == CAR(0)->season->x8c[resultsTrackId]) {
             DrawText("  %yyRECORD LAP!", g_dwScreenWidth * 11 / 16, y);
           } else {
             DrawText("  %yyBEST LAP!", g_dwScreenWidth * 11 / 16, y);
@@ -898,7 +895,7 @@ void ProcessCarSelectScreen(void)
         DrawText(time, g_dwScreenWidth * 11 / 16, y);
         y += 10;
       }
-    } else if (D_80316314 == 3) {
+    } else if (resultsPage == 3) {
       /* the season news */
       SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
       SetTextSize(12);
@@ -916,11 +913,11 @@ void ProcessCarSelectScreen(void)
       x = 0;
       for (p = 0; p < g_SeasonTable[round].x8; p++) {
         if (g_SeasonTable[round].races[p][0] < 5) {
-          if (D_80316304 & 1) {
+          if (resultsSeasonState & 1) {
             x = g_dwScreenWidth / 16;
             break;
           }
-        } else if ((D_80316304 & 1) == 0) {
+        } else if ((resultsSeasonState & 1) == 0) {
           x = g_dwScreenWidth / 16;
           break;
         }
@@ -928,7 +925,7 @@ void ProcessCarSelectScreen(void)
       total = 0;
       for (p = 0; p < g_SeasonTable[round].x8; p++) {
         tr = g_SeasonTable[round].races[p][0];
-        if (D_80316304 & 1) {
+        if (resultsSeasonState & 1) {
           if (tr < 5) {
             tr += 5;
           } else {
@@ -937,67 +934,67 @@ void ProcessCarSelectScreen(void)
         }
         SetTextAlignLeft();
 #if TGR_REGION_JPN
-        sprintf(D_80316318, "%%j%c", g_SeasonTable[round].races[p][1] + 0x29);
+        sprintf(resultsText, "%%j%c", g_SeasonTable[round].races[p][1] + 0x29);
         SetTextSize(13);
-        DrawText(D_80316318, g_dwScreenWidth * 3 / 16 - x, y + 1);
+        DrawText(resultsText, g_dwScreenWidth * 3 / 16 - x, y + 1);
         SetTextSize(10);
         DrawText((const char *)g_apTrackMenuItems[tr]->item.label,
                  g_dwScreenWidth * 3 / 16 - x + 12, y);
 #else
-        sprintf(D_80316318, "%s/%s", g_apTrackMenuItems[tr]->item.label,
+        sprintf(resultsText, "%s/%s", g_apTrackMenuItems[tr]->item.label,
                 g_apWeatherMenuItems[g_SeasonTable[round].races[p][1]]->label);
-        DrawText(D_80316318, g_dwScreenWidth * 3 / 16 - x, y);
+        DrawText(resultsText, g_dwScreenWidth * 3 / 16 - x, y);
 #endif
         SetTextAlignCenter();
         if (p <= (int)race) {
-          FormatLapTime(D_80316318, CAR(0)->season->times[round][p]);
+          FormatLapTime(resultsText, CAR(0)->season->times[round][p]);
         } else {
-          sprintf(D_80316318, "--");
+          sprintf(resultsText, "--");
         }
-        DrawText(D_80316318, g_dwScreenWidth * 17 / 32 + x, y);
+        DrawText(resultsText, g_dwScreenWidth * 17 / 32 + x, y);
         DrawText(p <= (int)race ? g_apszPlaceNames[CAR(0)->season->place[round][p]] : "--",
                     g_dwScreenWidth * 21 / 32 + x, y);
         SetTextAlignRight();
         if (p <= (int)race) {
-          sprintf(D_80316318, "%d PTS",
+          sprintf(resultsText, "%d PTS",
                   g_abRacePositionPoints[CAR(0)->season->place[round][p]]);
           total += g_abRacePositionPoints[CAR(0)->season->place[round][p]];
         }
-        DrawText(D_80316318, g_dwScreenWidth * 13 / 16 + x, y);
+        DrawText(resultsText, g_dwScreenWidth * 13 / 16 + x, y);
         y += 10;
       }
       y += 2;
-      sprintf(D_80316318, "TOTAL:    %d PTS ", total);
-      DrawText(D_80316318, g_dwScreenWidth * 13 / 16 + x, y);
+      sprintf(resultsText, "TOTAL:    %d PTS ", total);
+      DrawText(resultsText, g_dwScreenWidth * 13 / 16 + x, y);
     }
   } else {
     if (g_dwNumLocalPlayers == 2) {
       SetTextSize(17);
-      if (D_803162B0[0] == 0) {
+      if (playerCarSelectStep[0] == 0) {
         sprintf(buf, "%%ry%%i%s", *(char **)&g_aCarModels[CAR(0)->x2058]);
-      } else if (D_803162B0[0] == 6) {
+      } else if (playerCarSelectStep[0] == 6) {
         sprintf(buf, "%%ryREADY!");
       } else {
-        sprintf(buf, "%%ry%s: %%i%s", D_80316290[0], D_80316270[0][D_80316278[0]]->label);
+        sprintf(buf, "%%ry%s: %%i%s", setupListTitle[0], setupItemList[0][setupChoice[0]]->label);
       }
       DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight / 4);
-      if (D_803162B0[1] == 0) {
+      if (playerCarSelectStep[1] == 0) {
         sprintf(buf, "%%ry%%i%s", *(char **)&g_aCarModels[CAR(1)->x2058]);
-      } else if (D_803162B0[1] == 6) {
+      } else if (playerCarSelectStep[1] == 6) {
         sprintf(buf, "%%ryREADY!");
       } else {
-        sprintf(buf, "%%ry%s: %%i%s", D_80316290[1], D_80316270[1][D_80316278[1]]->label);
+        sprintf(buf, "%%ry%s: %%i%s", setupListTitle[1], setupItemList[1][setupChoice[1]]->label);
       }
       DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight * 3 / 5);
 #if TGR_REGION_JPN
       SetTextSize(14);
       SetTextAlignLeft();
-      if (D_803162B0[0] == 5 && D_80316278[0] != 1 && D_80316260[0] == 0) {
+      if (playerCarSelectStep[0] == 5 && setupChoice[0] != 1 && carSlidePosition[0] == 0) {
         DrawText("%ww%j\xD2\xD3" "2b3@sA5'", g_dwScreenWidth / 16, g_dwScreenHeight / 4 + 22);
         DrawText("%ww%j\xD2\xD3\x8D\x8F\xA1w", g_dwScreenWidth / 16, g_dwScreenHeight / 4 + 34);
         DrawText("%ww%j2Bc\xDB" "2@&", g_dwScreenWidth / 16, g_dwScreenHeight / 4 + 47);
       }
-      if (D_803162B0[1] == 5 && D_80316278[1] != 1 && D_80316260[1] == 0) {
+      if (playerCarSelectStep[1] == 5 && setupChoice[1] != 1 && carSlidePosition[1] == 0) {
         DrawText("%ww%j\xD2\xD3" "2b3@sA5'", g_dwScreenWidth / 16, g_dwScreenHeight * 3 / 5 + 22);
         DrawText("%ww%j\xD2\xD3\x8D\x8F\xA1w", g_dwScreenWidth / 16, g_dwScreenHeight * 3 / 5 + 34);
         DrawText("%ww%j2Bc\xDB" "2@&", g_dwScreenWidth / 16, g_dwScreenHeight * 3 / 5 + 47);
@@ -1006,14 +1003,14 @@ void ProcessCarSelectScreen(void)
 #else
       SetTextSize(8);
       SetTextAlignLeft();
-      if (D_803162B0[0] == 5 && D_80316278[0] != 1 && D_80316260[0] == 0) {
+      if (playerCarSelectStep[0] == 5 && setupChoice[0] != 1 && carSlidePosition[0] == 0) {
         DrawText("%wwIf you wish to use", g_dwScreenWidth * 11 / 16, g_dwScreenHeight / 4 + 19);
         DrawText("%wwthe Rumble Pak, you", g_dwScreenWidth * 11 / 16, g_dwScreenHeight / 4 + 28);
         DrawText("%wwshould ensure that it", g_dwScreenWidth * 11 / 16, g_dwScreenHeight / 4 + 37);
         DrawText("%wwis plugged in before", g_dwScreenWidth * 11 / 16, g_dwScreenHeight / 4 + 45);
         DrawText("%wwpressing A.", g_dwScreenWidth * 11 / 16, g_dwScreenHeight / 4 + 54);
       }
-      if (D_803162B0[1] == 5 && D_80316278[1] != 1 && D_80316260[1] == 0) {
+      if (playerCarSelectStep[1] == 5 && setupChoice[1] != 1 && carSlidePosition[1] == 0) {
         DrawText("%wwIf you wish to use", g_dwScreenWidth * 11 / 16, g_dwScreenHeight * 3 / 5 + 19);
         DrawText("%wwthe Rumble Pak, you", g_dwScreenWidth * 11 / 16, g_dwScreenHeight * 3 / 5 + 28);
         DrawText("%wwshould ensure that it", g_dwScreenWidth * 11 / 16, g_dwScreenHeight * 3 / 5 + 37);
@@ -1022,7 +1019,7 @@ void ProcessCarSelectScreen(void)
       }
 #endif
       SetTextAlignRight();
-      if (D_803162B0[0] == 0) {
+      if (playerCarSelectStep[0] == 0) {
         car = CAR(0);
         SetTextAlignRight();
         DrawText("%wwAcceleration", g_dwScreenWidth / 4 - 5, g_dwScreenHeight / 4 + 2);
@@ -1038,7 +1035,7 @@ void ProcessCarSelectScreen(void)
         DrawProgressBar(g_dwScreenWidth / 2, g_dwScreenHeight / 2 - 6, 80, 11,
                          *(float *)((char *)&g_aCarModels[car->x2058] + 0x48) / 10.0);
       }
-      if (D_803162B0[1] == 0) {
+      if (playerCarSelectStep[1] == 0) {
         car = CAR(1);
         SetTextAlignRight();
         DrawText("%wwAcceleration", g_dwScreenWidth / 4 - 5, g_dwScreenHeight * 3 / 5 + 2);
@@ -1060,32 +1057,32 @@ void ProcessCarSelectScreen(void)
         sprintf(buf, "%%ry%%i%s", *(char **)&g_aCarModels[CAR(0)->x2058]);
         DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight * 22 / 64);
       } else {
-        if (D_803162B0[0] == 0) {
+        if (playerCarSelectStep[0] == 0) {
           sprintf(buf, "%%ry%%i%s", *(char **)&g_aCarModels[CAR(0)->x2058]);
-        } else if (D_803162B0[0] == 6) {
+        } else if (playerCarSelectStep[0] == 6) {
           sprintf(buf, "%%ryLET'S GO!");
         } else {
-          sprintf(buf, "%%ry%s: %%i%s", D_80316290[0], D_80316270[0][D_80316278[0]]->label);
+          sprintf(buf, "%%ry%s: %%i%s", setupListTitle[0], setupItemList[0][setupChoice[0]]->label);
         }
         DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight * 20 / 64);
         SetTextSize(8);
         SetTextAlignCenter();
 #if TGR_REGION_JPN
-        if (D_803162B0[0] == 5 && D_80316278[0] != 1 && D_80316260[0] == 0) {
+        if (playerCarSelectStep[0] == 5 && setupChoice[0] != 1 && carSlidePosition[0] == 0) {
           SetTextSize(14);
           DrawText("%ww %j\xD2\xD3" "2b3@sA5'\xD2\xD3\x8D\x8F\xA1w2Bc\xDB" "2@&", g_dwScreenWidth / 2,
                       g_dwScreenHeight * 3 / 8 - 1);
           SetTextSize(8);
         }
 #else
-        if (D_803162B0[0] == 5 && D_80316278[0] != 1 && D_80316260[0] == 0) {
+        if (playerCarSelectStep[0] == 5 && setupChoice[0] != 1 && carSlidePosition[0] == 0) {
           DrawText("%wwIf you wish to use the Rumble Pak, you should", g_dwScreenWidth / 2,
                       g_dwScreenHeight * 3 / 8 - 6);
           DrawText("%wwensure that it is plugged in before pressing A.", g_dwScreenWidth / 2,
                       g_dwScreenHeight * 3 / 8 + 2);
         }
 #endif
-        if (D_803162B0[0] == 0) {
+        if (playerCarSelectStep[0] == 0) {
           car = CAR(0);
           SetTextAlignRight();
           SetTextSize(8);
@@ -1105,7 +1102,7 @@ void ProcessCarSelectScreen(void)
       }
     }
   }
-  if (D_803162AC != 0 || IsFadingOut() != 0 || IsFadingIn() != 0) {
+  if (titleFramesRemaining != 0 || IsFadingOut() != 0 || IsFadingIn() != 0) {
     if (g_dwIsReviewMode != 0) {
       DrawPauseMenuButtons();
     } else {
@@ -1119,30 +1116,30 @@ void ProcessCarSelectScreen(void)
   }
 
   /* ---- the decal load from the Controller Pak ---- */
-  if (D_803162B8 != 0) {
-    if (D_803162C0 == 0) {
-      if (D_803162C4 == 0) {
-        D_803162C0 = ProcessDecalSaveLoad(&g_aVehicleModels[D_803162BC], D_803162BC, 9, 1, &D_803162C4);
+  if (decalPakLoadActive != 0) {
+    if (decalPakLoadStatus == 0) {
+      if (decalPakLoadFinished == 0) {
+        decalPakLoadStatus = ProcessDecalSaveLoad(&g_aVehicleModels[decalPakPlayer], decalPakPlayer, 9, 1, &decalPakLoadFinished);
       }
-    } else if (D_803162C0 == 999) {
-      D_803162C4 = 1;
+    } else if (decalPakLoadStatus == 999) {
+      decalPakLoadFinished = 1;
     } else {
-      DrawPakErrorMessage(D_803162C0, 9, 1);
-      if (((N64PadRec *)CAR(D_803162BC)->pad)->pressed & 0x30) {
-        TransferFlags((N64PadRec *)CAR(D_803162BC)->pad, 0x30);
-        D_803162C4 = 1;
+      DrawPakErrorMessage(decalPakLoadStatus, 9, 1);
+      if (((N64PadRec *)CAR(decalPakPlayer)->pad)->pressed & 0x30) {
+        TransferFlags((N64PadRec *)CAR(decalPakPlayer)->pad, 0x30);
+        decalPakLoadFinished = 1;
       }
     }
-    if (D_803162C4 != 0) {
-      if (D_803162C0 != 0) {
-        D_80316288[D_803162BC] = g_dwDecalListCount - 1;
-        D_803162C0 = 0;
+    if (decalPakLoadFinished != 0) {
+      if (decalPakLoadStatus != 0) {
+        setupChoiceCount[decalPakPlayer] = g_dwDecalListCount - 1;
+        decalPakLoadStatus = 0;
       } else {
-        D_80316288[D_803162BC] = g_dwDecalListCount;
-        D_80316280[D_803162BC] = D_80316278[D_803162BC];
-        D_80316278[D_803162BC] = (D_80316278[D_803162BC] + 1) % g_dwDecalListCount;
-        D_80316260[D_803162BC] = 1.0f;
-        ExtractVehicleBaseColor(CAR(D_803162BC), &g_aVehicleModels[D_803162BC]);
+        setupChoiceCount[decalPakPlayer] = g_dwDecalListCount;
+        previousSetupChoice[decalPakPlayer] = setupChoice[decalPakPlayer];
+        setupChoice[decalPakPlayer] = (setupChoice[decalPakPlayer] + 1) % g_dwDecalListCount;
+        carSlidePosition[decalPakPlayer] = 1.0f;
+        ExtractVehicleBaseColor(CAR(decalPakPlayer), &g_aVehicleModels[decalPakPlayer]);
       }
     }
   }
@@ -1160,12 +1157,12 @@ void ProcessCarSelectScreen(void)
         g_aSoundEffectChannels[back].pitch = 0;
         g_aSoundEffectChannels[back].p = g_SilenceSampleData;
       }
-      if (D_80316298 != 0) {
+      if (advancingFromCarSelect != 0) {
         if (g_dwIsReviewMode != 0) {
           if (g_dwGameMode == 0) {
             g_dwNumLocalPlayers = 1;
             g_dwContinueFromResults = CAR(0)->season->race != 0;
-            if (D_803162FC == CAR(0)->season->round) {
+            if (resultsSeasonRound == CAR(0)->season->round) {
               SetTrackFromSeason();
               g_bSaveLoadEntryPoint = 1;
               SetCurrentScreenCallback((int)ProcessDataSaveLoadMenu);
@@ -1187,7 +1184,7 @@ void ProcessCarSelectScreen(void)
           SetCurrentScreenCallback((int)ProcessRacingScreen);
         }
       } else if (g_dwIsReviewMode != 0) {
-        if (g_dwGameMode == 0 && D_80316310 == 0) {
+        if (g_dwGameMode == 0 && seasonResultsSaved == 0) {
           ProcessSeasonResults();
         }
         SetCurrentScreenCallback((int)ProcessMainMenu);
@@ -1201,10 +1198,10 @@ void ProcessCarSelectScreen(void)
       }
     }
   } else {
-    if (D_803162B8 != 0) {
-      if (D_803162C4 != 0) {
-        D_803162C4 = 0;
-        D_803162B8 = 0;
+    if (decalPakLoadActive != 0) {
+      if (decalPakLoadFinished != 0) {
+        decalPakLoadFinished = 0;
+        decalPakLoadActive = 0;
       }
     } else {
       if (g_dwIsPaintMode != 0) {
@@ -1221,21 +1218,21 @@ void ProcessCarSelectScreen(void)
         } else {
           UpdateStickRepeat((N64PadRec *)PCAR->pad);
         }
-        if (D_803162B0[p] == 6) {
+        if (playerCarSelectStep[p] == 6) {
           if (((N64PadRec *)CAR(p)->pad)->pressed & 0x20) {
-            D_803162B0[p]--;
+            playerCarSelectStep[p]--;
             TransferFlags((N64PadRec *)CAR(p)->pad, 0x20);
           }
-        } else if (D_80316260[p] == 0) {
+        } else if (carSlidePosition[p] == 0) {
           /* the car (step 0): left and right pick the next selectable car */
-          if (D_803162B0[p] == 0) {
+          if (playerCarSelectStep[p] == 0) {
             if (((N64PadRec *)PCAR->pad)->pressed & 4) {
               n = PCAR->x2058;
               do {
                 PCAR->x2058 = (PCAR->x2058 + g_dwCarCount - 1) % g_dwCarCount;
               } while (IsCarUnlocked(PCAR->x2058) == 0);
               if (n != PCAR->x2058) {
-                D_80316260[p] = 1.0f;
+                carSlidePosition[p] = 1.0f;
                 goto newcar;
               }
             }
@@ -1245,16 +1242,16 @@ void ProcessCarSelectScreen(void)
                 PCAR->x2058 = (PCAR->x2058 + 1) % g_dwCarCount;
               } while (IsCarUnlocked(PCAR->x2058) == 0);
               if (n != PCAR->x2058) {
-                D_80316260[p] = -1.0f;
+                carSlidePosition[p] = -1.0f;
               newcar:
                 v = FindFreeSoundChannel();
                 if (v != -1) {
-                  InitSoundChannel(v, D_8031629C, D_803162A0, 0);
+                  InitSoundChannel(v, scrollSoundData, scrollSoundSize, 0);
                 }
-                D_80316258[p] ^= 2;
-                LoadVehicleModel(STREAM(D_80316258[p]), D_80316258[p], PCAR->x2058, p);
+                playerModelSlot[p] ^= 2;
+                LoadVehicleModel(STREAM(playerModelSlot[p]), playerModelSlot[p], PCAR->x2058, p);
 #if defined(__GNUC__) && !defined(__sgi)
-                while (PollVehicleModelDma(STREAM(D_80316258[p]))) {
+                while (PollVehicleModelDma(STREAM(playerModelSlot[p]))) {
                 }
 #endif
               }
@@ -1263,30 +1260,30 @@ void ProcessCarSelectScreen(void)
 #if TGR_REGION_JPN || TGR_REGION_EUR
 #if TGR_REGION_JPN
           /* the decal choice (step 5): left and right */
-          if (D_803162B0[p] == 5) {
+          if (playerCarSelectStep[p] == 5) {
             if (((N64PadRec *)CAR(p)->pad)->pressed & 4) {
-              D_80316280[p] = D_80316278[p];
-              D_80316278[p] = (D_80316278[p] + D_80316288[p] - 1) % D_80316288[p];
-              D_80316260[p] = 1.0f;
+              previousSetupChoice[p] = setupChoice[p];
+              setupChoice[p] = (setupChoice[p] + setupChoiceCount[p] - 1) % setupChoiceCount[p];
+              carSlidePosition[p] = 1.0f;
               goto tick5;
             }
             if (((N64PadRec *)CAR(p)->pad)->pressed & 1) {
-              D_80316280[p] = D_80316278[p];
-              D_80316278[p] = (D_80316278[p] + 1) % D_80316288[p];
-              D_80316260[p] = -1.0f;
+              previousSetupChoice[p] = setupChoice[p];
+              setupChoice[p] = (setupChoice[p] + 1) % setupChoiceCount[p];
+              carSlidePosition[p] = -1.0f;
             tick5:
               v = FindFreeSoundChannel();
               if (v != -1) {
-                InitSoundChannel(v, D_8031629C, D_803162A0, 0);
+                InitSoundChannel(v, scrollSoundData, scrollSoundSize, 0);
               }
             }
           }
 #endif
-          if (D_80316260[p] != 0.f) {
+          if (carSlidePosition[p] != 0.f) {
             continue;
           }
           /* the colour, on the car and on the decals */
-          if (D_803162B0[p] == 0 || D_803162B0[p] == 5) {
+          if (playerCarSelectStep[p] == 0 || playerCarSelectStep[p] == 5) {
             if (((N64PadRec *)car->pad)->pressed & 0x400) {
               TransferFlags((N64PadRec *)car->pad, 0x400);
               if (car->season->unlocked & 0x8000) {
@@ -1350,36 +1347,36 @@ void ProcessCarSelectScreen(void)
                 }
               }
             }
-            SetMaterialColor((int)&g_aVehicleModels[D_80316258[p]], CAR(p)->colour[0] >> 3, CAR(p)->colour[1] >> 3,
+            SetMaterialColor((int)&g_aVehicleModels[playerModelSlot[p]], CAR(p)->colour[0] >> 3, CAR(p)->colour[1] >> 3,
                               CAR(p)->colour[2] >> 3);
           }
 #if TGR_REGION_JPN
           /* the setup choice (steps 1-4): left and right */
-          if (D_803162B0[p] != 0 && D_803162B0[p] != 5) {
+          if (playerCarSelectStep[p] != 0 && playerCarSelectStep[p] != 5) {
 #else
           /* the setup choice (steps 1-5): left and right */
-          if (D_803162B0[p] != 0) {
+          if (playerCarSelectStep[p] != 0) {
 #endif
             if (((N64PadRec *)PCAR->pad)->pressed & 4) {
-              D_80316280[p] = D_80316278[p];
-              D_80316278[p] = (D_80316278[p] + D_80316288[p] - 1) % D_80316288[p];
-              D_80316260[p] = 1.0f;
+              previousSetupChoice[p] = setupChoice[p];
+              setupChoice[p] = (setupChoice[p] + setupChoiceCount[p] - 1) % setupChoiceCount[p];
+              carSlidePosition[p] = 1.0f;
               goto tick;
             }
             if (((N64PadRec *)PCAR->pad)->pressed & 1) {
-              D_80316280[p] = D_80316278[p];
-              D_80316278[p] = (D_80316278[p] + 1) % D_80316288[p];
-              D_80316260[p] = -1.0f;
+              previousSetupChoice[p] = setupChoice[p];
+              setupChoice[p] = (setupChoice[p] + 1) % setupChoiceCount[p];
+              carSlidePosition[p] = -1.0f;
             tick:
               v = FindFreeSoundChannel();
               if (v != -1) {
-                InitSoundChannel(v, D_8031629C, D_803162A0, 0);
+                InitSoundChannel(v, scrollSoundData, scrollSoundSize, 0);
               }
             }
           }
 #else
           /* the colour, on the car and on the decals */
-          if (D_803162B0[p] == 0 || D_803162B0[p] == 5) {
+          if (playerCarSelectStep[p] == 0 || playerCarSelectStep[p] == 5) {
             if (((N64PadRec *)PCAR->pad)->pressed & 0x400) {
               TransferFlags((N64PadRec *)PCAR->pad, 0x400);
               if (PCAR->season->unlocked & 0x8000) {
@@ -1448,21 +1445,21 @@ void ProcessCarSelectScreen(void)
             }
           }
           /* the setup choice (steps 1-5): left and right */
-          if (D_803162B0[p] != 0) {
+          if (playerCarSelectStep[p] != 0) {
             if (((N64PadRec *)PCAR->pad)->pressed & 4) {
-              D_80316280[p] = D_80316278[p];
-              D_80316278[p] = (D_80316278[p] + D_80316288[p] - 1) % D_80316288[p];
-              D_80316260[p] = 1.0f;
+              previousSetupChoice[p] = setupChoice[p];
+              setupChoice[p] = (setupChoice[p] + setupChoiceCount[p] - 1) % setupChoiceCount[p];
+              carSlidePosition[p] = 1.0f;
               goto tick;
             }
             if (((N64PadRec *)PCAR->pad)->pressed & 1) {
-              D_80316280[p] = D_80316278[p];
-              D_80316278[p] = (D_80316278[p] + 1) % D_80316288[p];
-              D_80316260[p] = -1.0f;
+              previousSetupChoice[p] = setupChoice[p];
+              setupChoice[p] = (setupChoice[p] + 1) % setupChoiceCount[p];
+              carSlidePosition[p] = -1.0f;
             tick:
               v = FindFreeSoundChannel();
               if (v != -1) {
-                InitSoundChannel(v, D_8031629C, D_803162A0, 0);
+                InitSoundChannel(v, scrollSoundData, scrollSoundSize, 0);
               }
             }
           }
@@ -1471,183 +1468,183 @@ void ProcessCarSelectScreen(void)
           if (pad->pressed & 0x20) {
             /* back */
             TransferFlags(pad, 0x20);
-            if (D_803162B0[p] == 0) {
-              D_80316298 = 0;
+            if (playerCarSelectStep[p] == 0) {
+              advancingFromCarSelect = 0;
               FadeSfxTo(0.0f, 0.2f);
               SetFadeTarget(0.0f, 0.2f);
             } else {
-              D_803162B0[p]--;
-              switch (D_803162B0[p]) {
+              playerCarSelectStep[p]--;
+              switch (playerCarSelectStep[p]) {
               case 1:
-                D_80316278[p] = PCAR->season->xd4;
+                setupChoice[p] = PCAR->season->xd4;
 #if TGR_REGION_JPN
-                D_80316270[p] = g_apHandlingOptions;
-                D_80316288[p] = g_dwHandlingOptionCount;
-                D_80316290[p] = "Handling";
+                setupItemList[p] = g_apHandlingOptions;
+                setupChoiceCount[p] = g_dwHandlingOptionCount;
+                setupListTitle[p] = "Handling";
 #else
                 SETUP(p, g_apHandlingOptions, g_dwHandlingOptionCount, "Handling");
 #endif
                 break;
               case 2:
-                D_80316278[p] = PCAR->season->xd8;
+                setupChoice[p] = PCAR->season->xd8;
 #if TGR_REGION_JPN
-                D_80316270[p] = g_apTransmissionOptions;
-                D_80316288[p] = g_dwTransmissionOptionCount;
-                D_80316290[p] = "Transmission";
+                setupItemList[p] = g_apTransmissionOptions;
+                setupChoiceCount[p] = g_dwTransmissionOptionCount;
+                setupListTitle[p] = "Transmission";
 #else
                 SETUP(p, g_apTransmissionOptions, g_dwTransmissionOptionCount, "Transmission");
 #endif
                 break;
               case 3:
-                D_80316278[p] = PCAR->season->xdc;
+                setupChoice[p] = PCAR->season->xdc;
 #if TGR_REGION_JPN
-                D_80316270[p] = g_apTiresOptions;
-                D_80316288[p] = g_dwTiresOptionCount;
-                D_80316290[p] = "TIRE";
+                setupItemList[p] = g_apTiresOptions;
+                setupChoiceCount[p] = g_dwTiresOptionCount;
+                setupListTitle[p] = "TIRE";
 #else
                 SETUP(p, g_apTiresOptions, g_dwTiresOptionCount, TIRES_TITLE);
 #endif
                 break;
               case 4:
-                D_80316278[p] = PCAR->season->xe0;
+                setupChoice[p] = PCAR->season->xe0;
 #if TGR_REGION_JPN
-                D_80316270[p] = g_apSuspensionOptions;
-                D_80316288[p] = g_dwSuspensionOptionCount;
-                D_80316290[p] = "Suspension";
+                setupItemList[p] = g_apSuspensionOptions;
+                setupChoiceCount[p] = g_dwSuspensionOptionCount;
+                setupListTitle[p] = "Suspension";
 #else
                 SETUP(p, g_apSuspensionOptions, g_dwSuspensionOptionCount, "Suspension");
 #endif
                 break;
               case 5:
-                D_80316278[p] = 0;
-                D_80316290[p] = DECALS_TITLE;
+                setupChoice[p] = 0;
+                setupListTitle[p] = DECALS_TITLE;
                 break;
               }
-              D_80316280[p] = D_80316278[p];
+              previousSetupChoice[p] = setupChoice[p];
             }
             goto sound;
           } else if (pad->pressed & 0xC010) {
             /* on to the next step */
             TransferFlags(pad, 0xC010);
-            switch (D_803162B0[p]) {
+            switch (playerCarSelectStep[p]) {
             case 0:
               PCAR->kind = PCAR->x2058;
-              D_80316278[p] = PCAR->season->xd4;
+              setupChoice[p] = PCAR->season->xd4;
 #if TGR_REGION_JPN
-              D_80316270[p] = g_apHandlingOptions;
-              D_80316288[p] = g_dwHandlingOptionCount;
-              D_80316290[p] = "Handling";
+              setupItemList[p] = g_apHandlingOptions;
+              setupChoiceCount[p] = g_dwHandlingOptionCount;
+              setupListTitle[p] = "Handling";
 #else
               SETUP(p, g_apHandlingOptions, g_dwHandlingOptionCount, "Handling");
 #endif
               break;
             case 1:
-              PCAR->season->xd4 = D_80316278[p];
-              D_80316278[p] = PCAR->season->xd8;
+              PCAR->season->xd4 = setupChoice[p];
+              setupChoice[p] = PCAR->season->xd8;
 #if TGR_REGION_JPN
-              D_80316270[p] = g_apTransmissionOptions;
-              D_80316288[p] = g_dwTransmissionOptionCount;
-              D_80316290[p] = "Transmission";
+              setupItemList[p] = g_apTransmissionOptions;
+              setupChoiceCount[p] = g_dwTransmissionOptionCount;
+              setupListTitle[p] = "Transmission";
 #else
               SETUP(p, g_apTransmissionOptions, g_dwTransmissionOptionCount, "Transmission");
 #endif
               break;
             case 2:
-              PCAR->season->xd8 = D_80316278[p];
-              D_80316278[p] = PCAR->season->xdc;
+              PCAR->season->xd8 = setupChoice[p];
+              setupChoice[p] = PCAR->season->xdc;
 #if TGR_REGION_JPN
-              D_80316270[p] = g_apTiresOptions;
-              D_80316288[p] = g_dwTiresOptionCount;
-              D_80316290[p] = TIRES_TITLE;
+              setupItemList[p] = g_apTiresOptions;
+              setupChoiceCount[p] = g_dwTiresOptionCount;
+              setupListTitle[p] = TIRES_TITLE;
 #else
               SETUP(p, g_apTiresOptions, g_dwTiresOptionCount, TIRES_TITLE);
 #endif
               break;
             case 3:
-              PCAR->season->xdc = D_80316278[p];
-              D_80316278[p] = PCAR->season->xe0;
+              PCAR->season->xdc = setupChoice[p];
+              setupChoice[p] = PCAR->season->xe0;
 #if TGR_REGION_JPN
-              D_80316270[p] = g_apSuspensionOptions;
-              D_80316288[p] = g_dwSuspensionOptionCount;
-              D_80316290[p] = "Suspension";
+              setupItemList[p] = g_apSuspensionOptions;
+              setupChoiceCount[p] = g_dwSuspensionOptionCount;
+              setupListTitle[p] = "Suspension";
 #else
               SETUP(p, g_apSuspensionOptions, g_dwSuspensionOptionCount, "Suspension");
 #endif
               break;
             case 4:
-              PCAR->season->xe0 = D_80316278[p];
-              D_80316278[p] = 0;
-              D_80316270[p] = g_apDecalOptions;
+              PCAR->season->xe0 = setupChoice[p];
+              setupChoice[p] = 0;
+              setupItemList[p] = g_apDecalOptions;
 #if TGR_REGION_JPN
               if (PCAR->kind < 9 || PCAR->kind == 9) {
 #else
               if (PCAR->kind < 9) {
 #endif
-                D_80316288[p] = g_dwDecalListCount - 1;
+                setupChoiceCount[p] = g_dwDecalListCount - 1;
               } else {
-                D_80316288[p] = g_dwDecalListCount - 2;
+                setupChoiceCount[p] = g_dwDecalListCount - 2;
               }
-              D_80316290[p] = DECALS_TITLE;
-              D_80316258[p] = p ^ 2;
+              setupListTitle[p] = DECALS_TITLE;
+              playerModelSlot[p] = p ^ 2;
               v = FindFreeSoundChannel();
               if (v != -1) {
-                InitSoundChannel(v, D_803162A4, D_803162A8, 0);
+                InitSoundChannel(v, selectSoundData, selectSoundSize, 0);
               }
               back = 0;
-              LoadVehicleModel(STREAM(D_80316258[p]), D_80316258[p], PCAR->kind, p);
-              while (PollVehicleModelDma(STREAM(D_80316258[p])) != 0) {
+              LoadVehicleModel(STREAM(playerModelSlot[p]), playerModelSlot[p], PCAR->kind, p);
+              while (PollVehicleModelDma(STREAM(playerModelSlot[p])) != 0) {
               }
-              LoadVehicleModel(STREAM(D_80316258[p] ^ 2), D_80316258[p] ^ 2, PCAR->kind, p);
+              LoadVehicleModel(STREAM(playerModelSlot[p] ^ 2), playerModelSlot[p] ^ 2, PCAR->kind, p);
               break;
             case 5:
-              if (D_80316278[p] == 1) {
-                D_803162B8 = 1;
-                D_803162C4 = 0;
-                D_803162C0 = 0;
-                D_803162BC = p;
+              if (setupChoice[p] == 1) {
+                decalPakLoadActive = 1;
+                decalPakLoadFinished = 0;
+                decalPakLoadStatus = 0;
+                decalPakPlayer = p;
                 goto sound;
               }
-              PCAR->xe58 = D_80316278[p] == 2;
+              PCAR->xe58 = setupChoice[p] == 2;
               break;
             }
-            D_80316280[p] = D_80316278[p];
+            previousSetupChoice[p] = setupChoice[p];
             if ((((N64PadRec *)PCAR->pad)->pressed & 0x4000) || g_dwIsPaintMode != 0 || g_dwIsReviewMode != 0) {
               /* START: straight to ready (or the next results page) */
-              D_80316288[p] = g_dwDecalListCount - 1;
-              D_80316278[p] = 0;
-              D_80316280[p] = 0;
+              setupChoiceCount[p] = g_dwDecalListCount - 1;
+              setupChoice[p] = 0;
+              previousSetupChoice[p] = 0;
               if (g_dwIsReviewMode != 0) {
-                y = D_80316314;
-                D_80316314++;
-                if (D_80316314 == 1 && g_dwNumLocalPlayers != 2) {
-                  D_80316314++;
+                y = resultsPage;
+                resultsPage++;
+                if (resultsPage == 1 && g_dwNumLocalPlayers != 2) {
+                  resultsPage++;
                 }
-                if (D_80316314 == 2 && g_dwGameMode != 0) {
-                  D_80316314 = 4;
+                if (resultsPage == 2 && g_dwGameMode != 0) {
+                  resultsPage = 4;
                 }
-                if (D_80316314 == 3) {
+                if (resultsPage == 3) {
                   ProcessSeasonResults();
-                  D_80316310 = 1;
+                  seasonResultsSaved = 1;
                   if (g_dwSeasonResultMsgLineCount == 0) {
-                    D_80316314++;
+                    resultsPage++;
                   }
                 }
-                if (D_80316314 == 4) {
-                  D_803162B0[0] = D_803162B0[1] = 6;
-                  D_80316314 = y;
+                if (resultsPage == 4) {
+                  playerCarSelectStep[0] = playerCarSelectStep[1] = 6;
+                  resultsPage = y;
                 }
               } else {
-                D_803162B0[p] = 6;
+                playerCarSelectStep[p] = 6;
               }
             } else {
-              D_803162B0[p]++;
+              playerCarSelectStep[p]++;
             }
             for (n = 0; n < g_dwNumLocalPlayers; n++) {
-              if (D_803162B0[n] != 6) {
+              if (playerCarSelectStep[n] != 6) {
                 goto sound;
               }
             }
-            D_80316298 = 1;
+            advancingFromCarSelect = 1;
             FadeSfxTo(0.0f, 0.2f);
             if (g_dwIsPaintMode == 0) {
               FadeMusicTo(0.0f, 0.2f);
@@ -1657,7 +1654,7 @@ void ProcessCarSelectScreen(void)
             if (back) {
               v = FindFreeSoundChannel();
               if (v != -1) {
-                InitSoundChannel(v, D_803162A4, D_803162A8, 0);
+                InitSoundChannel(v, selectSoundData, selectSoundSize, 0);
               }
             }
           }
