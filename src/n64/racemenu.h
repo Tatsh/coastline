@@ -56,6 +56,8 @@ typedef void (*MenuPostDrawCallback)(s32 item);
 typedef void (*MenuPreDrawCallback)(void);
 
 /**
+ * The callback after the selected item is drawn, or NULL.
+ *
  * @ghidraAddress USA: 0x80271fc8
  * @ghidraAddress Asia: 0x80271B18
  * @ghidraAddress EUR: 0x80273fa8
@@ -64,6 +66,8 @@ typedef void (*MenuPreDrawCallback)(void);
 extern MenuPostDrawCallback g_pfnScreenPostDrawCallback;
 
 /**
+ * The callback that draws in place of the menu items, or NULL.
+ *
  * @ghidraAddress USA: 0x80271fcc
  * @ghidraAddress Asia: 0x80271B1C
  * @ghidraAddress EUR: 0x80273fac
@@ -113,6 +117,8 @@ extern s32 g_dwMenuInputPlayerMask;
 extern Texture *g_pMenuTitleImage;
 
 /**
+ * The left edge of the menu title, in pixels.
+ *
  * @ghidraAddress USA: 0x80271fb4
  * @ghidraAddress Asia: 0x80271B04
  * @ghidraAddress EUR: 0x80273f94
@@ -121,6 +127,8 @@ extern Texture *g_pMenuTitleImage;
 extern s32 g_dwMenuTitleImageX;
 
 /**
+ * The top edge of the menu title, in pixels.
+ *
  * @ghidraAddress USA: 0x80271fb8
  * @ghidraAddress Asia: 0x80271B08
  * @ghidraAddress EUR: 0x80273f98
@@ -129,6 +137,8 @@ extern s32 g_dwMenuTitleImageX;
 extern s32 g_dwMenuTitleImageY;
 
 /**
+ * The width of the menu title, in pixels.
+ *
  * @ghidraAddress USA: 0x80271fbc
  * @ghidraAddress Asia: 0x80271B0C
  * @ghidraAddress EUR: 0x80273f9c
@@ -137,6 +147,8 @@ extern s32 g_dwMenuTitleImageY;
 extern s32 g_dwMenuTitleImageWidth;
 
 /**
+ * The height of the menu title, in pixels.
+ *
  * @ghidraAddress USA: 0x80271fc0
  * @ghidraAddress Asia: 0x80271B10
  * @ghidraAddress EUR: 0x80273fa0
@@ -287,6 +299,8 @@ extern u32 g_dwScreenSelectSoundSize;
 extern Texture g_ArrowLeftTextureDesc;
 
 /**
+ * The right arrow of the buttons at the bottom of a screen.
+ *
  * @ghidraAddress USA: 0x80271d84
  * @ghidraAddress Asia: 0x802718D4
  * @ghidraAddress EUR: 0x80273d64

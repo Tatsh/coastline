@@ -433,6 +433,8 @@ extern s32 g_dwDecalListCount;
 extern const char *g_apszEngineLayouts[];
 
 /**
+ * The names of the driven-wheel layouts shown during car selection.
+ *
  * @ghidraAddress USA: 0x8027203c
  * @ghidraAddress Asia: 0x80271B8C
  * @ghidraAddress EUR: 0x8027401c
