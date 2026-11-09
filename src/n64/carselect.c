@@ -1253,7 +1253,7 @@ void ProcessCarSelectScreen(void)
                 }
                 D_80316258[p] ^= 2;
                 LoadVehicleModel(STREAM(D_80316258[p]), D_80316258[p], PCAR->x2058, p);
-#ifdef ENABLE_PATCHES
+#if defined(__GNUC__) && !defined(__sgi)
                 while (PollVehicleModelDma(STREAM(D_80316258[p]))) {
                 }
 #endif
