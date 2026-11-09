@@ -3,9 +3,9 @@
 
 #include "common/vehiclemodel.h"
 
-#define PAINT_UNDO_SLOT 0
-#define PAINT_UNDO_ALL 1
-#define PAINT_UNDO_PALETTE 2
+#define PAINT_UNDO_SLOT 0    /*!< A saved edit to one decal slot. */
+#define PAINT_UNDO_ALL 1     /*!< A saved edit to every decal slot. */
+#define PAINT_UNDO_PALETTE 2 /*!< A saved palette edit. */
 
 /**
  * Initialise paint history in the remaining interface memory.

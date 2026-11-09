@@ -183,7 +183,8 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
                       [[stub="\par Stub:^^The body is a placeholder, not reconstructed yet."]]
                       [[stub{1}="\par Stub:^^Not reconstructed yet for \1."]])
   set(DOXYGEN_EXCLUDE_PATTERNS "*/node_modules/*" "*/build/*"
-                               "*/src/n64/race-internal.h")
+                               "*/src/*/*access.h" "*/src/*/*-aliases.h"
+                               "*/src/*/*-internal.h" "*/src/n64/options-message.h")
   # Headers sit beside their implementations under src, and only headers are documented. The
   # progress report and its parts become pages of the site, named after their paths in the tree.
   set(DOXYGEN_FILE_PATTERNS "*.h" "*.md")

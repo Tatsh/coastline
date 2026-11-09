@@ -13,11 +13,15 @@
 #define FILL_COLOR(red, green, blue)                                                               \
     ((u32)(u16)GPACK_RGBA5551((u32)(red), (u32)(green), (u32)(blue), 1) * 0x10001u)
 #else
+/** Add two coordinate components. */
 #define COORD_ADD(a, b) ((a) + (b))
+/** Subtract one coordinate component from another. */
 #define COORD_SUB(a, b) ((a) - (b))
+/** Double a coordinate component. */
 #define COORD_DOUBLE(value) ((value) * 2)
+/** Shift a coordinate component left by the specified bit count. */
 #define COORD_SHIFT(value, shift) ((value) << (shift))
-/* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
+/** Pack 8-bit RGB components into two identical RGBA5551 pixels. */
 #define FILL_COLOR(red, green, blue)                                                               \
     ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u32)(u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
 #endif
