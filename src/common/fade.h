@@ -431,6 +431,8 @@ s32 IsFadedToBlack(void);
 s32 IsFadedToWhite(void);
 
 /**
+ * Preserve an empty entry point in the original fade sequence.
+ *
  * @ghidraAddress USA: 0x80223a68
  * @ghidraAddress Asia: 0x802235B8
  * @ghidraAddress EUR: 0x80224da8

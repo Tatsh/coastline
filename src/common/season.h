@@ -46,6 +46,8 @@ void ExitRaceSessionToMenu(void);
 void ShutdownGameSession(void);
 
 /**
+ * Save championship results when applicable, then shut down the race session.
+ *
  * @ghidraAddress BRD3D: 0x10002140
  * @ghidraAddress BRGlide: 0x10002460
  */

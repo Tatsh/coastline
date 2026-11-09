@@ -2718,24 +2718,40 @@ extern "C" {
 #endif
 
 /**
+ * Toggle text editing for the selected season-save slot and back up its previous label.
+ *
+ * @param pWidget The menu item that opened text editing.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10041a00
  * @ghidraAddress BRGlide: 0x1003af60
  */
 int ToggleMenuItemTextEditA(MenuWidget *pWidget);
 
 /**
+ * Toggle text editing for the selected time-attack slot and back up its previous label.
+ *
+ * @param pWidget The menu item that opened text editing.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10042410
  * @ghidraAddress BRGlide: 0x1003b970
  */
 int ToggleMenuItemTextEditB(MenuWidget *pWidget);
 
 /**
+ * Restore the previous season-save label when editing was active.
+ *
+ * @param pWidget The menu item associated with text editing.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10041ac0
  * @ghidraAddress BRGlide: 0x1003b020
  */
 int RestoreMenuItemTextA(MenuWidget *pWidget);
 
 /**
+ * Restore the previous time-attack label when editing was active.
+ *
+ * @param pWidget The menu item associated with text editing.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100424d0
  * @ghidraAddress BRGlide: 0x1003ba30
  */
@@ -2765,12 +2781,18 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
 
 /**
+ * Remove player-list items by index before enumerating a session's players.
+ *
  * @ghidraAddress BRD3D: 0x1003c9b0
  * @ghidraAddress BRGlide: 0x10036040
  */
 void RefreshSessionListSlots(void);
 
 /**
+ * Copy the selected session's instance GUID when its menu item has one.
+ *
+ * @param guid Receives the selected GUID when available; otherwise it is unchanged.
+ * @return Always zero.
  * @ghidraAddress BRD3D: 0x1003d030
  * @ghidraAddress BRGlide: 0x100366c0
  */
@@ -2820,42 +2842,70 @@ int SeasonRoundList_SetBrowsingFlag(MenuWidget *pWidget = nullptr);
 int SeasonRoundList_ClearBrowsingFlag(MenuWidget *pWidget = nullptr);
 
 /**
+ * Update the session name from the text field and enable continuing when it is nonempty.
+ *
+ * @param pWidget The session-name text field.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003f210
  * @ghidraAddress BRGlide: 0x10038750
  */
 int OnSessionNameEdited(MenuWidget *pWidget);
 
 /**
+ * Update the player name from the text field and enable continuing when it is nonempty.
+ *
+ * @param pWidget The player-name text field.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003eef0
  * @ghidraAddress BRGlide: 0x10038420
  */
 int OnPlayerNameEdited(MenuWidget *pWidget);
 
 /**
+ * Save the edited modem number and enable continuing when it is nonempty.
+ *
+ * @param pWidget The modem-number text field.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003ef90
  * @ghidraAddress BRGlide: 0x100384c0
  */
 int OnModemPhoneNumberEdited(MenuWidget *pWidget);
 
 /**
+ * Update the selected round from the season preview list.
+ *
+ * @param pWidget The round list widget.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003eb60
  * @ghidraAddress BRGlide: 0x10038150
  */
 int SeasonRoundList_UpdateRoundSelection(MenuWidget *pWidget);
 
 /**
+ * Copy the edited chat text into the outgoing message buffer.
+ *
+ * @param pWidget The chat text field.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003f110
  * @ghidraAddress BRGlide: 0x10038650
  */
 int OnChatMessageEdited(MenuWidget *pWidget);
 
 /**
+ * Save the edited TCP/IP address in the game configuration.
+ *
+ * @param pWidget The address text field.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003f0b0
  * @ghidraAddress BRGlide: 0x100385f0
  */
 int OnTcpIpAddressEdited(MenuWidget *pWidget);
 
 /**
+ * Save the edited TCP/IP port in the game configuration.
+ *
+ * @param pWidget The port text field.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003f050
  * @ghidraAddress BRGlide: 0x10038580
  */
@@ -2894,17 +2944,29 @@ int ShowAudioOptionsMenu(MenuWidget *pWidget);
 int ShowGameOptionsMenu(MenuWidget *pWidget);
 
 /**
+ * Build the CD music and volume controls on an audio options screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004dfc0
  * @ghidraAddress BRGlide: 0x10046e70
  */
 int BuildAudioOptionsUI(MenuScreen *pScreen);
 
 /**
+ * Draw the sound-effects volume slider.
+ *
+ * @param pWidget The slider widget.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003e980
  * @ghidraAddress BRGlide: 0x10037fa0
  */
 int DrawGameplaySliderA(MenuWidget *pWidget);
 /**
+ * Draw the music volume slider.
+ *
+ * @param pWidget The slider widget.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1003e9e0
  * @ghidraAddress BRGlide: 0x10038000
  */
@@ -2913,6 +2975,10 @@ int DrawGameplaySliderB(MenuWidget *pWidget);
 extern RECT g_rcMenuAudioListBox;
 
 /**
+ * Build gameplay options on the supplied screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004e830
  * @ghidraAddress BRGlide: 0x100476e0
  */
@@ -3006,7 +3072,12 @@ int PopulateVideoSettingsLists(void);
  */
 int PopulateDisplayDeviceList(void);
 
-/** @ghidraAddress BRD3D: 0x1007a710 */
+/** Compare display modes by colour depth, width, then height for sorting.
+ * @param left Pointer to the first display-mode pointer.
+ * @param right Pointer to the second display-mode pointer.
+ * @return A negative, zero, or positive value according to the ordering.
+ * @ghidraAddress BRD3D: 0x1007a710
+ */
 int CompareDisplayModes(const void *left, const void *right);
 
 /**
@@ -3046,6 +3117,11 @@ int ShowD3DDeviceSelectMenu(MenuWidget *pWidget);
 int BuildD3DDeviceSelectUI(MenuScreen *pScreen);
 
 /**
+ * Process text entry and notify the widget when editing finishes.
+ *
+ * @param pWidget The widget containing the editable font.
+ * @param nFont The font index within the widget.
+ * @return Zero when the caret is hidden, otherwise one.
  * @ghidraAddress BRD3D: 0x1003ee50
  * @ghidraAddress BRGlide: 0x10038380
  */
@@ -3076,6 +3152,10 @@ extern int g_dwCapturedKeyBindingValue;
 extern int g_adwKeyBindingDuplicateFlags[KEY_CONFIG_ENTRY_COUNT];
 
 /**
+ * Mark repeated key bindings in the selected device's action table.
+ *
+ * @param nDevice The input device index.
+ * @return One when any binding is duplicated, otherwise zero.
  * @ghidraAddress BRD3D: 0x10040330
  * @ghidraAddress BRGlide: 0x10039870
  */
@@ -3090,6 +3170,10 @@ int DetectDuplicateKeyBindings(int nDevice);
 int ShowCarSetupScreen(MenuWidget *pWidget);
 
 /**
+ * Build car selection and handling controls on the supplied screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004a580
  * @ghidraAddress BRGlide: 0x100439b0
  */
@@ -3102,36 +3186,60 @@ int BuildCarSetupUI(MenuScreen *pScreen);
 extern int g_bRaceSetupShowCarSetup;
 
 /**
+ * Advance to pre-race information and discard the points dialog.
+ *
+ * @param pWidget The selected dialog item.
+ * @return Always zero.
  * @ghidraAddress BRD3D: 0x100471b0
  * @ghidraAddress BRGlide: 0x10040600
  */
 int OnListDialogItemSelected(MenuWidget *pWidget);
 
 /**
+ * Advance to pre-race information and reset the season totals after congratulations.
+ *
+ * @param pWidget The continue item.
+ * @return Always zero.
  * @ghidraAddress BRD3D: 0x10047120
  * @ghidraAddress BRGlide: 0x10040570
  */
 int OnPressAnyKeyContinue(MenuWidget *pWidget);
 
 /**
+ * Update a menu item's font and sprite for its active state.
+ *
+ * @param pWidget The menu item to validate.
+ * @return Zero when the item is disabled, otherwise one.
  * @ghidraAddress BRD3D: 0x10047360
  * @ghidraAddress BRGlide: 0x100407b0
  */
 int ValidateEntityState(MenuWidget *pWidget);
 
 /**
+ * Update a menu item's active state while always accepting the update.
+ *
+ * @param pWidget The menu item to validate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100474b0
  * @ghidraAddress BRGlide: 0x10040af0
  */
 int ValidateEntityStateAlwaysTrue(MenuWidget *pWidget);
 
 /**
+ * Process cheat-code input and update the menu item's active state.
+ *
+ * @param pWidget The menu item to validate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100475f0
  * @ghidraAddress BRGlide: 0x10040a20
  */
 int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget);
 
 /**
+ * Build connection-provider choices on the supplied screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100558a0
  * @ghidraAddress BRGlide: 0x1004e750
  */
@@ -3147,12 +3255,18 @@ int BuildMultiplayerConnectionUI(MenuScreen *pScreen);
 int ShowMultiplayerConnectionScreen(MenuWidget *pWidget = nullptr);
 
 /**
+ * Display the previous race's season position in the results panel.
+ *
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100409f0
  * @ghidraAddress BRGlide: 0x10039f30
  */
 int RaceResultsPanel_PreUpdateSelectLastRace(void);
 
 /**
+ * Restore the current season position after drawing the results panel.
+ *
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10040a20
  * @ghidraAddress BRGlide: 0x10039f60
  */
@@ -3860,12 +3974,20 @@ extern int g_adwSpecularLightingLabelStrIds[];
 extern int g_adwForceFeedbackLabelStrIds[];
 
 /**
+ * Open car setup for network play and update the host session settings.
+ *
+ * @param pWidget Unused.
+ * @return Zero when the screen cannot be created, otherwise one.
  * @ghidraAddress BRD3D: 0x100446d0
  * @ghidraAddress BRGlide: 0x1003dc20
  */
 int ShowNetworkCarSetupScreen(MenuWidget *pWidget = nullptr);
 
 /**
+ * Build player, car, and chat controls for network car setup.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10058750
  * @ghidraAddress BRGlide: 0x10051600
  */
@@ -3893,12 +4015,19 @@ extern const int g_adwTireLabelStrIds[3];
 extern const int g_adwCarImageIds[32];
 
 /**
+ * Check whether a drive contains a CD-ROM volume labelled Boss Rally.
+ *
+ * @param nDrive The drive number, with A as one.
+ * @return One for the game CD, otherwise zero.
  * @ghidraAddress BRD3D: 0x1003e100
  * @ghidraAddress BRGlide: 0x100377a0
  */
 int IsGameCdInDrive(int nDrive);
 
 /**
+ * Search CD-ROM drives for the Boss Rally disc and restore the original working directory.
+ *
+ * @return One when the disc is found or patches bypass the check, otherwise zero.
  * @ghidraAddress BRD3D: 0x10045a00
  * @ghidraAddress BRGlide: 0x1003ee90
  */
@@ -3913,12 +4042,20 @@ int FindGameCdDrive(void);
 int ShowChampionshipSeasonMenu(MenuWidget *pWidget);
 
 /**
+ * Build the championship season-selection screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004f2b0
  * @ghidraAddress BRGlide: 0x10048160
  */
 int BuildChampionshipSeasonUI(MenuScreen *pScreen);
 
 /**
+ * Build the time-attack save-slot screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1005a6e0
  * @ghidraAddress BRGlide: 0x10053590
  */
@@ -3967,6 +4104,10 @@ int ShowMultiplayerNameScreen(MenuWidget *pWidget);
 int ShowJoinCreateGameScreen(MenuWidget *pWidget);
 
 /**
+ * Open the season progress screen with the currently selected round.
+ *
+ * @param pWidget Unused.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045dc0
  * @ghidraAddress BRGlide: 0x1003f260
  */
@@ -3989,36 +4130,60 @@ int ShowRaceSetupMenu(MenuWidget *pWidget);
 int ShowQuitGameConfirmMenu(MenuWidget *pWidget);
 
 /**
+ * Build the time-attack setup screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10059760
  * @ghidraAddress BRGlide: 0x10052610
  */
 int BuildTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
+ * Build the time-attack load-slot screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10059bb0
  * @ghidraAddress BRGlide: 0x10052a60
  */
 int BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
+ * Build race settings for a network game.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10057c10
  * @ghidraAddress BRGlide: 0x10050ac0
  */
 int BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
 
 /**
+ * Build the player-name entry screen for network play.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100563e0
  * @ghidraAddress BRGlide: 0x1004f290
  */
 int BuildPlayerNameEntryUI(MenuScreen *pScreen);
 
 /**
+ * Build the menu for joining or creating a network game.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10056ff0
  * @ghidraAddress BRGlide: 0x1004fea0
  */
 int BuildJoinCreateGameUI(MenuScreen *pScreen);
 
 /**
+ * Build the network game-creation screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100575f0
  * @ghidraAddress BRGlide: 0x100504a0
  */
@@ -4032,18 +4197,30 @@ int BuildCreateGameMenuUI(MenuScreen *pScreen);
 int JoinSessionAndShowRaceSetup(MenuWidget *pWidget = nullptr);
 
 /**
+ * Build the current championship progress screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10052030
  * @ghidraAddress BRGlide: 0x1004aee0
  */
 int BuildSeasonProgressInfoUI(MenuScreen *pScreen);
 
 /**
+ * Build track, car, and weather settings for an arcade race.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004b430
  * @ghidraAddress BRGlide: 0x10044860
  */
 int BuildRaceSetupUI(MenuScreen *pScreen);
 
 /**
+ * Build the confirmation screen for quitting the game.
+ *
+ * @param pScreen The screen to populate.
+ * @return The result of building the confirmation screen.
  * @ghidraAddress BRD3D: 0x10049c20
  * @ghidraAddress BRGlide: 0x10043050
  */
@@ -4058,12 +4235,19 @@ int BuildQuitGameConfirmUI(MenuScreen *pScreen);
 int ShowOptionsMenu(MenuWidget *pWidget);
 
 /**
+ * Build the main options menu.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004bdc0
  * @ghidraAddress BRGlide: 0x100451f0
  */
 int BuildOptionsMenuUI(MenuScreen *pScreen);
 
 /**
+ * Set the root menu item's text when the item exists.
+ *
+ * @param pszText The text to display.
  * @ghidraAddress BRD3D: 0x100419d0
  * @ghidraAddress BRGlide: 0x1003af30
  */
@@ -4706,36 +4890,60 @@ extern int g_adwTransmissionMenuIndexToType[2];
 unsigned IsTrackSelectable(int nTrack);
 
 /**
+ * Build the race-results information screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10052f50
  * @ghidraAddress BRGlide: 0x1004be00
  */
 int BuildRaceResultsInfoUI(MenuScreen *pScreen);
 
 /**
+ * Build the race-results summary screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10053cf0
  * @ghidraAddress BRGlide: 0x1004cba0
  */
 int BuildRaceResultsSummaryUI(MenuScreen *pScreen);
 
 /**
+ * Build the race-results totals screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10054b50
  * @ghidraAddress BRGlide: 0x1004da00
  */
 int BuildRaceResultsTotalsUI(MenuScreen *pScreen);
 
 /**
+ * Build confirmation for exiting a season after the results summary.
+ *
+ * @param pScreen The screen to populate.
+ * @return The result of building the confirmation screen.
  * @ghidraAddress BRD3D: 0x1004a260
  * @ghidraAddress BRGlide: 0x10043690
  */
 int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *pScreen);
 
 /**
+ * Build the championship congratulations screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10051990
  * @ghidraAddress BRGlide: 0x1004a840
  */
 int BuildSeasonCongratsUI(MenuScreen *pScreen);
 
 /**
+ * Build the insufficient-points screen after a championship race.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10051d30
  * @ghidraAddress BRGlide: 0x1004abe0
  */
@@ -4780,12 +4988,20 @@ int ShowRaceResultsTotalsScreen(MenuWidget *pWidget = nullptr);
 int ShowRaceResultsSummaryScreen(MenuWidget *pWidget = nullptr);
 
 /**
+ * Build the pre-race information screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x100509f0
  * @ghidraAddress BRGlide: 0x100498a0
  */
 int BuildPreRaceInfoUI(MenuScreen *pScreen);
 
 /**
+ * Build confirmation for exiting a season before a race.
+ *
+ * @param pScreen The screen to populate.
+ * @return The result of building the confirmation screen.
  * @ghidraAddress BRD3D: 0x10049f40
  * @ghidraAddress BRGlide: 0x10043370
  */
@@ -4802,12 +5018,20 @@ int BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
 int ShowPreRaceInfoScreen(MenuWidget *pWidget);
 
 /**
+ * Build the saved-season selection screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x1004f700
  * @ghidraAddress BRGlide: 0x100485b0
  */
 int BuildLoadSeasonUI(MenuScreen *pScreen);
 
 /**
+ * Build the season save-slot screen.
+ *
+ * @param pScreen The screen to populate.
+ * @return Always one.
  * @ghidraAddress BRD3D: 0x10050060
  * @ghidraAddress BRGlide: 0x10048f10
  */

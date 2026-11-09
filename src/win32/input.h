@@ -358,6 +358,8 @@ extern int g_adwMouseButtonPressed[MOUSE_BUTTON_COUNT];
 void UpdateMouseButtonEdges(void);
 
 /**
+ * Refresh keyboard and mouse button transitions for menu input.
+ *
  * @ghidraAddress BRD3D: 0x1003e070
  * @ghidraAddress BRGlide: 0x10037710
  */
@@ -421,6 +423,11 @@ extern InputControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
 extern InputControlName g_aKeyboardControlNames[KEYBOARD_CONTROL_NAME_COUNT];
 
 /**
+ * Find a control code in the keyboard or joystick label table.
+ *
+ * @param nTable Zero for keyboard labels, one or two for joystick table B, or three for table A.
+ * @param nCode The control code to locate.
+ * @return The label index, or zero for an unknown code or table.
  * @ghidraAddress BRD3D: 0x10040040
  * @ghidraAddress BRGlide: 0x10039580
  */
