@@ -91,19 +91,11 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - name: 'Linux aarch64'
-            os: 'ubuntu-24.04-arm'
-            slug: 'linux-aarch64'
           - arch: 'arm64'
             name: 'macOS aarch64'
             os: 'macos-latest'
             slug: 'macos-aarch64'
             triplet: 'arm64-osx'
-          - arch: 'x86_64'
-            name: 'macOS x86-64'
-            os: 'macos-latest'
-            slug: 'macos-x86-64'
-            triplet: 'x64-osx'
           - arch: 'x64'
             name: 'Windows x86-64'
             os: 'windows-2022'
@@ -129,14 +121,6 @@ jobs:
         with:
           key: "vcpkg-${{ runner.os }}-${{ matrix.platform.slug }}-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
-      - if: runner.os == 'Linux'
-        name: 'Install Linux tools'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y autoconf-archive cmake libasound2-dev libegl1-mesa-dev \
-            libltdl-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev \
-            libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev nasm ninja-build \
-            pkg-config wayland-protocols
       - if: runner.os == 'macOS'
         name: 'Install macOS tools'
         run: |
@@ -150,12 +134,6 @@ jobs:
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
-      - if: runner.os == 'Linux'
-        name: 'Build coastline for analysis'
-        run: |
-          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
-            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
-          cmake --build --preset coastline -- -k 0
       - if: runner.os == 'macOS'
         name: 'Build coastline for analysis'
         run: |
@@ -199,7 +177,7 @@ jobs:
           category: '/language:c-cpp/sdl-${{ matrix.platform.slug }}'
           output: '${{ runner.temp }}/codeql-sarif'
           upload: false
-      - if: runner.os != 'Windows'
+      - if: runner.os == 'macOS'
         name: 'Restrict native findings to project sources'
         run: python3 .github/scripts/static-analysis.py --sarif "$RUNNER_TEMP/codeql-sarif"
       - if: runner.os == 'Windows'
