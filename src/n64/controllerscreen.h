@@ -26,6 +26,8 @@ extern "C" {
 extern Texture g_texControllerLayout0;
 
 /**
+ * The picture of button layout 1.
+ *
  * @ghidraAddress USA: 0x802725a4
  * @ghidraAddress Asia: 0x802720F4
  * @ghidraAddress EUR: 0x80274614
@@ -34,6 +36,8 @@ extern Texture g_texControllerLayout0;
 extern Texture g_texControllerLayout1;
 
 /**
+ * The picture of button layout 2.
+ *
  * @ghidraAddress USA: 0x802725b8
  * @ghidraAddress Asia: 0x80272108
  * @ghidraAddress EUR: 0x80274628
@@ -42,6 +46,8 @@ extern Texture g_texControllerLayout1;
 extern Texture g_texControllerLayout2;
 
 /**
+ * The picture of button layout 3.
+ *
  * @ghidraAddress USA: 0x802725cc
  * @ghidraAddress Asia: 0x8027211C
  * @ghidraAddress EUR: 0x8027463c
@@ -50,6 +56,8 @@ extern Texture g_texControllerLayout2;
 extern Texture g_texControllerLayout3;
 
 /**
+ * The picture of button layout 4.
+ *
  * @ghidraAddress USA: 0x802725e0
  * @ghidraAddress Asia: 0x80272130
  * @ghidraAddress EUR: 0x80274650

@@ -25,6 +25,8 @@ extern "C" {
 extern MenuItem *g_apPlayerCountMenuItems[];
 
 /**
+ * The number of choices in the player count menu.
+ *
  * @ghidraAddress USA: 0x80316390
  * @ghidraAddress Asia: 0x80315E40
  * @ghidraAddress EUR: 0x80318070
@@ -33,6 +35,8 @@ extern MenuItem *g_apPlayerCountMenuItems[];
 extern s32 g_dwPlayerCountMenuItemCount;
 
 /**
+ * The selected choice in the player count menu.
+ *
  * @ghidraAddress USA: 0x80316394
  * @ghidraAddress Asia: 0x80315E44
  * @ghidraAddress EUR: 0x80318074

@@ -26,6 +26,8 @@ extern "C" {
 #define FRUSTUM_FAR 5          /*!< The centre of the far plane. */
 
 /**
+ * The camera and five far-plane points of the view frustum.
+ *
  * @ghidraAddress USA: 0x8031b1f0
  * @ghidraAddress Asia: 0x8031ACA0
  * @ghidraAddress EUR: 0x8031d6f0
@@ -50,6 +52,8 @@ extern s32 g_dwVisibleGridMinCol;
 #endif /* !TGR_BOSS_RALLY */
 
 /**
+ * The first row of the cells covered by the view frustum.
+ *
  * @ghidraAddress USA: 0x8028bd94
  * @ghidraAddress Asia: 0x8028B8E4
  * @ghidraAddress EUR: 0x8028e4f4
@@ -61,6 +65,8 @@ extern s32 g_dwVisibleGridMinRow;
 
 #if !TGR_BOSS_RALLY
 /**
+ * The last column of the cells covered by the view frustum.
+ *
  * @ghidraAddress USA: 0x8028bd98
  * @ghidraAddress Asia: 0x8028B8E8
  * @ghidraAddress EUR: 0x8028e4f8
@@ -72,6 +78,8 @@ extern s32 g_dwVisibleGridMaxCol;
 #endif /* !TGR_BOSS_RALLY */
 
 /**
+ * The last row of the cells covered by the view frustum.
+ *
  * @ghidraAddress USA: 0x8028bd9c
  * @ghidraAddress Asia: 0x8028B8EC
  * @ghidraAddress EUR: 0x8028e4fc

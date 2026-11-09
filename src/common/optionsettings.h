@@ -24,6 +24,8 @@ typedef struct {
 } OptionSettings;
 
 /**
+ * The current music, sound effect, and speed-unit settings.
+ *
  * @ghidraAddress USA: 0x802723d0
  * @ghidraAddress Asia: 0x80271F20
  * @ghidraAddress EUR: 0x802743b0
@@ -43,6 +45,8 @@ extern OptionSettings g_OptionSettings;
 extern s32 g_adwBgmVolumeLevels[VOLUME_LEVELS];
 
 /**
+ * The sound effect volume at each level.
+ *
  * @ghidraAddress USA: 0x802724b4
  * @ghidraAddress Asia: 0x80272004
  * @ghidraAddress EUR: 0x80274464

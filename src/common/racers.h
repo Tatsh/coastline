@@ -43,6 +43,8 @@ extern Vec3f g_vTrackRoutePoint;
 extern TrackSection *g_pTrackRouteSection;
 
 /**
+ * The point index in g_pTrackRouteSection found by the last route walk.
+ *
  * @ghidraAddress USA: 0x8028b828
  * @ghidraAddress Asia: 0x8028B378
  * @ghidraAddress EUR: 0x8028dad8
@@ -65,6 +67,8 @@ extern s32 g_dwTrackRoutePointIndex;
 extern s32 g_dwTrackRouteGates;
 
 /**
+ * The laps FindTrackRoutePoint() passed.
+ *
  * @ghidraAddress USA: 0x8028b830
  * @ghidraAddress Asia: 0x8028B380
  * @ghidraAddress EUR: 0x8028dae0

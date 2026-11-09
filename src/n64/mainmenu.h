@@ -46,6 +46,8 @@ extern Texture g_MainMenuTitleTextureDesc;
 extern s32 g_dwMainMenuEntrySource;
 
 /**
+ * The number of choices in the main menu.
+ *
  * @ghidraAddress USA: 0x80316380
  * @ghidraAddress Asia: 0x80315E30
  * @ghidraAddress EUR: 0x80318060

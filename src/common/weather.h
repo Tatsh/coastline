@@ -51,6 +51,8 @@ extern u32 g_dwCurrentWeather;
 extern u32 g_dwWeatherActive;
 
 /**
+ * Whether the race uses night lighting.
+ *
  * @ghidraAddress USA: 0x8028aa80
  * @ghidraAddress Asia: 0x8028A5D0
  * @ghidraAddress EUR: 0x8028cc88
@@ -61,6 +63,8 @@ extern u32 g_dwWeatherActive;
 extern u32 g_dwNightMode;
 
 /**
+ * Whether the race uses snow effects.
+ *
  * @ghidraAddress USA: 0x8028aa84
  * @ghidraAddress Asia: 0x8028A5D4
  * @ghidraAddress EUR: 0x8028cc8c
@@ -71,6 +75,8 @@ extern u32 g_dwNightMode;
 extern u32 g_dwSnowMode;
 
 /**
+ * Whether the race uses rain effects.
+ *
  * @ghidraAddress USA: 0x8028aa8c
  * @ghidraAddress Asia: 0x8028A5DC
  * @ghidraAddress EUR: 0x8028cc94
@@ -93,6 +99,8 @@ extern u32 g_dwRainMode;
 extern u8 g_bFogR;
 
 /**
+ * The green component of the fog colour.
+ *
  * @ghidraAddress USA: 0x8028ab24
  * @ghidraAddress Asia: 0x8028A674
  * @ghidraAddress EUR: 0x8028cd2c
@@ -103,6 +111,8 @@ extern u8 g_bFogR;
 extern u8 g_bFogG;
 
 /**
+ * The blue component of the fog colour.
+ *
  * @ghidraAddress USA: 0x8028ab28
  * @ghidraAddress Asia: 0x8028A678
  * @ghidraAddress EUR: 0x8028cd30
