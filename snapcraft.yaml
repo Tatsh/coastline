@@ -69,6 +69,7 @@ parts:
       - '-DCMAKE_INSTALL_PREFIX=/usr'
       - '-DCOASTLINE_PORTABLE=ON'
       - '-DCOASTLINE_DISCORD=ON'
+      - '-DTGR_DEBUG_SYMBOLS=ON'
       - '-DTGR_ENABLE_PATCHES=ON'
       - '-DTGR_PLATFORM=sdl'
     override-pull: |

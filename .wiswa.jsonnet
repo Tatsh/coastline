@@ -107,6 +107,7 @@
           // Portable lookup uses platform directories until adjacent files are created.
           '-DCOASTLINE_PORTABLE=ON',
           '-DCOASTLINE_DISCORD=ON',
+          '-DTGR_DEBUG_SYMBOLS=ON',
           '-DTGR_ENABLE_PATCHES=ON',
           '-DTGR_PLATFORM=sdl',
         ],
@@ -201,6 +202,7 @@
           // Portable lookup uses platform directories until adjacent files are created.
           '-DCOASTLINE_PORTABLE=ON',
           '-DCOASTLINE_DISCORD=ON',
+          '-DTGR_DEBUG_SYMBOLS=ON',
           '-DTGR_ENABLE_PATCHES=ON',
           '-DTGR_PLATFORM=sdl',
         ],

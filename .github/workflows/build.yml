@@ -27,7 +27,7 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'Nintendo 64 (${{ matrix.region_name }})'
+    name: 'Top Gear Rally (${{ matrix.region_name }})'
     needs: 'version'
     runs-on: ubuntu-latest
     strategy:
@@ -36,13 +36,13 @@ jobs:
         region: ['us', 'jp', 'eu', 'asia']
         include:
           - region: 'us'
-            region_name: 'US ROM'
+            region_name: 'US'
           - region: 'jp'
-            region_name: 'Japan ROM'
+            region_name: 'Japan'
           - region: 'eu'
-            region_name: 'Europe ROM'
+            region_name: 'Europe'
           - region: 'asia'
-            region_name: 'Asia ROM'
+            region_name: 'Asia'
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
@@ -64,7 +64,9 @@ jobs:
           /opt/libdragon/bin/mips64-elf-gcc --version
           cmake --version
       - name: 'Configure'
-        run: cmake --preset "tgr-$TGR_REGION" -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=ON
+        run: >-
+          cmake --preset "tgr-$TGR_REGION" -DCMAKE_BUILD_TYPE=Release
+          -DTGR_ENABLE_PATCHES=ON -DTGR_DEBUG_SYMBOLS=ON
         env:
           N64_INST: '/opt/libdragon'
           TGR_REGION: '${{ matrix.region }}'
@@ -72,32 +74,29 @@ jobs:
         run: cmake --build --preset "tgr-$TGR_REGION" -- -k 0
         env:
           TGR_REGION: '${{ matrix.region }}'
-      # Without a cartridge image the build links neither the program nor the cartridge, only the
-      # archives of the routines.
-      - name: 'Version the archive filenames'
+      # The ELF links without ROM assets and retains addresses for GDB.
+      - name: 'Save the N64 symbols'
         run: |
-          while IFS= read -r -d '' archive; do
-            relative="${archive#build/tgr-"$TGR_REGION"/src/}"
-            destination="artifacts/${relative%.a}-$VERSION.a"
-            mkdir -p "${destination%/*}"
-            cp "$archive" "$destination"
-          done < <(find "build/tgr-$TGR_REGION/src" -type f -name '*.a' -print0)
+          cp "build/tgr-$TGR_REGION/src/coastline" \
+            "top-gear-rally-$VERSION-$TGR_REGION.elf"
+          /opt/libdragon/bin/mips64-elf-readelf -S \
+            "top-gear-rally-$VERSION-$TGR_REGION.elf" | grep -q '.debug_info'
         env:
           TGR_REGION: '${{ matrix.region }}'
           VERSION: '${{ needs.version.outputs.version }}'
-      - name: 'Attest the archives'
+      - name: 'Attest the symbols'
         if: github.event_name != 'pull_request'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
-          subject-path: 'artifacts/**/*.a'
-      - name: 'Upload the archives'
+          subject-path: 'top-gear-rally-*.elf'
+      - name: 'Upload the symbols'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'tgr-${{ matrix.region }}-Release'
-          path: 'artifacts/**/*.a'
+          name: 'top-gear-rally-${{ needs.version.outputs.version }}-${{ matrix.region }}-symbols'
+          path: 'top-gear-rally-*.elf'
   n64-matching:
-    name: 'Nintendo 64 matching (${{ matrix.region_name }})'
+    name: 'Top Gear Rally matching (${{ matrix.region_name }})'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -105,13 +104,13 @@ jobs:
         region: ['us', 'jp', 'eu', 'asia']
         include:
           - region: 'us'
-            region_name: 'US ROM'
+            region_name: 'US'
           - region: 'jp'
-            region_name: 'Japan ROM'
+            region_name: 'Japan'
           - region: 'eu'
-            region_name: 'Europe ROM'
+            region_name: 'Europe'
           - region: 'asia'
-            region_name: 'Asia ROM'
+            region_name: 'Asia'
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
@@ -151,7 +150,7 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'SDL (${{ matrix.platform.name }})'
+    name: 'coastline (${{ matrix.platform.name }})'
     needs: 'version'
     runs-on: '${{ matrix.platform.os }}'
     strategy:
@@ -160,36 +159,50 @@ jobs:
         platform:
           # linuxdeploy builds the AppImage, and its checksum is that of the pinned release.
           - architecture: 'x86_64'
+            artifact_arch: 'x86-64'
             linuxdeploy-sha256: 'c20cd71e3a4e3b80c3483cef793cda3f4e990aca14014d23c544ca3ce1270b4d'
-            name: 'Linux x86_64'
+            name: 'Linux x86-64'
             os: 'ubuntu-latest'
-            slug: 'linux-x86_64'
+            slug: 'linux-x86-64'
           - architecture: 'arm64'
+            artifact_arch: 'aarch64'
             linuxdeploy-sha256: '620095110d693282b8ebeb244a95b5e911cf8f65f76c88b4b47d16ae6346fcff'
-            name: 'Linux arm64'
+            name: 'Linux aarch64'
             os: 'ubuntu-24.04-arm'
-            slug: 'linux-arm64'
+            slug: 'linux-aarch64'
           # MSVC of Visual Studio 2022 is the oldest that compiles C++23, and the game targets
           # Windows 7, the oldest SDL 3 runs on.
           - architecture: 'x64'
-            name: 'Windows x64'
+            artifact_arch: 'x86-64'
+            compiler: 'msvc'
+            name: 'Windows x86-64'
             os: 'windows-2022'
-            slug: 'windows-x64'
+            slug: 'windows-x86-64'
           - architecture: 'arm64'
-            name: 'Windows arm64'
+            artifact_arch: 'aarch64'
+            compiler: 'msvc'
+            name: 'Windows aarch64'
             os: 'windows-11-arm'
-            slug: 'windows-arm64'
+            slug: 'windows-aarch64'
+          - architecture: 'arm64'
+            artifact_arch: 'aarch64'
+            compiler: 'clang'
+            name: 'Windows aarch64 Clang'
+            os: 'windows-11-arm'
+            slug: 'windows-aarch64-clang'
           # The Apple silicon runner also builds for Intel Macs, from 10.15, the oldest macOS
           # whose C++ library has std::filesystem.
           - architecture: 'arm64'
-            name: 'macOS arm64'
+            artifact_arch: 'aarch64'
+            name: 'macOS aarch64'
             os: 'macos-latest'
-            slug: 'macos-arm64'
+            slug: 'macos-aarch64'
             triplet: 'arm64-osx'
           - architecture: 'x86_64'
-            name: 'macOS x86_64'
+            artifact_arch: 'x86-64'
+            name: 'macOS x86-64'
             os: 'macos-latest'
-            slug: 'macos-x86_64'
+            slug: 'macos-x86-64'
             triplet: 'x64-osx'
     env:
       # Each package filename includes a version tag or the seven-character commit SHA.
@@ -237,12 +250,14 @@ jobs:
         name: 'Configure and compile'
         run: |
           cmake --preset coastline -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
+            -DTGR_DEBUG_SYMBOLS=ON \
             -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
           cmake --build --preset coastline -- -k 0
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
           cmake --preset coastline -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
+            -DTGR_DEBUG_SYMBOLS=ON \
             -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
             -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
           cmake --build --preset coastline -- -k 0
@@ -260,13 +275,21 @@ jobs:
           Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
+          $compilerArgs = @()
+          if ($env:COMPILER -eq 'clang') {
+            $clang = (Get-Command clang-cl -ErrorAction Stop).Source
+            & $clang --version
+            $compilerArgs = @("-DCMAKE_C_COMPILER=$clang", "-DCMAKE_CXX_COMPILER=$clang")
+          }
           cmake --preset coastline -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=ON `
-            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
+            -DTGR_DEBUG_SYMBOLS=ON `
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' @compilerArgs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build --preset coastline -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         env:
           ARCHITECTURE: '${{ matrix.platform.architecture }}'
+          COMPILER: '${{ matrix.platform.compiler }}'
         shell: pwsh
       - if: >-
           !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master' &&
@@ -276,9 +299,31 @@ jobs:
         with:
           key: "vcpkg-${{ runner.os }}-${{ matrix.platform.slug }}-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
+      - if: runner.os == 'macOS'
+        name: 'Save macOS symbols'
+        run: |
+          dsymutil build/coastline/src/sdl/Coastline.app/Contents/MacOS/Coastline \
+            -o Coastline.app.dSYM
+          ditto -c -k --keepParent Coastline.app.dSYM "$PACKAGE-symbols.zip"
       - name: 'Install'
-        run: cmake --install build/coastline --prefix staging --strip
+        run: |
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            cmake --install build/coastline --prefix staging
+          else
+            cmake --install build/coastline --prefix staging --strip
+          fi
         shell: bash
+      - if: runner.os == 'Linux'
+        name: 'Save Linux symbols'
+        run: |
+          while IFS= read -r -d '' binary; do
+            readelf -h "$binary" >/dev/null 2>&1 || continue
+            mkdir -p "symbols/${binary%/*}"
+            cp "$binary" "symbols/$binary"
+            strip --strip-unneeded "$binary"
+          done < <(find staging -type f -print0)
+          test -f symbols/staging/bin/coastline
+          tar -C symbols -czf "$PACKAGE-symbols.tar.gz" .
       # Each package keeps the permissions of the files, which an artifact loses: a tarball on
       # Linux, and on macOS a disk image, which also keeps the signature of the bundle.
       - if: runner.os == 'Linux'
@@ -291,9 +336,10 @@ jobs:
           mkdir dmg-root
           ditto staging/Coastline.app dmg-root/Coastline.app
           ln -s /Applications dmg-root/Applications
+          mac_package="Coastline-${PACKAGE#coastline-}"
           hdiutil create -volname Coastline -srcfolder dmg-root -ov -format UDZO \
-            "$PACKAGE.dmg"
-          hdiutil attach -readonly -nobrowse -mountpoint dmg-check "$PACKAGE.dmg"
+            "$mac_package.dmg"
+          hdiutil attach -readonly -nobrowse -mountpoint dmg-check "$mac_package.dmg"
           test -d dmg-check/Coastline.app
           test "$(readlink dmg-check/Applications)" = /Applications
           codesign --verify --deep --strict dmg-check/Coastline.app
@@ -332,6 +378,9 @@ jobs:
             $link.Dispose()
           }
           Compress-Archive -Path staging\* -DestinationPath "$env:PACKAGE.zip"
+          $pdb = 'build/coastline/src/sdl/coastline.pdb'
+          if (-not (Test-Path $pdb)) { throw "Missing $pdb" }
+          Compress-Archive -Path $pdb -DestinationPath "$env:PACKAGE-symbols.zip"
         shell: pwsh
       # NSIS is on the x64 runner but not always on the arm64 runner.
       - if: runner.os == 'Windows'
@@ -349,7 +398,7 @@ jobs:
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
           subject-path: |
-            coastline-*.dmg
+            Coastline-*.dmg
             coastline-*.exe
             coastline-*.tar.gz
             coastline-*.zip
@@ -357,12 +406,21 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-${{ matrix.platform.slug }}-Release'
+          name: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release'
           path: |
-            coastline-*.dmg
-            coastline-*.exe
-            coastline-*.tar.gz
-            coastline-*.zip
+            Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.dmg
+            ${{ env.PACKAGE }}.exe
+            ${{ env.PACKAGE }}-setup.exe
+            ${{ env.PACKAGE }}.tar.gz
+            ${{ env.PACKAGE }}.zip
+      - name: 'Upload the symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-symbols'
+          path: |
+            ${{ env.PACKAGE }}-symbols.tar.gz
+            ${{ env.PACKAGE }}-symbols.zip
       # The AppImage bundles the libraries the game links, and SDL opens those of the system for
       # the display, the GPU, and the sound.
       - if: runner.os == 'Linux'
@@ -381,7 +439,7 @@ jobs:
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir \
             --desktop-file=AppDir/usr/share/applications/sh.tat.coastline.desktop --output appimage
         env:
-          LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
+          LDAI_OUTPUT: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release.AppImage'
           LDAI_NO_APPSTREAM: '1'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
@@ -389,14 +447,21 @@ jobs:
         name: 'Attest the AppImage'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
-          subject-path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
+          subject-path: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release.AppImage'
       - if: runner.os == 'Linux'
         name: 'Upload the AppImage'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-appimage-${{ matrix.platform.architecture }}-Release'
-          path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
+          name: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release'
+          path: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release.AppImage'
+      - if: runner.os == 'Linux'
+        name: 'Upload the AppImage symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-symbols'
+          path: '${{ env.PACKAGE }}-symbols.tar.gz'
   flatpak:
     env:
       NODE_OPTIONS: '--no-deprecation'
@@ -407,7 +472,7 @@ jobs:
     container:
       image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08@sha256:c91a88269eee8fcdd73ecf43064232fbebe27411f926f63f38bdf70c51f2ceae'
       options: '--privileged'
-    name: 'Flatpak (${{ matrix.arch }})'
+    name: 'coastline Flatpak (${{ matrix.artifact_arch }})'
     needs: 'version'
     runs-on: '${{ matrix.os }}'
     strategy:
@@ -415,41 +480,57 @@ jobs:
       matrix:
         include:
           - arch: 'x86_64'
+            artifact_arch: 'x86-64'
             os: 'ubuntu-latest'
           - arch: 'aarch64'
+            artifact_arch: 'aarch64'
             os: 'ubuntu-24.04-arm'
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
           persist-credentials: false
-      # The action uploads the bundle as an artifact.
       - uses: 'flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3'
         with:
           arch: '${{ matrix.arch }}'
-          artifact-name: 'coastline-flatpak-${{ matrix.arch }}'
-          bundle: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
+          build-debug-bundle: true
+          bundle: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release.flatpak'
           cache: false
           manifest-path: 'sh.tat.coastline.yml'
+          upload-artifact: false
       - name: 'Attest the Flatpak'
         if: github.event_name != 'pull_request'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
-          subject-path: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
+          subject-path: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release*.flatpak'
+      - name: 'Upload the Flatpak'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release'
+          path: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release.flatpak'
+      - name: 'Upload the Flatpak symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-symbols'
+          path: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release-debug.flatpak'
   snap:
     permissions:
       attestations: write
       contents: read
       id-token: write
-    name: 'Snap (${{ matrix.name }})'
+    name: 'coastline Snap (${{ matrix.artifact_arch }})'
     needs: 'version'
     runs-on: '${{ matrix.os }}'
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: 'amd64'
+          - artifact_arch: 'x86-64'
+            name: 'amd64'
             os: 'ubuntu-latest'
-          - name: 'arm64'
+          - artifact_arch: 'aarch64'
+            name: 'arm64'
             os: 'ubuntu-24.04-arm'
     steps:
       # The version of the snap is the description of the commit by its tags.
@@ -491,33 +572,53 @@ jobs:
           shopt -s nullglob
           snaps=(*.snap)
           [[ ${#snaps[@]} -eq 1 ]]
-          name="coastline_${VERSION}_${ARCH}.snap"
+          name="coastline-${VERSION}-snap-${ARTIFACT_ARCH}-Release.snap"
           [[ "${snaps[0]}" == "$name" ]] || mv -- "${snaps[0]}" "$name"
           echo "SNAP_FILE=$name" >> "$GITHUB_ENV"
         env:
-          ARCH: '${{ matrix.name }}'
+          ARTIFACT_ARCH: '${{ matrix.artifact_arch }}'
+          VERSION: '${{ needs.version.outputs.version }}'
+      - name: 'Save the snap symbols'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y squashfs-tools
+          unsquashfs -no-progress -d .wiswa-ci/snap-symbols "$SNAP_FILE" usr/bin/coastline
+          readelf --debug-dump=info .wiswa-ci/snap-symbols/usr/bin/coastline \
+            | grep -q 'DW_AT_comp_dir'
+          tar -C .wiswa-ci/snap-symbols -czf \
+            "coastline-$VERSION-snap-$ARTIFACT_ARCH-symbols.tar.gz" usr/bin/coastline
+        env:
+          ARTIFACT_ARCH: '${{ matrix.artifact_arch }}'
           VERSION: '${{ needs.version.outputs.version }}'
       - name: 'Attest the snap'
         if: github.event_name != 'pull_request'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
-          subject-path: '${{ env.SNAP_FILE }}'
+          subject-path: |
+            ${{ env.SNAP_FILE }}
+            coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-symbols.tar.gz
       - name: 'Upload the snap'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-snap-${{ matrix.name }}'
+          name: 'coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-Release'
           path: '${{ env.SNAP_FILE }}'
+      - name: 'Upload the snap symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-symbols'
+          path: 'coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-symbols.tar.gz'
   sdl-mingw:
     permissions:
       attestations: write
       contents: read
       id-token: write
-    name: 'SDL (Windows x64 MinGW)'
+    name: 'coastline (Windows x86-64 MinGW)'
     needs: 'version'
     runs-on: windows-2022
     env:
-      PACKAGE: 'coastline-${{ needs.version.outputs.version }}-windows-x64-mingw-Release'
+      PACKAGE: 'coastline-${{ needs.version.outputs.version }}-windows-x86-64-mingw-Release'
       VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
       VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
     steps:
@@ -546,6 +647,7 @@ jobs:
         run: |
           git clone https://github.com/microsoft/vcpkg .vcpkg
           cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
+            -DTGR_DEBUG_SYMBOLS=ON \
             -DCOASTLINE_VIDEO=OFF -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic \
             -DVCPKG_HOST_TRIPLET=x64-mingw-dynamic \
             -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
@@ -562,10 +664,19 @@ jobs:
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Package'
         run: |
-          cmake --install build/coastline --prefix staging --strip
+          cmake --install build/coastline --prefix staging
           ./staging/bin/coastline.exe --help
+          mkdir -p symbols
+          find staging -type f \( -name '*.exe' -o -name '*.dll' \) -print0 \
+            | while IFS= read -r -d '' binary; do
+                cp "$binary" "symbols/${binary##*/}"
+                strip --strip-unneeded "$binary"
+              done
+          objdump -h symbols/coastline.exe | grep -q '.debug_info'
           cd staging
           zip -r -9 "../$PACKAGE.zip" .
+          cd ../symbols
+          zip -r -9 "../$PACKAGE-symbols.zip" .
         shell: 'msys2 {0}'
       - name: 'Attest the game package'
         if: github.event_name != 'pull_request'
@@ -576,14 +687,20 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-windows-x64-mingw-Release'
+          name: 'coastline-${{ needs.version.outputs.version }}-windows-x86-64-mingw-Release'
           path: '${{ env.PACKAGE }}.zip'
+      - name: 'Upload the symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'coastline-${{ needs.version.outputs.version }}-windows-x86-64-mingw-symbols'
+          path: '${{ env.PACKAGE }}-symbols.zip'
   win:
     permissions:
       attestations: write
       contents: read
       id-token: write
-    name: 'Windows (Boss Rally)'
+    name: 'Boss Rally (MinGW)'
     needs: 'version'
     runs-on: windows-latest
     steps:
@@ -612,7 +729,7 @@ jobs:
             choco install nsis -y --no-progress
           }
       - name: 'Configure'
-        run: cmake --preset boss-rally -DTGR_ENABLE_PATCHES=ON
+        run: cmake --preset boss-rally -DTGR_ENABLE_PATCHES=ON -DTGR_DEBUG_SYMBOLS=ON
         shell: 'msys2 {0}'
       - name: 'Compile'
         run: cmake --build --preset boss-rally -- -k 0
@@ -626,9 +743,13 @@ jobs:
             build/boss-rally/win-glide/src/BRGlide.dll \
             build/boss-rally/win-d3d/src/win32/ear/earpds.dll \
             build/boss-rally/win-d3d/src/win32/boot/*.exe staging/
-          (cd staging && zip -9 "../coastline-$VERSION-br-Release.zip" ./*)
-          cp build/boss-rally/BossRally-Setup.exe "coastline-$VERSION-br-Setup.exe"
-          unzip -l ./coastline-*.zip
+          (cd staging && zip -9 "../boss-rally-$VERSION-windows-x86-symbols.zip" ./*)
+          objdump -h staging/BRD3D.dll | grep -q '.debug_info'
+          strip --strip-unneeded staging/*.{dll,exe}
+          (cd staging && zip -9 "../boss-rally-$VERSION-windows-x86-Release.zip" ./*)
+          cp build/boss-rally/BossRally-Setup.exe \
+            "boss-rally-$VERSION-windows-x86-setup.exe"
+          unzip -l "boss-rally-$VERSION-windows-x86-Release.zip"
         env:
           VERSION: '${{ needs.version.outputs.version }}'
         shell: 'msys2 {0}'
@@ -637,18 +758,29 @@ jobs:
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
           subject-path: |
-            coastline-*.zip
-            coastline-*-br-Setup.exe
+            boss-rally-*.zip
+            boss-rally-*-setup.exe
       - name: 'Upload the binaries'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'br-windows-Release'
+          name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-Release'
           path: |
-            coastline-*.zip
-            coastline-*-br-Setup.exe
+            boss-rally-${{ needs.version.outputs.version }}-windows-x86-Release.zip
+            boss-rally-${{ needs.version.outputs.version }}-windows-x86-setup.exe
+      - name: 'Upload the Boss Rally symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-symbols'
+          path: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-symbols.zip'
   win-msvc:
-    name: 'Windows (Boss Rally, MSVC)'
+    name: 'Boss Rally (MSVC)'
+    needs: 'version'
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     runs-on: windows-2022
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
@@ -676,10 +808,57 @@ jobs:
       - name: 'Configure'
         run: >-
           cmake -S . -B build/win-msvc -G 'Visual Studio 17 2022' -A Win32
-          -DTGR_VARIANTS=boss-rally -DTGR_ENABLE_PATCHES=ON
+          -DTGR_VARIANTS=boss-rally -DTGR_ENABLE_PATCHES=ON -DTGR_DEBUG_SYMBOLS=ON
           "-DDXSDK_DIR=$env:GITHUB_WORKSPACE/dxsdk/DXSDK_Aug2007"
       - name: 'Compile'
         run: cmake --build build/win-msvc --config Release --parallel 4
+      - name: 'Package the binaries and symbols'
+        run: |
+          New-Item -ItemType Directory staging, symbols | Out-Null
+          $d3d = 'build/win-msvc/win-d3d/src'
+          $glide = 'build/win-msvc/win-glide/src'
+          $files = @(
+            "$d3d/Release/BRD3D.dll",
+            "$glide/Release/BRGlide.dll",
+            "$d3d/win32/ear/Release/earpds.dll",
+            "$d3d/win32/boot/Release/BRally.exe",
+            "$d3d/win32/boot/Release/BossRally.exe",
+            "$d3d/win32/boot/Release/SetVideo.exe"
+          )
+          foreach ($file in $files) {
+            if (-not (Test-Path $file)) { throw "Missing $file" }
+            Copy-Item $file staging/
+          }
+          $pdbs = Get-ChildItem build/win-msvc -Recurse -Filter '*.pdb'
+          if (-not $pdbs) { throw 'Missing Boss Rally PDB files' }
+          foreach ($pdb in $pdbs) {
+            $relative = $pdb.FullName.Substring((Resolve-Path build/win-msvc).Path.Length + 1)
+            $destination = Join-Path symbols $relative
+            New-Item -ItemType Directory (Split-Path $destination) -Force | Out-Null
+            Copy-Item $pdb.FullName $destination
+          }
+          $stem = "boss-rally-${env:VERSION}-windows-x86-msvc"
+          Compress-Archive -Path staging/* -DestinationPath "$stem-Release.zip"
+          Compress-Archive -Path symbols/* -DestinationPath "$stem-symbols.zip"
+        env:
+          VERSION: '${{ needs.version.outputs.version }}'
+      - name: 'Attest the MSVC binaries and symbols'
+        if: github.event_name != 'pull_request'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: 'boss-rally-*-windows-x86-msvc-*.zip'
+      - name: 'Upload the MSVC binaries'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-Release'
+          path: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-Release.zip'
+      - name: 'Upload the MSVC symbols'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-symbols'
+          path: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-symbols.zip'
   # On a tag, PC packages go to the draft. N64 artifacts remain on the CI run.
   # The Release workflow publishes the draft once every workflow of the commit succeeds.
   release:
@@ -697,7 +876,7 @@ jobs:
           merge-multiple: true
           path: 'packages'
           pattern: >-
-            {coastline-{linux,windows,macos,appimage}-*-Release,br-*-Release,coastline-{flatpak,snap}-*}
+            {coastline-*-{linux,windows,macos,appimage,flatpak,snap}-*-Release,boss-rally-*-windows-x86-Release}
       - name: 'List the packages'
         run: |
           find packages -maxdepth 1 -type f \( -name '*.AppImage' -o -name '*.dmg' -o -name '*.exe' \

@@ -97,26 +97,28 @@ jobs:
         name: 'Check that every package is attached'
         run: |
           required=()
-          for platform in linux-x86_64 linux-arm64; do
+          for platform in linux-x86-64 linux-aarch64; do
             required+=("coastline-${TAG}-${platform}-Release.tar.gz")
           done
-          for platform in windows-x64 windows-arm64; do
+          for platform in windows-x86-64 windows-aarch64; do
             required+=("coastline-${TAG}-${platform}-Release.zip")
             required+=("coastline-${TAG}-${platform}-Release-setup.exe")
           done
-          for platform in macos-arm64 macos-x86_64; do
-            required+=("coastline-${TAG}-${platform}-Release.dmg")
-          done
-          for library in brd3d brglide; do
-            required+=("coastline-${TAG}-${library}-Release.zip")
+          for platform in macos-aarch64 macos-x86-64; do
+            required+=("Coastline-${TAG}-${platform}-Release.dmg")
           done
           required+=(
-            "Coastline-${TAG}-linux-arm64-Release.AppImage"
-            "Coastline-${TAG}-linux-x86_64-Release.AppImage"
-            "coastline_${TAG}_amd64.snap"
-            "coastline_${TAG}_arm64.snap"
-            "sh.tat.coastline-${TAG}-aarch64.flatpak"
-            "sh.tat.coastline-${TAG}-x86_64.flatpak"
+            "boss-rally-${TAG}-windows-x86-Release.zip"
+            "boss-rally-${TAG}-windows-x86-setup.exe"
+            "coastline-${TAG}-windows-aarch64-clang-Release.zip"
+            "coastline-${TAG}-windows-aarch64-clang-Release-setup.exe"
+            "coastline-${TAG}-windows-x86-64-mingw-Release.zip"
+            "coastline-${TAG}-appimage-aarch64-Release.AppImage"
+            "coastline-${TAG}-appimage-x86-64-Release.AppImage"
+            "coastline-${TAG}-snap-aarch64-Release.snap"
+            "coastline-${TAG}-snap-x86-64-Release.snap"
+            "coastline-${TAG}-flatpak-aarch64-Release.flatpak"
+            "coastline-${TAG}-flatpak-x86-64-Release.flatpak"
           )
           mapfile -t attached < <(gh release view "$TAG" --json assets --jq '.assets[].name')
           echo "${TAG} has ${#attached[@]} packages attached."

@@ -2,9 +2,7 @@
 # explicitly. A recursive glob would hide what is built. A source added to the tree would join the
 # build with no record of the decision, and a source removed would disappear the same way.
 #
-# Static libraries are deliberate. Archiving produces object files and archives without linking a
-# ROM. The reconstruction is partial, and no link can succeed until every routine a call arrives at
-# has a body.
+# Static libraries provide each translation unit for matching verification.
 
 # The settings every library of the game shares. An interface library provides them without
 # compiling anything itself.
@@ -223,9 +221,8 @@ if(TGR_PLATFORM STREQUAL "win")
     target_link_libraries(${_library} PRIVATE coastline_glide)
   endif()
 else()
-  if(NOT TGR_IDO AND COASTLINE_ASSETS_DIR AND COASTLINE_ASM_SYMBOLS)
-    # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the
-    # original header and IPL3, places the assets at their offsets, and writes the checksum.
+  if(NOT TGR_IDO AND COASTLINE_ASM_SYMBOLS)
+    # The ELF links without ROM assets, allowing debug symbols to be saved independently.
     set(_link_script "${CMAKE_CURRENT_SOURCE_DIR}/n64/coastline-${TGR_REGION}.ld")
     # The archives come after the objects, in one group. Their routines call each other. An
     # archive member is not linked when an object already defines its routine (the assembly of a
@@ -241,22 +238,26 @@ else()
     target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -nostdlib -nostartfiles ${_link_scripts})
     set_property(TARGET ${CMAKE_PROJECT_NAME} APPEND PROPERTY LINK_DEPENDS "${_link_script}"
                                                                 ${COASTLINE_ASM_SYMBOLS})
-    set(_program "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.bin")
-    set(_rom "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-${TGR_REGION}.z64")
-    add_custom_command(
-      OUTPUT "${_program}"
-      COMMAND "${CMAKE_OBJCOPY}" -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> "${_program}"
-      DEPENDS ${CMAKE_PROJECT_NAME}
-      COMMENT "Flattening the program"
-      VERBATIM)
-    add_custom_command(
-      OUTPUT "${_rom}"
-      COMMAND "${COASTLINE_TOOL_BUILD_ROM}" "${COASTLINE_ASSETS_DIR}/boot.bin" "${_program}"
-              "${COASTLINE_ASSETS_DIR}" "${_rom}"
-      DEPENDS "${_program}" "${COASTLINE_ASSETS_DIR}/manifest.txt" "${COASTLINE_TOOL_BUILD_ROM}"
-              coastline_tools
-      COMMENT "Building ${_rom}"
-      VERBATIM)
-    add_custom_target(rom ALL DEPENDS "${_rom}")
+    if(COASTLINE_ASSETS_DIR)
+      # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the
+      # original header and IPL3, places the assets at their offsets, and writes the checksum.
+      set(_program "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}.bin")
+      set(_rom "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-${TGR_REGION}.z64")
+      add_custom_command(
+        OUTPUT "${_program}"
+        COMMAND "${CMAKE_OBJCOPY}" -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> "${_program}"
+        DEPENDS ${CMAKE_PROJECT_NAME}
+        COMMENT "Flattening the program"
+        VERBATIM)
+      add_custom_command(
+        OUTPUT "${_rom}"
+        COMMAND "${COASTLINE_TOOL_BUILD_ROM}" "${COASTLINE_ASSETS_DIR}/boot.bin" "${_program}"
+                "${COASTLINE_ASSETS_DIR}" "${_rom}"
+        DEPENDS "${_program}" "${COASTLINE_ASSETS_DIR}/manifest.txt" "${COASTLINE_TOOL_BUILD_ROM}"
+                coastline_tools
+        COMMENT "Building ${_rom}"
+        VERBATIM)
+      add_custom_target(rom ALL DEPENDS "${_rom}")
+    endif()
   endif()
 endif()

@@ -27,6 +27,7 @@ foreach(_variant win-d3d win-glide)
     BINARY_DIR "${CMAKE_BINARY_DIR}/${_variant}"
     CMAKE_ARGS -DTGR_PLATFORM=${_platform} ${_choice_arg}
                -DTGR_ENABLE_PATCHES=${TGR_ENABLE_PATCHES}
+               -DTGR_DEBUG_SYMBOLS=${TGR_DEBUG_SYMBOLS}
                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
                -DCMAKE_EXPORT_COMPILE_COMMANDS=${CMAKE_EXPORT_COMPILE_COMMANDS}
                ${_toolchain_arg}

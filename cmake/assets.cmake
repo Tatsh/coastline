@@ -1,6 +1,6 @@
 # Extracts the assets of the original cartridge into ${CMAKE_BINARY_DIR}/assets with extract-rom.
 # The ROM is required to build a ROM, and the extraction runs as part of every build. Without a
-# ROM, the sources still compile.
+# ROM, the sources still compile and link into an ELF with symbols.
 
 set(TGR_ROM
     ""

@@ -42,7 +42,8 @@ jobs:
             libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev ninja-build \
             pkg-config wayland-protocols
           git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
-          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
           cmake --build --preset coastline -- -k 0
         env:
           VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
@@ -77,8 +78,224 @@ jobs:
             language: c-cpp
           - build-mode: none
             language: actions
+  analyze-sdl:
+    name: 'Analyze coastline (${{ matrix.platform.name }})'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    runs-on: '${{ matrix.platform.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: 'Linux aarch64'
+            os: 'ubuntu-24.04-arm'
+            slug: 'linux-aarch64'
+          - arch: 'arm64'
+            name: 'macOS aarch64'
+            os: 'macos-latest'
+            slug: 'macos-aarch64'
+            triplet: 'arm64-osx'
+          - arch: 'x86_64'
+            name: 'macOS x86-64'
+            os: 'macos-latest'
+            slug: 'macos-x86-64'
+            triplet: 'x64-osx'
+          - arch: 'x64'
+            compiler: 'msvc'
+            name: 'Windows x86-64'
+            os: 'windows-2022'
+            slug: 'windows-x86-64'
+          - arch: 'arm64'
+            compiler: 'msvc'
+            name: 'Windows aarch64'
+            os: 'windows-11-arm'
+            slug: 'windows-aarch64'
+          - arch: 'arm64'
+            compiler: 'clang'
+            name: 'Windows aarch64 Clang'
+            os: 'windows-11-arm'
+            slug: 'windows-aarch64-clang'
+    env:
+      CODEQL_EXTRACTOR_CPP_AUTOINSTALL_DEPENDENCIES: 'false'
+      MACOSX_DEPLOYMENT_TARGET: '10.15'
+      VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
+      VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET;NASMENV'
+      VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - name: 'Prepare the vcpkg binary cache'
+        run: mkdir -p .wiswa-ci/vcpkg-cache
+        shell: bash
+      - if: github.ref_type != 'tag'
+        id: 'vcpkg-cache'
+        name: 'Restore vcpkg binaries'
+        uses: 'actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
+        with:
+          key: "vcpkg-${{ runner.os }}-${{ matrix.platform.slug }}-${{ hashFiles('vcpkg.json') }}"
+          path: '.wiswa-ci/vcpkg-cache'
+      - if: runner.os == 'Linux'
+        name: 'Install Linux tools'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf-archive cmake libasound2-dev libegl1-mesa-dev \
+            libltdl-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev \
+            libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev nasm ninja-build \
+            pkg-config wayland-protocols
+      - if: runner.os == 'macOS'
+        name: 'Install macOS tools'
+        run: |
+          brew install librsvg nasm
+          command -v ninja >/dev/null || brew install ninja
+      - name: 'Install vcpkg'
+        run: git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
+        shell: bash
+      - name: 'Initialize CodeQL'
+        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          build-mode: 'manual'
+          languages: 'c-cpp'
+      - if: runner.os == 'Linux'
+        name: 'Build coastline for analysis'
+        run: |
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
+          cmake --build --preset coastline -- -k 0
+      - if: runner.os == 'macOS'
+        name: 'Build coastline for analysis'
+        run: |
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
+            -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
+          cmake --build --preset coastline -- -k 0
+        env:
+          ARCHITECTURE: '${{ matrix.platform.arch }}'
+          NASMENV: '!--pragma!macho build_version macos,10,15'
+          TRIPLET: '${{ matrix.platform.triplet }}'
+      - if: runner.os == 'Windows'
+        name: 'Build coastline for analysis'
+        run: |
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $studio = & $installer -latest -property installationPath
+          Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+          Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
+            -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
+          $compilerArgs = @()
+          if ($env:COMPILER -eq 'clang') {
+            $clang = (Get-Command clang-cl -ErrorAction Stop).Source
+            $compilerArgs = @("-DCMAKE_C_COMPILER=$clang", "-DCMAKE_CXX_COMPILER=$clang")
+          }
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON `
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' @compilerArgs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build --preset coastline -- -k 0
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        env:
+          ARCHITECTURE: '${{ matrix.platform.arch }}'
+          COMPILER: '${{ matrix.platform.compiler }}'
+        shell: pwsh
+      - if: >-
+          !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master' &&
+          steps.vcpkg-cache.outputs.cache-hit != 'true'
+        name: 'Save vcpkg binaries'
+        uses: 'actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
+        with:
+          key: "vcpkg-${{ runner.os }}-${{ matrix.platform.slug }}-${{ hashFiles('vcpkg.json') }}"
+          path: '.wiswa-ci/vcpkg-cache'
+      - name: 'Analyze'
+        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/sdl-${{ matrix.platform.slug }}'
+          output: '${{ runner.temp }}/codeql-sarif'
+          upload: false
+      - if: runner.os != 'Windows'
+        name: 'Restrict native findings to project sources'
+        run: python3 .github/scripts/static-analysis.py --sarif "$RUNNER_TEMP/codeql-sarif"
+      - if: runner.os == 'Windows'
+        name: 'Restrict native findings to project sources'
+        run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
+        shell: pwsh
+      - name: 'Upload CodeQL results'
+        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/sdl-${{ matrix.platform.slug }}'
+          sarif_file: '${{ runner.temp }}/codeql-sarif'
+  analyze-sdl-mingw:
+    name: 'Analyze coastline (Windows x86-64 MinGW)'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    runs-on: windows-2022
+    env:
+      VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
+      VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
+    steps:
+      - uses: 'msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e'
+        with:
+          install: 'git zip'
+          msystem: 'ucrt64'
+          pacboy: >-
+            cmake:p
+            ninja:p
+            toolchain:p
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - name: 'Prepare the vcpkg binary cache'
+        run: mkdir -p .wiswa-ci/vcpkg-cache
+        shell: 'msys2 {0}'
+      - if: github.ref_type != 'tag'
+        id: 'vcpkg-cache'
+        name: 'Restore vcpkg binaries'
+        uses: 'actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
+        with:
+          key: "vcpkg-${{ runner.os }}-windows-x64-ucrt-${{ hashFiles('vcpkg.json') }}"
+          path: '.wiswa-ci/vcpkg-cache'
+      - name: 'Install vcpkg'
+        run: git clone https://github.com/microsoft/vcpkg .vcpkg
+        shell: 'msys2 {0}'
+      - name: 'Initialize CodeQL'
+        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          build-mode: 'manual'
+          languages: 'c-cpp'
+      - name: 'Build coastline for analysis'
+        run: |
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
+            -DCOASTLINE_VIDEO=OFF -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic \
+            -DVCPKG_HOST_TRIPLET=x64-mingw-dynamic \
+            -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+            -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++
+          cmake --build --preset coastline -- -k 0
+        shell: 'msys2 {0}'
+      - if: >-
+          !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master' &&
+          steps.vcpkg-cache.outputs.cache-hit != 'true'
+        name: 'Save vcpkg binaries'
+        uses: 'actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
+        with:
+          key: "vcpkg-${{ runner.os }}-windows-x64-ucrt-${{ hashFiles('vcpkg.json') }}"
+          path: '.wiswa-ci/vcpkg-cache'
+      - name: 'Analyze'
+        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/sdl-windows-x86-64-mingw'
+          output: '${{ runner.temp }}/codeql-sarif'
+          upload: false
+      - name: 'Restrict native findings to project sources'
+        run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
+        shell: pwsh
+      - name: 'Upload CodeQL results'
+        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/sdl-windows-x86-64-mingw'
+          sarif_file: '${{ runner.temp }}/codeql-sarif'
   analyze-n64:
-    name: 'Analyze Nintendo 64 (${{ matrix.region_name }})'
+    name: 'Analyze Top Gear Rally (${{ matrix.region_name }})'
     permissions:
       actions: read
       contents: read
@@ -90,13 +307,13 @@ jobs:
         region: ['us', 'jp', 'eu', 'asia']
         include:
           - region: 'us'
-            region_name: 'US ROM'
+            region_name: 'US'
           - region: 'jp'
-            region_name: 'Japan ROM'
+            region_name: 'Japan'
           - region: 'eu'
-            region_name: 'Europe ROM'
+            region_name: 'Europe'
           - region: 'asia'
-            region_name: 'Asia ROM'
+            region_name: 'Asia'
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:

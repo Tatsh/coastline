@@ -300,7 +300,6 @@ devicearrival
 devicecaps
 deviceremovecomplete
 devmgr
-dexpansion
 dfiles
 dfrac
 dialog
@@ -415,6 +414,7 @@ dsll
 dsra
 dsrl
 dsscl
+dsymutil
 dtable
 dtaddress
 dtdy
@@ -961,6 +961,7 @@ oahwnd
 oatrue
 objcopy
 objcxx
+objdump
 obji
 offscreenplain
 oneline
@@ -993,6 +994,7 @@ particleupdate
 pathlib
 pcmstream
 pcmwaveformat
+pdbs
 penm
 peripheralinput
 persp
@@ -1121,6 +1123,7 @@ rdploadsync
 rdppipesync
 rdptilesync
 rdram
+readelf
 readlink
 readwrite
 rearload
@@ -1471,6 +1474,7 @@ unmuting
 unrecovered
 unrotated
 unscii
+unsquashfs
 uopt
 userabort
 usermod
