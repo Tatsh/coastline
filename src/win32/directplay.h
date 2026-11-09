@@ -464,12 +464,22 @@ struct NetworkJoinCredentials {
 };
 
 /**
+ * Join the selected session and initialise network play after a successful connection.
+ *
+ * @return Zero if DirectPlay is unavailable or joining fails, otherwise one.
  * @ghidraAddress BRD3D: 0x1003c260
  * @ghidraAddress BRGlide: 0x100358f0
  */
 int JoinNetworkSession(void);
 
 /**
+ * Open a session, create the local player, and load its race settings.
+ *
+ * @param pDirectPlay The connected DirectPlay object.
+ * @param instance The selected session instance.
+ * @param credentials Optional authentication fields and the local user name.
+ * @param pInfo Receives the local player and session state after a successful join.
+ * @return The DirectPlay result, including DPERR_CANTADDPLAYER when eight players are present.
  * @ghidraAddress BRD3D: 0x1003c740
  * @ghidraAddress BRGlide: 0x10035dd0
  */
@@ -479,6 +489,12 @@ HRESULT JoinDirectPlaySession(IDirectPlay3A *pDirectPlay,
                               DirectPlayInfo *pInfo);
 
 /**
+ * Create an eight-player session and its local host player.
+ *
+ * @param pDirectPlay The connected DirectPlay object.
+ * @param pSettings The session name and secure-server setting.
+ * @param pInfo Receives the host player and session state after creation.
+ * @return The DirectPlay result, or DP_OK when launched from a lobby.
  * @ghidraAddress BRD3D: 0x1003c5c0
  * @ghidraAddress BRGlide: 0x10035c50
  */
@@ -487,12 +503,17 @@ HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
                                 DirectPlayInfo *pInfo);
 
 /**
+ * Create a session using the selected settings and initialise host network state.
+ *
  * @ghidraAddress BRD3D: 0x1003c150
  * @ghidraAddress BRGlide: 0x100357e0
  */
 void HostNetworkSession(void);
 
 /**
+ * Publish the selected track, weather, car class, and lap count to the current session.
+ *
+ * @return The DirectPlay result, or DPERR_INVALIDOBJECT without a connection.
  * @ghidraAddress BRD3D: 0x1003cda0
  * @ghidraAddress BRGlide: 0x10036430
  */
@@ -576,6 +597,13 @@ HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby);
 HRESULT RefreshNetworkSessionList(IDirectPlay3A *pDirectPlay);
 
 /**
+ * Refresh player entries, enumerate players, and broadcast the local ready flag.
+ *
+ * @param instance The session instance to enumerate.
+ * @param callback The callback for each player.
+ * @param context User data passed to the callback.
+ * @param flags DirectPlay enumeration flags.
+ * @return The enumeration result, or E_FAIL without a DirectPlay object.
  * @ghidraAddress BRD3D: 0x1003cb10
  * @ghidraAddress BRGlide: 0x100361a0
  */
@@ -585,6 +613,13 @@ HRESULT EnumerateNetworkPlayers(GUID *instance,
                                 DWORD flags);
 
 /**
+ * Add an available session to the menu, then enumerate its players.
+ *
+ * @param description The session description.
+ * @param timeout Unused.
+ * @param flags DirectPlay callback flags.
+ * @param context User data passed to the player enumeration.
+ * @return False when the menu is absent or enumeration timed out, otherwise true.
  * @ghidraAddress BRD3D: 0x1003cb90
  * @ghidraAddress BRGlide: 0x10036220
  */
@@ -726,30 +761,60 @@ extern int g_dwLocalNetPlayerId;
 void TickNetworkPauseRequest(void);
 
 /**
+ * Send the local player information once every active vehicle has a session player.
+ *
  * @ghidraAddress BRD3D: 0x100053f0
  * @ghidraAddress BRGlide: 0x10005760
  */
 void MaybeSendAllPlayersReadyPacket(void);
 
 /**
+ * Count active vehicles with a driver assigned.
+ *
+ * @return The number of active drivers.
  * @ghidraAddress BRD3D: 0x10005470
  * @ghidraAddress BRGlide: 0x100057e0
  */
 int CountActivePlayerSlots(void);
 
 /**
+ * Send a stream to the server, or process it locally when hosting. Sending is skipped while the
+ * network data stream is active.
+ *
+ * @param pInfo The local session.
+ * @param pStream The stream to send.
+ * @return The stream size, or -1 when DirectPlay sending fails.
  * @ghidraAddress BRD3D: 0x100046d0
  * @ghidraAddress BRGlide: 0x10004a40
  */
 int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream);
 
 /**
+ * Send a stream to every player and process it locally when hosting. Sending is skipped while the
+ * network data stream is active.
+ *
+ * @param pInfo The local session.
+ * @param pStream The stream to send.
+ * @return The stream size, or -1 when DirectPlay sending fails.
  * @ghidraAddress BRD3D: 0x10004dd0
  * @ghidraAddress BRGlide: 0x10005140
  */
 int SendNetworkStreamUnreliable(DirectPlayInfo *pInfo, NetStream *pStream);
 
 /**
+ * Send a player's car, colour, owner, and status in a reliable packet.
+ *
+ * @param pInfo The local session.
+ * @param bPlayer The player slot.
+ * @param bCar The car selection.
+ * @param bColorR The red component of the car colour.
+ * @param bColorG The green component of the car colour.
+ * @param bColorB The blue component of the car colour.
+ * @param dpidOwner The DirectPlay owner of the player.
+ * @param szPlayerName The player name, included for status values up to two.
+ * @param nState The player status, including any flags outside the low six bits.
+ * @param bTag Flags combined with the local player identifier.
+ * @return The sent stream size, or -1 when DirectPlay sending fails.
  * @ghidraAddress BRD3D: 0x10004760
  * @ghidraAddress BRGlide: 0x10004ad0
  */
@@ -853,18 +918,33 @@ extern char g_szSlotPlayerNameBuffer[0x400];
 extern int g_nPendingNetSoundEffect;
 
 /**
+ * Copy a player's name under its slot mutex into the shared name buffer.
+ *
+ * @param nSlot The peer slot index.
+ * @return The shared name buffer, overwritten by the next call.
  * @ghidraAddress BRD3D: 0x10005e70
  * @ghidraAddress BRGlide: 0x100061e0
  */
 char *GetSlotPlayerName(int nSlot);
 
 /**
+ * Send a reliable reply with the timestamp received from the server.
+ *
+ * @param pInfo The local session.
+ * @param timestamp The timestamp to return.
+ * @return The sent stream size, or -1 when DirectPlay sending fails.
  * @ghidraAddress BRD3D: 0x10004910
  * @ghidraAddress BRGlide: 0x10004c80
  */
 int SendTimeSyncReply(DirectPlayInfo *pInfo, unsigned timestamp);
 
 /**
+ * Adjust the network clock when a sampled reply improves the round-trip measurement.
+ *
+ * @param serverFrame The server frame in the latest sample.
+ * @param localTime The local timestamp associated with the latest sample.
+ * @param echoedFrame A prior server frame echoed by the reply.
+ * @param roundTrip The measured round-trip duration.
  * @ghidraAddress BRD3D: 0x100034a0
  * @ghidraAddress BRGlide: 0x10003810
  */
@@ -874,12 +954,24 @@ void SyncNetworkClockFromServer(unsigned serverFrame,
                                 unsigned roundTrip);
 
 /**
+ * Copy the local player's assigned colour into the first vehicle.
+ *
  * @ghidraAddress BRD3D: 0x100049c0
  * @ghidraAddress BRGlide: 0x10004d30
  */
 void LoadNetworkPlayerColors(void);
 
 /**
+ * Send the joining player's car, colour, and name in a reliable packet.
+ *
+ * @param pInfo The local session.
+ * @param player The joining player slot.
+ * @param red The red component of the car colour.
+ * @param green The green component of the car colour.
+ * @param blue The blue component of the car colour.
+ * @param name The player name, truncated to 24 bytes in the packet.
+ * @param tag Flags combined with the local player identifier.
+ * @return The sent stream size, or -1 when DirectPlay sending fails.
  * @ghidraAddress BRD3D: 0x10004590
  * @ghidraAddress BRGlide: 0x10004900
  */
@@ -977,6 +1069,13 @@ extern char g_szNetStatusString[];
 extern int g_bNetStatusStringDirty;
 
 /**
+ * Read a peer's selected car and RGB colour under its slot mutex.
+ *
+ * @param slotIndex The peer slot index.
+ * @param red Receives the red colour component.
+ * @param green Receives the green colour component.
+ * @param blue Receives the blue colour component.
+ * @return The selected car identifier.
  * @ghidraAddress BRD3D: 0x10005de0
  * @ghidraAddress BRGlide: 0x10006150
  */
@@ -1219,6 +1318,8 @@ DWORD WINAPI NetworkWorkerThreadProc(LPVOID pParameter);
 void CreateNetworkPlayerSlotMutexes(void);
 
 /**
+ * Reset race and peer states, timing, and finishing positions for every network player.
+ *
  * @ghidraAddress BRD3D: 0x100713c0
  * @ghidraAddress BRGlide: 0x1006a330
  */
@@ -1237,6 +1338,12 @@ extern DWORD g_dwNetSlotResetTime;
 extern unsigned g_dwNetNextFinishPosition;
 
 /**
+ * Broadcast a player's finishing position with guaranteed delivery.
+ *
+ * @param pInfo The local session.
+ * @param dpidPlayer The finishing player.
+ * @param dwPosition The finishing position.
+ * @return The DirectPlay send result, or zero without a connection.
  * @ghidraAddress BRD3D: 0x1003db50
  * @ghidraAddress BRGlide: 0x100371f0
  */
@@ -1328,6 +1435,10 @@ void ProcessMultiplayerPackets(
     DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
+ * Find a player's active slot, or the first free slot for a new player.
+ *
+ * @param dpidPlayer The player identifier.
+ * @return The slot index, zero for the server, or -1 when all slots are in use.
  * @ghidraAddress BRD3D: 0x10036030
  * @ghidraAddress BRGlide: 0x1002f6d0
  */
@@ -1508,6 +1619,11 @@ void DestroyNetworkGroups(void);
 void InitializeNetworkServiceProvider(void);
 
 /**
+ * Build the compound address for the selected DirectPlay service provider.
+ *
+ * @param ppAddress Receives globally allocated, locked address data on success.
+ * @param pdwSize Receives the address size in bytes on success.
+ * @return The DirectPlay result, or E_OUTOFMEMORY when allocation fails.
  * @ghidraAddress BRD3D: 0x1003d480
  * @ghidraAddress BRGlide: 0x10036b20
  */
@@ -1566,6 +1682,14 @@ extern SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
  */
 void MarkSessionListEntrySeen(DPID dpidPlayer);
 /**
+ * Add a non-spectator player to the network player menu.
+ *
+ * @param dpidPlayer The player identifier.
+ * @param dwPlayerType Unused.
+ * @param pName The player's DirectPlay name.
+ * @param dwFlags Enumeration flags, including the spectator flag.
+ * @param pContext Unused.
+ * @return False without a player menu, otherwise true.
  * @ghidraAddress BRD3D: 0x1003caa0
  * @ghidraAddress BRGlide: 0x10036130
  */
@@ -1603,6 +1727,12 @@ int GetSessionSlotFlag(DPID dpidPlayer);
 extern char g_szNetworkChatText[];
 
 /**
+ * Post the local chat line to the window and broadcast its text with guaranteed delivery.
+ *
+ * @param hWindow The window that receives the local notice.
+ * @param pInfo The local session.
+ * @param bNotice Whether to format the line as a notice rather than chat.
+ * @return The DirectPlay result, or DP_OK when sending is unavailable or blocked.
  * @ghidraAddress BRD3D: 0x1003d210
  * @ghidraAddress BRGlide: 0x100368a0
  */
@@ -1623,12 +1753,26 @@ void HandleMultiplayerSessionMessage(
     DirectPlayInfo *pInfo, void *pMessage, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
+ * Retrieve a player's DirectPlay name in globally allocated, locked memory.
+ *
+ * @param pDirectPlay The DirectPlay object.
+ * @param dpidPlayer The player identifier.
+ * @param ppName Receives the name on success; the caller must unlock and free it.
+ * @return The DirectPlay result, or E_OUTOFMEMORY when allocation fails.
  * @ghidraAddress BRD3D: 0x1003d180
  * @ghidraAddress BRGlide: 0x10036810
  */
 HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPNAME **ppName);
 
 /**
+ * Format a chat line with the sender's name in globally allocated, locked memory.
+ *
+ * @param pDirectPlay The DirectPlay object.
+ * @param dpidPlayer The sender identifier.
+ * @param text The chat message.
+ * @param ppLine Receives the line on success; the caller must unlock and free it.
+ * @param bNotice Whether to omit the colon between the sender and the text.
+ * @return The DirectPlay result, or DP_OK without a DirectPlay object.
  * @ghidraAddress BRD3D: 0x1003d3a0
  * @ghidraAddress BRGlide: 0x10036a30
  */
@@ -1645,6 +1789,9 @@ extern int g_dwNetworkDataStreamActive;
  */
 extern int g_dwNetworkEscapePending;
 /**
+ * Toggle the local player's session slot flag.
+ *
+ * @return The new flag, or zero without a local player slot.
  * @ghidraAddress BRD3D: 0x10058700
  * @ghidraAddress BRGlide: 0x100515b0
  */
