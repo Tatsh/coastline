@@ -42,6 +42,8 @@ typedef struct {
 extern u16 g_aFramebuffer0[];
 
 /**
+ * The second 320-by-240 frame buffer of 16-bit pixels. The link script places it.
+ *
  * @ghidraAddress USA: 0x801da800
  * @ghidraAddress Asia: 0x801DA800
  * @ghidraAddress EUR: 0x801da800
@@ -401,6 +403,8 @@ extern OSMesgQueue g_RspEventMsgQueue;
 extern OSMesg g_aRspEventMsgBuf[1];
 
 /**
+ * The queue of completed RSP tasks consumed by the frame renderer.
+ *
  * @ghidraAddress USA: 0x8031a320
  * @ghidraAddress Asia: 0x80319DD0
  * @ghidraAddress EUR: 0x8031c800
@@ -443,6 +447,8 @@ extern OSMesgQueue g_RdpEventMsgQueue;
 extern OSMesg g_aRdpEventMsgBuf[1];
 
 /**
+ * The queue of completed RDP tasks consumed by the frame renderer.
+ *
  * @ghidraAddress USA: 0x8031a358
  * @ghidraAddress Asia: 0x80319E08
  * @ghidraAddress EUR: 0x8031c838
@@ -486,6 +492,8 @@ extern OSMesgQueue g_ViRetracePollMesgQueue;
 extern OSMesg g_ViRetracePollMesgBuf[1];
 
 /**
+ * The queue of video retrace events consumed by frame timing and display updates.
+ *
  * @ghidraAddress USA: 0x8031a390
  * @ghidraAddress Asia: 0x80319E40
  * @ghidraAddress BRD3D: 0x106c6540
@@ -794,6 +802,8 @@ extern s32 g_dwFaultState;
 extern char *g_apszBootArgv[];
 
 /**
+ * The boot argument vector shared with the rendering initialiser.
+ *
  * @ghidraAddress USA: 0x8026ff04
  * @ghidraAddress Asia: 0x8026FA54
  * @ghidraAddress EUR: 0x80271ed4
@@ -835,6 +845,8 @@ extern OSMesg g_aPiMgrCmdMsgBuf[32];
 extern OSViMode g_ViModeNtscLan1;
 
 /**
+ * The MPAL low-resolution video mode.
+ *
  * @ghidraAddress USA: 0x802a5d70
  * @ghidraAddress Asia: 0x802A58C0
  */
@@ -1309,6 +1321,8 @@ extern s32 g_dwAppliedScreenScaleShift;
 extern OSViMode g_ViModeNtscHaf1;
 
 /**
+ * The MPAL high-resolution video mode.
+ *
  * @ghidraAddress USA: 0x802a6040
  * @ghidraAddress Asia: 0x802A5B90
  * @ghidraAddress JPN: 0x802a7640
@@ -1319,7 +1333,7 @@ extern OSViMode g_ViModeMpalHaf1;
 /** The copies of the PAL video modes the game sets. @ghidraAddress EUR: 0x8028cd74 */
 extern OSViMode g_ViModePalHaf1;
 
-/** @ghidraAddress EUR: 0x8028cdc4 */
+/** The PAL low-resolution video mode. @ghidraAddress EUR: 0x8028cdc4 */
 extern OSViMode g_ViModePalLan1;
 #endif
 
