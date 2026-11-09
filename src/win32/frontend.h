@@ -2803,6 +2803,8 @@ int GetSelectedSessionGuid(GUID *guid);
 #endif
 
 /**
+ * The selected row in the display-mode list, updated by Direct3D and Glide device selection.
+ *
  * @ghidraAddress BRD3D: 0x10aa2a30
  * @ghidraAddress BRGlide: 0x10ac5d88
  */
@@ -2971,8 +2973,10 @@ int DrawGameplaySliderA(MenuWidget *pWidget);
  * @ghidraAddress BRGlide: 0x10038000
  */
 int DrawGameplaySliderB(MenuWidget *pWidget);
+/** @cond */
 /** @ghidraAddress BRD3D: 0x100ab548 */
 extern RECT g_rcMenuAudioListBox;
+/** @endcond */
 
 /**
  * Build gameplay options on the supplied screen.
@@ -3081,13 +3085,17 @@ int PopulateDisplayDeviceList(void);
 int CompareDisplayModes(const void *left, const void *right);
 
 /**
+ * The menu bounds of the display-device list.
+ *
  * @ghidraAddress BRD3D: 0x100ab528
  * @ghidraAddress BRGlide: 0x100aacc8
  */
 extern RECT g_rcMenuDeviceListBox;
 
+/** @cond */
 /** @ghidraAddress BRD3D: 0x100ab538 */
 extern RECT g_rcMenuLoadSeasonListBox;
+/** @endcond */
 
 /**
  * Populate available display modes for the selected device. The Glide library lists the modes of
@@ -3133,6 +3141,7 @@ struct KeyConfigEntry {
     int nControl;       /*!< The control being configured. */
 };
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ab330
  * @ghidraAddress BRGlide: 0x100aaad0
@@ -3144,8 +3153,11 @@ extern KeyConfigEntry g_aKeyConfigEntries[KEY_CONFIG_ENTRY_COUNT];
  * @ghidraAddress BRGlide: 0x100abe40
  */
 extern int g_dwCapturedKeyBindingValue;
+/** @endcond */
 
 /**
+ * Flags marking duplicate bindings in each key-configuration row.
+ *
  * @ghidraAddress BRD3D: 0x10a9d5c0
  * @ghidraAddress BRGlide: 0x10ac4648
  */
@@ -3179,11 +3191,13 @@ int ShowCarSetupScreen(MenuWidget *pWidget);
  */
 int BuildCarSetupUI(MenuScreen *pScreen);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ac304
  * @ghidraAddress BRGlide: 0x100abaa4
  */
 extern int g_bRaceSetupShowCarSetup;
+/** @endcond */
 
 /**
  * Advance to pre-race information and discard the points dialog.
@@ -3275,6 +3289,7 @@ int RaceResultsPanel_PostUpdateRestoreSeasonProgress(void);
 }
 #endif
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ac570
  * @ghidraAddress BRGlide: 0x100abd10
@@ -3376,6 +3391,7 @@ extern const int g_awSkidMarksImageIds[2];
  * @ghidraAddress BRGlide: 0x10ac5c30
  */
 extern int g_dwMenuTextEditActive;
+/** @endcond */
 
 /** The index in apWidgets of the mouse cursor of the first panel of the root screen. */
 #define MENU_CURSOR_WIDGET_INDEX (MENU_PANEL_WIDGET_COUNT - 1)
@@ -3795,10 +3811,13 @@ extern MenuWidget *g_pPlayerNameContinueItem;
 extern MenuWidget *g_pMultiplayerGameSetupMenu;
 
 /**
+ * Bounds used for the centre panel of the multiplayer session list.
+ *
  * @ghidraAddress BRD3D: 0x100ab448
  * @ghidraAddress BRGlide: 0x100aabe8
  */
 extern RECT g_rcMenuCenterPanel;
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ab508
  * @ghidraAddress BRGlide: 0x100aaca8
@@ -3819,11 +3838,15 @@ extern RECT g_rcMenuLeftColumn;
  * @ghidraAddress BRGlide: 0x100aac18
  */
 extern RECT g_rcMenuRightColumnWide;
+/** @endcond */
 /**
+ * Bounds of the network player list beside the session menu.
+ *
  * @ghidraAddress BRD3D: 0x100ab3f8
  * @ghidraAddress BRGlide: 0x100aab98
  */
 extern RECT g_rcMenuNetworkPlayers;
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ab488
  * @ghidraAddress BRGlide: 0x100aac28
@@ -3834,15 +3857,20 @@ extern RECT g_rcMenuRightColumn;
  * @ghidraAddress BRGlide: 0x100aac08
  */
 extern RECT g_rcMenuRightLabel;
+/** @endcond */
 /**
+ * A one-space string used by menu labels and the Glide texture cache.
+ *
  * @ghidraAddress BRD3D: 0x100ad300
  * @ghidraAddress BRGlide: 0x100acad8
  */
 extern const char g_szSpace[];
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x10aa2a70
  */
 extern char g_szEmptyString[1];
+/** @endcond */
 
 /**
  * The menu to save a time attack.
@@ -3908,6 +3936,7 @@ extern MenuWidget *g_pDisplayModeSelectMenu;
  */
 extern MenuWidget *g_pD3DDeviceSelectMenu;
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ac368
  * @ghidraAddress BRGlide: 0x100abb08
@@ -3972,6 +4001,7 @@ extern int g_adwSpecularLightingLabelStrIds[];
  * @ghidraAddress BRGlide: 0x100abba0
  */
 extern int g_adwForceFeedbackLabelStrIds[];
+/** @endcond */
 
 /**
  * Open car setup for network play and update the host session settings.
@@ -4004,6 +4034,7 @@ int BuildNetworkCarSetupUI(MenuScreen *pScreen);
  */
 int CompleteConnectionTextEdit(MenuWidget *pWidget);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ac348
  */
@@ -4013,6 +4044,7 @@ extern const int g_adwTireLabelStrIds[3];
  * @ghidraAddress BRD3D: 0x100ac5a8
  */
 extern const int g_adwCarImageIds[32];
+/** @endcond */
 
 /**
  * Check whether a drive contains a CD-ROM volume labelled Boss Rally.
@@ -4253,6 +4285,7 @@ int BuildOptionsMenuUI(MenuScreen *pScreen);
  */
 void SetActiveMenuItemText(const char *pszText);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ab558
  * @ghidraAddress BRGlide: 0x100aacf8
@@ -4270,6 +4303,7 @@ extern MenuWidget *g_pOptionsSubMenu;
  * @ghidraAddress BRGlide: 0x100aab94
  */
 extern int g_dwFileListSelectedSlot;
+/** @endcond */
 
 /**
  * Build the items of the root screen of the front end.
@@ -4843,6 +4877,7 @@ extern KeyCharacter g_KeyNameLookupTable[KEY_CHARACTER_COUNT];
  */
 char LookupKeyCharacter(DWORD dwKey);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100ac420
  * @ghidraAddress BRGlide: 0x100abbc0
@@ -4878,6 +4913,7 @@ extern int g_adwTrackMenuIndexToTrackId[15];
  * @ghidraAddress BRGlide: 0x100abcb8
  */
 extern int g_adwTransmissionMenuIndexToType[2];
+/** @endcond */
 
 /**
  * Report a track's selection mask or a cheat override.
