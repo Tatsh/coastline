@@ -250,6 +250,8 @@ extern DecalGlyph g_aDecalGlyphs[DECAL_GLYPHS];
 extern u8 g_bDashColorA;
 
 /**
+ * The second colour of the marching dashes of a shape not yet drawn.
+ *
  * @ghidraAddress USA: 0x8028dabc
  * @ghidraAddress Asia: 0x8028D60C
  * @ghidraAddress EUR: 0x8029021c
@@ -388,6 +390,8 @@ extern u8 g_bDecalSlot;
 extern u8 g_bPreviousDecalSlot;
 
 /**
+ * The decal slot selected before a tool temporarily visits every slot.
+ *
  * @ghidraAddress USA: 0x8028db70
  * @ghidraAddress Asia: 0x8028D6C0
  * @ghidraAddress EUR: 0x802902d0
@@ -446,6 +450,8 @@ extern u8 *g_pDecalScratchTexels;
 extern u8 g_bDecalWidth;
 
 /**
+ * The height of the decal being edited, in texels.
+ *
  * @ghidraAddress USA: 0x8028db8c
  * @ghidraAddress Asia: 0x8028D6DC
  * @ghidraAddress EUR: 0x802902ec

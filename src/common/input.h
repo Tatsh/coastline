@@ -80,6 +80,8 @@ extern CheatCode g_aCheatCodes[];
 extern s32 g_bShowDepthBuffer;
 
 /**
+ * Whether the credits race scrolls the credits rather than displaying captions.
+ *
  * @ghidraAddress USA: 0x8026ff20
  * @ghidraAddress Asia: 0x8026FA70
  * @ghidraAddress EUR: 0x80271ef0

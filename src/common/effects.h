@@ -33,6 +33,8 @@ typedef struct {
 #define PARTICLES 256
 
 /**
+ * The pool of smoke and exhaust particles linked by index.
+ *
  * @ghidraAddress USA: 0x80366a80
  * @ghidraAddress Asia: 0x80366530
  * @ghidraAddress EUR: 0x80368f80

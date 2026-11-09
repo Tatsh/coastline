@@ -126,6 +126,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
  */
 extern u32 g_dwDmaAssetSizeBuffer;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031b330
  * @ghidraAddress Asia: 0x8031ADE0
@@ -135,6 +136,7 @@ extern u32 g_dwDmaAssetSizeBuffer;
  * @ghidraAddress BRGlide: 0x106ea390
  */
 extern u32 g_dwDmaReadWordBuffer;
+/** @endcond */
 
 #if TGR_BOSS_RALLY
 /**

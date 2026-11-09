@@ -94,6 +94,8 @@ extern u32 g_dwVehicleOtherModeLBlend;
 
 #if !TGR_BOSS_RALLY
 /**
+ * The render-mode flags applied when drawing a vehicle.
+ *
  * @ghidraAddress USA: 0x8028c304
  * @ghidraAddress Asia: 0x8028BE54
  * @ghidraAddress EUR: 0x8028ea64
@@ -261,6 +263,8 @@ extern s32 g_bPaintShopPreviewActive;
 extern u8 g_aVehicleHighlightTexture[];
 
 /**
+ * The texture of a vehicle's night-time highlights.
+ *
  * @ghidraAddress USA: 0x802a2170
  * @ghidraAddress Asia: 0x802A1CC0
  * @ghidraAddress EUR: 0x802a4930

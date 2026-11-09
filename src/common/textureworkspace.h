@@ -13,11 +13,13 @@ extern "C" {
 /** The shared workspace of decoded pixels. */
 typedef union {
     unsigned char decoded[TEXTURE_DECODE_WORKSPACE_BYTES]; /*!< The decoded pixels. */
-    /** The workspace as RGBA5551 pixels, with file pixels from RGBA5551_IMAGE_PIXEL_COUNT. */
-    unsigned short rgba5551[TEXTURE_DECODE_WORKSPACE_BYTES / sizeof(unsigned short)];
+    unsigned short rgba5551[TEXTURE_DECODE_WORKSPACE_BYTES / sizeof(unsigned short)]; /*!< The
+        workspace as RGBA5551 pixels, with file pixels from RGBA5551_IMAGE_PIXEL_COUNT. */
 } TextureDecodeWorkspace;
 
 /**
+ * The shared buffer used while decoding textures.
+ *
  * @ghidraAddress BRD3D: 0x11829870
  * @ghidraAddress BRGlide: 0x1186c988
  */

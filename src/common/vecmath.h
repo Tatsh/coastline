@@ -36,6 +36,8 @@ typedef struct {
 #endif
 
 /**
+ * The seed used by the game's pseudorandom number generator.
+ *
  * @ghidraAddress USA: 0x8028b790
  * @ghidraAddress Asia: 0x8028B2E0
  * @ghidraAddress EUR: 0x8028da40

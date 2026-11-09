@@ -30,6 +30,8 @@ extern "C" {
 #endif
 
 /**
+ * The routine that retrieves painted pixels of a texture entry and returns its size.
+ *
  * @ghidraAddress BRD3D: 0x118aa0bc
  */
 extern u8 *(*g_pfnGetTextureEntryPixelsWithPaint)(int nEntry, unsigned *pSize);

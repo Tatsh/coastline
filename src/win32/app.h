@@ -38,13 +38,16 @@ extern char g_szInstallDirectory[];
  */
 extern HINSTANCE g_hRallyMainInstance;
 
-/** @ghidraAddress BRGlide: 0x105bc734 */
+/** The previous application instance passed to RallyMain().
+ * @ghidraAddress BRGlide: 0x105bc734 */
 extern HINSTANCE g_hRallyMainPrevInstance;
 
-/** @ghidraAddress BRGlide: 0x105bc738 */
+/** The command line passed to RallyMain().
+ * @ghidraAddress BRGlide: 0x105bc738 */
 extern LPSTR g_pszRallyMainCmdLine;
 
-/** @ghidraAddress BRGlide: 0x105bc73c */
+/** The initial window display mode passed to RallyMain().
+ * @ghidraAddress BRGlide: 0x105bc73c */
 extern int g_nRallyMainCmdShow;
 
 /**

@@ -324,6 +324,8 @@ typedef struct {
 #define OS_VI_DITHER_FILTER_OFF 0x0080 /*!< Turn the dither filter off. */
 
 /**
+ * The low-resolution PAL video mode with anti-aliasing.
+ *
  * @ghidraAddress USA: 0x802a62f0
  * @ghidraAddress Asia: 0x802A5E40
  * @ghidraAddress EUR: 0x802a7bf0
@@ -332,11 +334,14 @@ typedef struct {
 extern OSViMode osViModePalLan1;
 
 #if TGR_REGION == TGR_REGION_EU
-/** @ghidraAddress EUR: 0x802a7ba0 */
+/** The high-resolution PAL video mode with anti-aliasing.
+ * @ghidraAddress EUR: 0x802a7ba0 */
 extern OSViMode osViModePalHaf1;
 #endif
 
 /**
+ * The low-resolution MPAL video mode with anti-aliasing.
+ *
  * @ghidraAddress USA: 0x802a6340
  * @ghidraAddress Asia: 0x802A5E90
  * @ghidraAddress EUR: 0x802a7c90
@@ -345,6 +350,8 @@ extern OSViMode osViModePalHaf1;
 extern OSViMode osViModeMpalLan1;
 
 /**
+ * The low-resolution NTSC video mode with anti-aliasing.
+ *
  * @ghidraAddress USA: 0x802a6390
  * @ghidraAddress Asia: 0x802A5EE0
  * @ghidraAddress EUR: 0x802a7e80

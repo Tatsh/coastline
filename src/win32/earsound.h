@@ -77,6 +77,8 @@ static_assert(offsetof(EarPlayParams, wUnknown7e) == offsetof(EarEventParams, un
 typedef WPARAM(WINAPI *EarMixEventProc)(EarPlayParams *pParams);
 
 /**
+ * The parameters of the current EAR playback request.
+ *
  * @ghidraAddress BRD3D: 0x10220c50
  * @ghidraAddress BRGlide: 0x1021c780
  */

@@ -18,8 +18,8 @@ extern "C" {
  */
 #if TGR_BOSS_RALLY
 typedef union VehicleReflectionTexture {
-    u8 *image;
-    unsigned entry;
+    u8 *image;      /*!< The reflection image pixels. */
+    unsigned entry; /*!< The texture entry of the reflection image. */
 } VehicleReflectionTexture;
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern VehicleReflectionTexture g_apVehicleReflectionTextures[4];
@@ -29,6 +29,8 @@ extern u8 *g_apVehicleReflectionTextures[4];
 #endif
 
 /**
+ * The palettes of the four vehicle reflection textures.
+ *
  * @ghidraAddress USA: 0x8028c318
  * @ghidraAddress Asia: 0x8028BE68
  * @ghidraAddress EUR: 0x8028ea78

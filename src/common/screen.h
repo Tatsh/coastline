@@ -40,6 +40,8 @@ extern s32 g_dwScreenScaleShift;
 extern s32 g_dwScreenWidth;
 
 /**
+ * The height of the frame in pixels.
+ *
  * @ghidraAddress USA: 0x8028aab4
  * @ghidraAddress Asia: 0x8028A604
  * @ghidraAddress EUR: 0x8028ccbc
@@ -62,6 +64,8 @@ extern s32 g_dwScreenHeight;
 extern ScreenCallback g_pfnCurrentScreen;
 
 /**
+ * The screen routine selected for the next frame.
+ *
  * @ghidraAddress USA: 0x8031b31c
  * @ghidraAddress Asia: 0x8031ADCC
  * @ghidraAddress EUR: 0x8031d81c
@@ -72,6 +76,8 @@ extern ScreenCallback g_pfnCurrentScreen;
 extern ScreenCallback g_pfnNextScreen;
 
 /**
+ * The secondary screen routine run after the current one, or NULL.
+ *
  * @ghidraAddress USA: 0x8031b320
  * @ghidraAddress Asia: 0x8031ADD0
  * @ghidraAddress EUR: 0x8031d820

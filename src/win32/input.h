@@ -114,6 +114,8 @@ public:
 };
 
 /**
+ * Whether the game window has focus and can receive input.
+ *
  * @ghidraAddress BRD3D: 0x10aa33e0
  * @ghidraAddress BRGlide: 0x10ac6740
  */
@@ -418,6 +420,8 @@ extern InputControlName g_aJoystickButtonNamesB[JOYSTICK_NAME_COUNT_B];
 #define KEYBOARD_CONTROL_NAME_COUNT 120
 
 /**
+ * The labels of the keyboard controls available for binding.
+ *
  * @ghidraAddress BRD3D: 0x100b4338
  * @ghidraAddress BRGlide: 0x100b3b40
  */

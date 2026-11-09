@@ -37,6 +37,8 @@ typedef struct {
 extern TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
 
 /**
+ * The number of timing markers on each bar of each frame.
+ *
  * @ghidraAddress USA: 0x803519b0
  * @ghidraAddress Asia: 0x80351460
  * @ghidraAddress EUR: 0x80353eb0
@@ -115,6 +117,8 @@ extern s32 g_dwTimingBarScaleHold;
 extern u32 g_dwTimingBarsRenderMode0;
 
 /**
+ * The second half of the render mode the timing meter leaves set.
+ *
  * @ghidraAddress USA: 0x8028a894
  * @ghidraAddress Asia: 0x8028A3E4
  * @ghidraAddress EUR: 0x8028ca98

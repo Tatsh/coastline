@@ -18,6 +18,8 @@ extern "C" {
 #endif
 
 /**
+ * The selected texture quality level for the Boss Rally renderer.
+ *
  * @ghidraAddress BRD3D: 0x100b8c90
  * @ghidraAddress BRGlide: 0x100b8498
  */

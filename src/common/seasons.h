@@ -29,6 +29,8 @@ typedef struct {
 } Season;
 
 /**
+ * The race and track settings of each championship season.
+ *
  * @ghidraAddress USA: 0x8028b944
  * @ghidraAddress Asia: 0x8028B494
  * @ghidraAddress EUR: 0x8028dbf4

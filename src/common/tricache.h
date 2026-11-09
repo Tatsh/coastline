@@ -32,6 +32,8 @@ typedef struct TrackTriangle {
 } TrackTriangle;
 
 /**
+ * The track triangles stored in each slot of the collision cache.
+ *
  * @ghidraAddress USA: 0x80379f80
  * @ghidraAddress Asia: 0x80379A30
  * @ghidraAddress EUR: 0x8037c480
