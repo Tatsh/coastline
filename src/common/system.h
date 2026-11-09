@@ -62,6 +62,7 @@ extern u16 g_aDepthBuffer[];
 #define N64_ACTIVE_DEPTH_BUFFER                                                                    \
     ((g_dwScreenScaleShift && osMemSize > 0x400000) ? (u16 *)0x80400000 : g_aDepthBuffer)
 #else
+/** Use the regular depth buffer when Expansion Pak rendering is unavailable. */
 #define N64_ACTIVE_DEPTH_BUFFER g_aDepthBuffer
 #endif
 

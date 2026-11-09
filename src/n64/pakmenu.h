@@ -90,9 +90,10 @@ extern Sprite g_texButtonB;
 extern Sprite g_texButtonBSmall;
 
 #if TGR_REGION == TGR_REGION_JP
-/* The Japanese table has 83 more characters. */
+/** The number of characters in the Japanese Controller Pak note name map. */
 #define DECAL_CHAR_COUNT 149
 #else
+/** The number of characters in a non-Japanese Controller Pak note name map. */
 #define DECAL_CHAR_COUNT 66
 #endif
 

@@ -6,6 +6,7 @@
  */
 
 #ifndef DIRECTINPUT_VERSION
+/** Select the DirectInput 5 declarations used by Boss Rally. */
 #define DIRECTINPUT_VERSION 0x0500
 #endif
 #include <windows.h>

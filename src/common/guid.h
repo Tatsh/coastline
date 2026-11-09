@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #ifndef GUID_DEFINED
+/** Prevent a second GUID definition when Windows headers are also included. */
 #define GUID_DEFINED
 /** A globally unique identifier. */
 typedef struct _GUID {

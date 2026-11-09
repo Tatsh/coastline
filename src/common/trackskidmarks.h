@@ -20,8 +20,10 @@ typedef struct SdlSkidMarkState {
 
 /** @return Skid trail endpoints for the active engine runtime. */
 SdlSkidMarkState *GetSdlSkidMarkState(void);
+/** @cond */
 #define g_anSkidMarkHead (GetSdlSkidMarkState()->heads)
 #define g_anSkidMarkTail (GetSdlSkidMarkState()->tails)
+/** @endcond */
 #else
 /**
  * The first skid mark of each track of skid marks.

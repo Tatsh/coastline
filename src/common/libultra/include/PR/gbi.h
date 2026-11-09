@@ -176,8 +176,9 @@ typedef union {
 #define G_SETZIMG 0xFE           /*!< Set the depth image. */
 #define G_RDPFULLSYNC 0xE9       /*!< Wait for the RDP to finish and raise its interrupt. */
 
-/* The drawing commands with integer coordinates of the Windows port. */
+/** Fill a rectangle with integer coordinates in the Windows renderer. */
 #define G_FILLRECT_INT_COORDS 0xE1
+/** Set a scissor rectangle with integer coordinates in the Windows renderer. */
 #define G_SETSCISSOR_INT_COORDS 0xE2
 
 /* The parameters of gSPMatrix(). */

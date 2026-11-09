@@ -821,6 +821,7 @@ void TransformVertexToScreen(
 /** The number of entries of g_aGbiVertexCache and g_apVertexPool. */
 #define GBI_VERTEX_CACHE_SIZE 128
 
+/** The number of vertices available while clipping display-list geometry. */
 #define GBI_CLIP_VERTEX_POOL_SIZE 64
 
 /**

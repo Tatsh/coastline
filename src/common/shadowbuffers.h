@@ -14,8 +14,10 @@ extern "C" {
 #if TGR_BOSS_RALLY
 #define SHADOW_COMMANDS 10000
 #else
+/** The number of shadow commands per frame buffer on Nintendo 64. */
 #define SHADOW_COMMANDS 500
 #endif
+/** The number of shadow vertices per frame buffer. */
 #define SHADOW_VERTICES 1000
 
 /**

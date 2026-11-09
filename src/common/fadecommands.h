@@ -34,6 +34,9 @@ extern "C" {
 #endif
 
 #else
+/** Set primitive-colour blending for a fade's second cycle.
+ * @param secondCycle The second-cycle colour and alpha source.
+ */
 #define WriteFadeCombineMode(secondCycle)                                                          \
     gDPSetCombineLERP(gDisplayListPtr++,                                                           \
                       0,                                                                           \

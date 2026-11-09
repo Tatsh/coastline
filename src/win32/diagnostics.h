@@ -20,8 +20,11 @@ void WriteApplicationDiagnostic(const char *message);
 #endif
 
 #else
+/** Omit crash-handler installation when patches are disabled. */
 #define InitializeApplicationDiagnostics()
+/** Omit crash-handler shutdown when patches are disabled. */
 #define ShutdownApplicationDiagnostics()
+/** Omit diagnostic output when patches are disabled. */
 #define WriteApplicationDiagnostic(message)
 #endif /* ENABLE_PATCHES */
 

@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-/* Load the console particle-image commands retained by the exhaust path. */
+/** Load the particle image and configure its rendering tile. */
 #define LoadParticleTextureImage()                                                                 \
     gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aParticleTexture);        \
     gDPSetTile(gDisplayListPtr++,                                                                  \
@@ -94,7 +94,7 @@ static inline void ConfigureExhaustParticleTexture(void) {
 }
 
 #else
-/* Load the particle texture to be drawn as rectangles of the primitive colour. */
+/** Configure the particle texture for primitive-colour rectangles. */
 #define ConfigureParticleTexture()                                                                 \
     gDPPipeSync(gDisplayListPtr++);                                                                \
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);                                              \
@@ -118,11 +118,12 @@ static inline void ConfigureExhaustParticleTexture(void) {
                       PRIMITIVE,                                                                   \
                       0);                                                                          \
     LoadParticleTextureImage()
+/** Reuse the particle texture setup for exhaust particles. */
 #define ConfigureExhaustParticleTexture() ConfigureParticleTexture()
 
 #endif /* TGR_BOSS_RALLY */
 
-/* Put back the modes the rest of the frame draws with. */
+/** Restore the texture and depth modes used after particle rendering. */
 #define RestoreParticleModes()                                                                     \
     gDPPipeSync(gDisplayListPtr++);                                                                \
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);                                             \

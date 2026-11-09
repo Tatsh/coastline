@@ -85,6 +85,7 @@ extern "C" {
 #if TGR_BOSS_RALLY
 #define CONT_ERRNO errnum
 #else
+/** Select the Nintendo 64 controller channel-error member. */
 #define CONT_ERRNO errno
 #endif
 

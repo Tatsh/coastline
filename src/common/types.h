@@ -82,6 +82,7 @@ typedef double f64; /*!< A 64-bit floating-point number. */
 #if TGR_BOSS_RALLY
 #define BOSS_RALLY_INLINE inline
 #else
+/** Compile a shared helper as a separate routine outside the Boss Rally target. */
 #define BOSS_RALLY_INLINE
 #endif
 
