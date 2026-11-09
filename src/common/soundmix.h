@@ -7,8 +7,8 @@
 extern "C" {
 #endif
 
-#define SAMPLE_RATE 11000.0f
-#define STEP_ONE 4294967296.0
+#define SAMPLE_RATE 11000.0f  /*!< The mixing rate, in samples per second. */
+#define STEP_ONE 4294967296.0 /*!< One unit in the 32.32 sample-position format. */
 
 #if TGR_BOSS_RALLY
 /** The precision used for Boss Rally sound-mixing calculations. */

@@ -78,10 +78,12 @@ typedef struct {
 /** @return Reflection storage for the active SDL texture collection. */
 SdlVehicleReflections *GetSdlVehicleReflections(void);
 
+/** @cond */
 #define g_abDaySkyTexture (GetSdlVehicleReflections()->daySky)
 #define g_abNightSkyTexture (GetSdlVehicleReflections()->nightSky)
 #define g_apVehicleReflectionTextures (GetSdlVehicleReflections()->textures)
 #define g_abVehicleReflectionTexSelect (GetSdlVehicleReflections()->selection)
+/** @endcond */
 #endif
 
 #ifdef __cplusplus

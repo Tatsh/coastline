@@ -8,6 +8,7 @@ extern "C" {
 
 /** The number of sound channels. */
 #define SOUND_CHANNEL_COUNT 15
+/** The number of sound sample rows, including variant rows. */
 #define SOUND_SAMPLE_COUNT 26
 
 struct SoundBufferNode;
@@ -33,12 +34,16 @@ typedef struct {
 extern SoundSample g_aSoundChannelBuffers[SOUND_SAMPLE_COUNT];
 
 /**
+ * Sound buffers loaded from h.wav variants.
+ *
  * @ghidraAddress BRD3D: 0x100b64b0
  * @ghidraAddress BRGlide: 0x100b5cb8
  */
 #define g_SfxWaveVariantTable (g_aSoundChannelBuffers[24].channelBuffers)
 
 /**
+ * Sound buffers loaded from r.wav variants.
+ *
  * @ghidraAddress BRD3D: 0x100b64f8
  * @ghidraAddress BRGlide: 0x100b5d00
  */

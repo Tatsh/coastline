@@ -106,8 +106,11 @@ typedef struct {
 #define MODEL_TEXTURE_FORMAT(texture) (((texture)->textureFlags >> 24) & 0xfu)
 #define MODEL_TEXTURE_SIZE(texture) ((texture)->textureFlags & 0x3ffffu)
 #else
+/** Whether a model texture advances through animation frames. */
 #define MODEL_TEXTURE_ANIMATED(texture) ((texture)->animated)
+/** The texel format of a model texture. */
 #define MODEL_TEXTURE_FORMAT(texture) ((texture)->format)
+/** The size of a model texture, in bytes. */
 #define MODEL_TEXTURE_SIZE(texture) ((texture)->size)
 #endif
 
@@ -982,6 +985,7 @@ void UnblankDisplay(void);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 #if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
+/** Blank the video display. */
 #define BLANK_SCREEN() osViBlack(TRUE)
 #else
 #define BLANK_SCREEN() BlankDisplay()

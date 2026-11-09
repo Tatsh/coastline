@@ -15,18 +15,24 @@ typedef struct {
 } SoundBankRow;
 
 /**
+ * Sound-channel mappings and frequency scaling for each sample row.
+ *
  * @ghidraAddress BRD3D: 0x100b6540
  * @ghidraAddress BRGlide: 0x100b5d48
  */
 extern SoundBankRow g_SoundBankIndexTableA[SOUND_SAMPLE_COUNT];
 
 /**
+ * Sound-channel mappings for the h.wav sample variants.
+ *
  * @ghidraAddress BRD3D: 0x100b6c00
  * @ghidraAddress BRGlide: 0x100b6408
  */
 #define g_SoundBankIndexTableB (g_SoundBankIndexTableA[24])
 
 /**
+ * Sound-channel mappings for the r.wav sample variants.
+ *
  * @ghidraAddress BRD3D: 0x100b6c48
  * @ghidraAddress BRGlide: 0x100b6450
  */

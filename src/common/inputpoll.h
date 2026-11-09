@@ -139,10 +139,12 @@ typedef struct {
 /** @return Action storage for the active SDL input configuration. */
 SdlRaceInputState *GetSdlRaceInputState(void);
 
+/** @cond */
 #define g_dwInputButtonMask (GetSdlRaceInputState()->buttonMask)
 #define g_bNetReadyToStartSent (GetSdlRaceInputState()->readyToStartSent)
 #define g_bNetGamePaused (GetSdlRaceInputState()->paused)
 #define g_bRespawnRequested (GetSdlRaceInputState()->respawnRequested)
+/** @endcond */
 
 /**
  * Read the second controller of the SDL game as the console reads a pad, for the second player of

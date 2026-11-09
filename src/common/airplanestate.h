@@ -24,9 +24,12 @@ typedef struct {
     Vec3f nextDirection;     /*!< The direction of the next segment. */
 } AirplaneState;
 
-/** @ghidraAddress BRD3D: 0x10680618 */
+/** Aeroplane flight state for the current race.
+ * @ghidraAddress BRD3D: 0x10680618
+ */
 extern AirplaneState g_AirplaneState;
 
+/** @cond */
 /** @ghidraAddress BRD3D: 0x10680618 */
 #define g_dwAirplaneInstance (g_AirplaneState.instance)
 /** @ghidraAddress BRD3D: 0x1068061c */
@@ -55,6 +58,7 @@ extern AirplaneState g_AirplaneState;
 #define g_vAirplaneDir (g_AirplaneState.direction)
 /** @ghidraAddress BRD3D: 0x1068065c */
 #define g_vAirplaneDirNext (g_AirplaneState.nextDirection)
+/** @endcond */
 
 #ifdef __cplusplus
 }
