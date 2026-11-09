@@ -52,6 +52,7 @@ typedef struct {
     __OSViScale y;     /*!< The vertical scale. */
 } __OSViContext;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x802a61c0
  * @ghidraAddress Asia: 0x802A5D10
@@ -141,6 +142,7 @@ extern OSIoMesg viCounterMsg;
  * @ghidraAddress JPN: 0x80381250
  */
 extern u16 viMgrRetrace;
+/** @endcond */
 
 /**
  * @ghidraAddress USA: 0x80268580

@@ -23,6 +23,7 @@ extern "C" {
 /** Round d half away from zero to an int. */
 #define ROUND(d) (int)(((d) >= 0.0) ? ((d) + 0.5) : ((d) - 0.5))
 
+/** @cond */
 /**
  * The first quarter of a sine wave in s1.15 fixed point.
  *
@@ -124,6 +125,7 @@ extern const float g_fCosfZero;
  * @ghidraAddress JPN: 0x802ac1b0
  */
 extern const float __libm_qnan_f;
+/** @endcond */
 
 #ifdef __cplusplus
 }

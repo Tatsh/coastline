@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x802a62e0
  * @ghidraAddress Asia: 0x802A5E30
@@ -115,6 +116,7 @@ extern OSPiHandle LeoDiskHandle;
  * @ghidraAddress JPN: 0x803825c4
  */
 extern OSPiHandle *__osDiskHandle;
+/** @endcond */
 
 /**
  * @ghidraAddress USA: 0x8026c5c0
