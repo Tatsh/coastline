@@ -153,6 +153,8 @@ extern f32 g_fStartLightsDrop;
 extern s32 g_dwAirplaneInstance;
 
 /**
+ * The scene instance whose contact starts the aeroplane flight.
+ *
  * @ghidraAddress USA: 0x8026ff68
  * @ghidraAddress Asia: 0x8026FAB8
  * @ghidraAddress EUR: 0x80271f38
@@ -163,6 +165,8 @@ extern s32 g_dwAirplaneInstance;
 extern s32 g_dwAirplaneTrigger;
 
 /**
+ * The lap on which the aeroplane trigger starts the flight.
+ *
  * @ghidraAddress USA: 0x8026ff6c
  * @ghidraAddress Asia: 0x8026FABC
  * @ghidraAddress EUR: 0x80271f3c
@@ -197,6 +201,8 @@ extern s32 g_bAirplaneFlying;
 extern s32 g_dwAirplaneNode;
 
 /**
+ * The number of nodes in the aeroplane flight path.
+ *
  * @ghidraAddress USA: 0x8026ff78
  * @ghidraAddress Asia: 0x8026FAC8
  * @ghidraAddress EUR: 0x80271f48
@@ -231,6 +237,8 @@ extern f32 g_fAirplaneScale;
 extern Vec3f *g_pAirplanePathLeft;
 
 /**
+ * The right edge of the aeroplane flight path.
+ *
  * @ghidraAddress USA: 0x8026ff84
  * @ghidraAddress Asia: 0x8026FAD4
  * @ghidraAddress EUR: 0x80271f54
@@ -253,6 +261,8 @@ extern Vec3f *g_pAirplanePathRight;
 extern f32 g_fAirplaneDistance;
 
 /**
+ * The length of the current aeroplane flight segment.
+ *
  * @ghidraAddress USA: 0x8026ff8c
  * @ghidraAddress Asia: 0x8026FADC
  * @ghidraAddress EUR: 0x80271f5c
@@ -276,6 +286,8 @@ extern f32 g_fAirplaneSegmentLength;
 extern Vec3f g_vAirplaneDirPrev;
 
 /**
+ * The direction of the current aeroplane flight segment.
+ *
  * @ghidraAddress USA: 0x8026ff9c
  * @ghidraAddress Asia: 0x8026FAEC
  * @ghidraAddress EUR: 0x80271f6c
@@ -286,6 +298,8 @@ extern Vec3f g_vAirplaneDirPrev;
 extern Vec3f g_vAirplaneDir;
 
 /**
+ * The direction of the next aeroplane flight segment.
+ *
  * @ghidraAddress USA: 0x8026ffa8
  * @ghidraAddress Asia: 0x8026FAF8
  * @ghidraAddress EUR: 0x80271f78
@@ -401,6 +415,8 @@ extern u8 g_abRacePositionPoints[];
 #endif
 
 /**
+ * The number of lines in the season result message.
+ *
  * @ghidraAddress USA: 0x802707c0
  * @ghidraAddress Asia: 0x80270310
  * @ghidraAddress EUR: 0x80272790
@@ -532,6 +548,8 @@ extern s16 g_wRaceScreenLoopExited;
 extern s32 g_adwSavedResultPositions[SAVED_RESULTS];
 
 /**
+ * The race time of each saved local result, in seconds.
+ *
  * @ghidraAddress USA: 0x80315d68
  * @ghidraAddress Asia: 0x80315828
  * @ghidraAddress EUR: 0x80317a58
@@ -542,6 +560,8 @@ extern s32 g_adwSavedResultPositions[SAVED_RESULTS];
 extern f32 g_afSavedResultTimes[SAVED_RESULTS];
 
 /**
+ * The best lap time of each saved local result, in seconds.
+ *
  * @ghidraAddress USA: 0x80315d70
  * @ghidraAddress Asia: 0x80315830
  * @ghidraAddress EUR: 0x80317a60
@@ -552,6 +572,8 @@ extern f32 g_afSavedResultTimes[SAVED_RESULTS];
 extern f32 g_afSavedResultBestLapTimes[SAVED_RESULTS];
 
 /**
+ * The time of each completed lap in each saved local result, in seconds.
+ *
  * @ghidraAddress USA: 0x80315d78
  * @ghidraAddress Asia: 0x80315838
  * @ghidraAddress EUR: 0x80317a68
@@ -566,6 +588,8 @@ extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][5];
 #endif
 
 /**
+ * The best lap number of each saved local result, counted from 0.
+ *
  * @ghidraAddress USA: 0x80315da0
  * @ghidraAddress Asia: 0x80315860
  * @ghidraAddress EUR: 0x80317a90
@@ -576,6 +600,8 @@ extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][5];
 extern s32 g_adwSavedResultBestLaps[SAVED_RESULTS];
 
 /**
+ * The number of completed laps in each saved local result.
+ *
  * @ghidraAddress USA: 0x80315da8
  * @ghidraAddress Asia: 0x80315868
  * @ghidraAddress EUR: 0x80317a98
@@ -606,6 +632,8 @@ extern const char *g_apszSeasonResultMsgLines[];
 extern char g_szFormatBuffer[0x20];
 
 /**
+ * The scene instance index of each waterfall in the loaded track.
+ *
  * @ghidraAddress USA: 0x80315df8
  * @ghidraAddress Asia: 0x803158B8
  * @ghidraAddress EUR: 0x80317ae8
@@ -638,6 +666,8 @@ extern s32 g_dwScreenClearFrames;
 extern f32 g_fRaceCaptionTimer;
 
 /**
+ * The credit caption currently shown during the attract race.
+ *
  * @ghidraAddress USA: 0x80315e6c
  * @ghidraAddress Asia: 0x8031592C
  * @ghidraAddress EUR: 0x80317b5c

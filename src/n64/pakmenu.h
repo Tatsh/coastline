@@ -58,6 +58,8 @@ enum {
 extern Sprite g_texBackground;
 
 /**
+ * The logo sprite shared by the Controller Pak and other menu screens.
+ *
  * @ghidraAddress USA: 0x8028cb70
  * @ghidraAddress Asia: 0x8028C6C0
  * @ghidraAddress EUR: 0x8028f2d0
@@ -66,6 +68,8 @@ extern Sprite g_texBackground;
 extern Sprite g_texLogo;
 
 /**
+ * The A-button prompt sprite shared by menu screens.
+ *
  * @ghidraAddress USA: 0x8028d0b0
  * @ghidraAddress Asia: 0x8028CC00
  * @ghidraAddress EUR: 0x8028f810
@@ -74,6 +78,8 @@ extern Sprite g_texLogo;
 extern Sprite g_texButtonA;
 
 /**
+ * The B-button prompt sprite shared by menu screens.
+ *
  * @ghidraAddress USA: 0x8028d0e0
  * @ghidraAddress Asia: 0x8028CC30
  * @ghidraAddress EUR: 0x8028f840
@@ -81,6 +87,7 @@ extern Sprite g_texButtonA;
  */
 extern Sprite g_texButtonB;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028dd20
  * @ghidraAddress Asia: 0x8028D870
@@ -88,6 +95,7 @@ extern Sprite g_texButtonB;
  * @ghidraAddress JPN: 0x8028ff10
  */
 extern Sprite g_texButtonBSmall;
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_JP
 /** The number of characters in the Japanese Controller Pak note name map. */
@@ -112,6 +120,7 @@ typedef struct DecalCharMap {
  */
 extern const DecalCharMap g_szDecalCharMap;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028dd94
  * @ghidraAddress Asia: 0x8028D8E4
@@ -119,6 +128,7 @@ extern const DecalCharMap g_szDecalCharMap;
  * @ghidraAddress JPN: 0x8028ffd8
  */
 extern u8 g_bPakMenuInitialized;
+/** @endcond */
 
 /**
  * The notes the menu found empty, a bit for each.
@@ -130,6 +140,7 @@ extern u8 g_bPakMenuInitialized;
  */
 extern u16 g_wPakEmptySlotMask;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8036a060
  * @ghidraAddress Asia: 0x80369B10
@@ -169,6 +180,7 @@ extern u8 g_bPakLastValidNote;
  * @ghidraAddress JPN: 0x8036b1d4
  */
 extern s32 g_dwPakNoteCount;
+/** @endcond */
 
 /**
  * The free space of the Pak in bytes.
@@ -190,6 +202,7 @@ extern s32 g_dwPakFreeBlocks;
  */
 extern OSPfsState g_aPakDirEntries[PAK_NOTES];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8036a270
  * @ghidraAddress Asia: 0x80369D20
@@ -205,6 +218,7 @@ extern u8 g_bPakMenuState;
  * @ghidraAddress JPN: 0x8036b3e8
  */
 extern s32 g_nPakFilesUsed;
+/** @endcond */
 
 /**
  * The notes InitPakAndEnumerateFiles() reads.
