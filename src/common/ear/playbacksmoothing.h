@@ -18,12 +18,14 @@ void __stdcall ConfigurePlaybackSmoothingPasses(uint32_t reduced);
  * ConfigurePlaybackSmoothingPasses() sets one or two.
  * @ghidraAddress EAR: 0x100360b8
  */
+/** @cond */
 extern uint16_t g_wPlaybackSmoothingPassCount;
 /**
  * Nonzero when an applied gain/pan smoothing update advances directly beyond the final pass.
  * @ghidraAddress EAR: 0x1003b7b8
  */
 extern int g_earPlaybackSmoothingEnabled;
+/** @endcond */
 
 #ifdef __cplusplus
 }

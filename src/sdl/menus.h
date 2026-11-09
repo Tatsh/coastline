@@ -268,18 +268,18 @@ public:
     }
 
 private:
-    // The screens of the console, each the routine of the same name.
+    /** The console screens, each processed by its corresponding routine. */
     enum class Screen {
-        MainMenu,
-        PlayerCountSelect,
-        TrackMenu,
-        WeatherSelect,
-        CarSelect,
-        DataSaveLoadMenu,
-        OptionsMenu,
-        RaceResultsScreen,
-        PaintShopScreen,
-        ControllerConfigScreen,
+        MainMenu,              /*!< The main menu. */
+        PlayerCountSelect,     /*!< Player-count selection. */
+        TrackMenu,             /*!< Track selection. */
+        WeatherSelect,         /*!< Weather selection. */
+        CarSelect,             /*!< Car selection. */
+        DataSaveLoadMenu,      /*!< Controller Pak save and load. */
+        OptionsMenu,           /*!< Game options. */
+        RaceResultsScreen,     /*!< Race results. */
+        PaintShopScreen,       /*!< Car paint shop. */
+        ControllerConfigScreen /*!< Controller configuration. */
     };
 
     explicit Menus(std::unique_ptr<MenuScreen> screen);
@@ -380,8 +380,12 @@ private:
     void DrawControllerLayoutDiagram(SceneRenderer &renderer, int item) const;
     void
     ProcessControllerConfigScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
-    // The screens that open the save and load menu, g_bSaveLoadEntryPoint of the console.
-    enum class SaveLoadEntry { MainMenu, Season, TimeAttack };
+    /** The entry point that opens the console save and load menu. */
+    enum class SaveLoadEntry {
+        MainMenu,   /*!< Opened from the main menu. */
+        Season,     /*!< Opened from championship progress. */
+        TimeAttack, /*!< Opened from time attack. */
+    };
     void StartDataSaveLoadMenu(SaveLoadEntry entry);
     void DrawShortMessage(int boxX, int boxWidth, int textX, std::string_view text);
     void DrawSaveLoadChoices();

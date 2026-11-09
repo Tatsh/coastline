@@ -117,20 +117,22 @@ public:
     Adjustment AdjustAndSave(std::size_t index, int direction, const std::filesystem::path &path);
 
 private:
+    /** A stored value and its label in an options menu. */
     struct Choice {
-        std::string value;
-        std::string label;
-        int height = 0;
+        std::string value; /*!< The value written to the INI file. */
+        std::string label; /*!< The label displayed in the menu. */
+        int height = 0;    /*!< The menu row height override. */
     };
+    /** An option backed by a configuration key and a list of choices. */
     struct Option {
-        std::string label;
-        std::string section;
-        std::string key;
-        std::vector<Choice> choices;
-        std::size_t fallback = 0;
-        bool numeric = false;
-        bool boolean = false;
-        bool restart = true;
+        std::string label;           /*!< The option label. */
+        std::string section;         /*!< The INI section. */
+        std::string key;             /*!< The INI key. */
+        std::vector<Choice> choices; /*!< The available values. */
+        std::size_t fallback = 0;    /*!< The choice used for invalid values. */
+        bool numeric = false;        /*!< Whether the value is an integer. */
+        bool boolean = false;        /*!< Whether the value is a boolean. */
+        bool restart = true;         /*!< Whether applying the option restarts the session. */
     };
     std::size_t Selected(const Option &option) const;
     const GameConfig &ConfigFor(const Option &option) const;

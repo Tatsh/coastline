@@ -27,22 +27,22 @@ extern "C" {
 
 /** Vehicle pose and interpolated controls before compact frame encoding. */
 struct KeyframeState {
-    Quaternion orientation;
-    Vec3f position;
-    Vec3f linearVelocity;
-    Vec3f angularVelocity;
-    float fBodyRollAngle;
-    float fSteerAngle;
-    float afWheelAngle[4];
-    float afWheelContact[4];
-    float afWheelSurface[4];
-    float fGearControl;
-    float fBraking;
-    float fReverse;
-    float fProgress;
-    float fEngineRpm;
-    float afLight[2];
-    float afEffectFlags[6];
+    Quaternion orientation;  /*!< The car body's orientation. */
+    Vec3f position;          /*!< The car body's position. */
+    Vec3f linearVelocity;    /*!< The car body's linear velocity. */
+    Vec3f angularVelocity;   /*!< The car body's angular velocity. */
+    float fBodyRollAngle;    /*!< The car body's roll angle. */
+    float fSteerAngle;       /*!< The steering angle. */
+    float afWheelAngle[4];   /*!< The rotation angle of each wheel. */
+    float afWheelContact[4]; /*!< The contact value of each wheel. */
+    float afWheelSurface[4]; /*!< The surface value under each wheel. */
+    float fGearControl;      /*!< The gear-control input. */
+    float fBraking;          /*!< The brake input. */
+    float fReverse;          /*!< The reverse-gear input. */
+    float fProgress;         /*!< The progress along the track. */
+    float fEngineRpm;        /*!< The engine speed in revolutions per minute. */
+    float afLight[2];        /*!< The car's two light values. */
+    float afEffectFlags[6];  /*!< The recorded visual-effect flags. */
 };
 
 /**

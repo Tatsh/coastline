@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+/** Initialise a race and its loaded track and vehicles. */
 void InitRace(void);
 
 #ifdef __cplusplus

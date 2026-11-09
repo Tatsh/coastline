@@ -8,9 +8,10 @@
 extern "C" {
 #endif
 
+/** A sound-bank row that maps game channels to samples. */
 typedef struct {
-    int32_t anChannels[SOUND_CHANNEL_COUNT];
-    double dFrequencyScale;
+    int32_t anChannels[SOUND_CHANNEL_COUNT]; /*!< The sample index of each sound channel. */
+    double dFrequencyScale;                  /*!< The frequency multiplier for this row. */
 } SoundBankRow;
 
 /**

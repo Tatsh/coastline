@@ -2249,6 +2249,7 @@ public:
     static int OnContinue(MenuActionWidget *pItem);
 };
 
+/** Callbacks for selecting a track, weather, and lap count. */
 class RaceSetupUI {
 public:
     /**
@@ -2312,6 +2313,7 @@ public:
     static int OnBackToTimeAttack(MenuActionWidget *pItem);
 };
 
+/** Callbacks for confirming an exit from the championship results. */
 class ResultsSummaryExitSeasonConfirmUI {
 public:
     /**
@@ -2327,6 +2329,7 @@ public:
     static int OnNo(MenuWidget *pWidget);
 };
 
+/** Callbacks for selecting and naming a championship save slot. */
 class SaveSeasonUI {
 public:
     /**
@@ -2412,6 +2415,7 @@ public:
     static int OnBackToRaceResultsTotals(MenuActionWidget *pItem);
 };
 
+/** Callbacks for the time attack save menu. */
 class SaveTimeAttackMenuUI {
 public:
     /**
@@ -2441,6 +2445,7 @@ public:
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Callbacks for the time attack save-slot screen. */
 class SaveTimeAttackUI {
 public:
     /**
@@ -2450,6 +2455,7 @@ public:
     static int UpdateSlotSelection(MenuWidget *pWidget);
 };
 
+/** Callbacks for the championship completion screen. */
 class SeasonCongratsUI {
 public:
     /**
@@ -2471,6 +2477,7 @@ public:
     static int UpdateSecondaryBannerImage(MenuWidget *pWidget);
 };
 
+/** Callbacks for the selected championship file's labels. */
 class SeasonFileUI {
 public:
     /**
@@ -2486,6 +2493,7 @@ public:
     static int UpdateRoundLabel(MenuWidget *pWidget);
 };
 
+/** Callbacks for championship progress and actions. */
 class SeasonProgressInfoUI {
 public:
     /**
@@ -2535,6 +2543,7 @@ public:
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Callbacks for championship standings and totals. */
 class SeasonUI {
 public:
     /**
@@ -2572,6 +2581,7 @@ public:
     static int UpdateTotalPointsLabel(MenuWidget *pWidget);
 };
 
+/** Callbacks for the time attack menu. */
 class TimeAttackMenuUI {
 public:
     /**
@@ -2581,6 +2591,7 @@ public:
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Callbacks for the selected time attack record. */
 class TimeAttackUI {
 public:
     /**
@@ -2604,6 +2615,7 @@ public:
     static int UpdateBestLapLabel(MenuWidget *pWidget);
 };
 
+/** Callbacks for the video options screen. */
 class VideoOptionsUI {
 public:
     /**
@@ -2951,9 +2963,10 @@ int BuildD3DDeviceSelectUI(MenuScreen *pScreen);
  */
 int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont);
 
+/** A keyboard configuration row and its label resource. */
 struct KeyConfigEntry {
-    unsigned nStringId;
-    int nControl;
+    unsigned nStringId; /*!< The label resource identifier. */
+    int nControl;       /*!< The control being configured. */
 };
 
 /**
@@ -3208,45 +3221,59 @@ public:
      */
     virtual bool RunFrame();
 
+    /** Set the callback invoked before panel widgets run. */
     void SetBeforeWidgetsCallback(int (*callback)(void)) {
         pfnBeforeWidgets = callback;
     }
+    /** Set the callback invoked after panel widgets run. */
     void SetAfterWidgetsCallback(int (*callback)(void)) {
         pfnAfterWidgets = callback;
     }
+    /** Replace the panel flags. */
     int SetFlags(int value) {
         return nFlags = value;
     }
+    /** @return The number of widgets in the panel. */
     unsigned short GetWidgetCount() const {
         return wWidgetCount;
     }
+    /** Replace the number of widgets in the panel. */
     unsigned short SetWidgetCount(unsigned short value) {
         return wWidgetCount = value;
     }
+    /** @return The widget at @p index. */
     MenuWidget *GetWidget(int index) const {
         return apWidgets[index];
     }
+    /** Replace the widget at @p index. */
     MenuWidget *SetWidget(int index, MenuWidget *widget) {
         return apWidgets[index] = widget;
     }
+    /** @return The panel's horizontal position. */
     float GetX() const {
         return fX;
     }
+    /** Set the panel's horizontal position. */
     float SetX(float value) {
         return fX = value;
     }
+    /** @return The panel's vertical position. */
     float GetY() const {
         return fY;
     }
+    /** Set the panel's vertical position. */
     float SetY(float value) {
         return fY = value;
     }
+    /** Associate the panel with @p screen. */
     MenuScreen *SetScreen(MenuScreen *screen) {
         return pScreen = screen;
     }
+    /** @return The number of navigable widgets. */
     unsigned short GetNavigationCount() const {
         return wNavigationCount;
     }
+    /** Replace the number of navigable widgets. */
     unsigned short SetNavigationCount(unsigned short value) {
         return wNavigationCount = value;
     }
@@ -3347,54 +3374,71 @@ public:
      */
     virtual HRESULT ClearBackBuffer();
 
+    /** @return The callback that builds the screen. */
     auto GetBuildCallback() const {
         return pfnBuildMenu;
     }
+    /** Set the callback that builds the screen. */
     void SetBuildCallback(int (*callback)(MenuScreen *)) {
         pfnBuildMenu = callback;
     }
+    /** @return Whether the screen has been built. */
     bool IsBuilt() const {
         return bBuilt != 0;
     }
+    /** Set whether the screen has been built. */
     void SetBuilt(bool value) {
         bBuilt = value;
     }
+    /** @return The number of panels in the screen. */
     unsigned short GetPanelCount() const {
         return wPanelCount;
     }
+    /** Replace the number of panels in the screen. */
     unsigned short SetPanelCount(unsigned short value) {
         return wPanelCount = value;
     }
+    /** Set the index of the current panel. */
     unsigned short SetCurrentPanelIndex(unsigned short value) {
         return wCurrentPanel = value;
     }
+    /** @return The panel at @p index. */
     MenuPanel *GetPanel(int index) const {
         return apPanels[index];
     }
+    /** Replace the panel at @p index. */
     MenuPanel *SetPanel(int index, MenuPanel *panel) {
         return apPanels[index] = panel;
     }
+    /** @return The current panel. */
     MenuPanel *GetCurrentPanel() const {
         return pCurrentPanel;
     }
+    /** @return Whether the screen is running. */
     bool IsRunning() const {
         return bRunning != 0;
     }
+    /** Set whether the screen is running. */
     void SetRunning(bool value) {
         bRunning = value;
     }
+    /** @return Whether the panel at @p index is active. */
     int GetPanelActive(int index) const {
         return anPanelActive[index];
     }
+    /** Set whether the panel at @p index is active. */
     int SetPanelActive(int index, int value) {
         return anPanelActive[index] = value;
     }
+    /** @return The save-file list at @p index. */
     SaveFileList *GetFileList(int index) const {
         return apFiles[index];
     }
+    /** @return The widget selected when panel navigation resets. */
     unsigned short GetPanelResetWidgetIndex() const {
         return wPanelResetWidgetIndex;
     }
+    /** Reset panel activation and select @p widgetIndex. */
     inline void ResetPanelActivation(unsigned short widgetIndex);
 
 private:

@@ -95,8 +95,11 @@ public:
 
 private:
     void ResetInvalidSettings();
+    /** Compare INI section and key names without case. */
     struct CaseInsensitiveLess {
+        /** Permit lookups with string views without allocating a string. */
         using is_transparent = void;
+        /** @return Whether @p left sorts before @p right without case. */
         bool operator()(std::string_view left, std::string_view right) const;
     };
     using Section = std::map<std::string, std::string, CaseInsensitiveLess>;

@@ -5,12 +5,15 @@
 
 /** A texture upload receives numeric command data or a pixel buffer. */
 typedef union TextureUploadData {
-    unsigned value;
-    const u8 *pixels;
+    unsigned value;   /*!< The numeric argument of an upload command. */
+    const u8 *pixels; /*!< The pixel data of an upload command. */
 #ifdef __cplusplus
+    /** Construct an empty upload argument. */
     TextureUploadData() = default;
+    /** Construct a numeric upload argument. */
     TextureUploadData(unsigned value) : value(value) {
     }
+    /** Construct a pixel-buffer upload argument. */
     TextureUploadData(const u8 *pixels) : pixels(pixels) {
     }
 #endif

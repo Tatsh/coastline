@@ -30,6 +30,7 @@ int ValidateEarAudioComponents(void);
  * Nonzero when config.ear includes the global configuration section.
  * @ghidraAddress EAR: 0x1003b704
  */
+/** @cond */
 extern int32_t g_bGlobalConfigurationFound;
 /**
  * Configured hexadecimal product target from [PTARGET], compared with the version's high word.
@@ -109,6 +110,7 @@ extern uint16_t g_earAudioComponentValidationFlags;
  * @ghidraAddress EAR: 0x1003b7b4
  */
 extern int32_t g_earAudioComponentsValidated;
+/** @endcond */
 
 /**
  * @param code The code the game passes.

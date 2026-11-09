@@ -6,21 +6,22 @@
 extern "C" {
 #endif
 
+/** The aeroplane's position and flight path during a race. */
 typedef struct {
-    s32 instance;
-    s32 trigger;
-    s32 triggerLap;
-    s32 flying;
-    s32 node;
-    s32 nodeCount;
-    f32 scale;
-    Vec3f *pathLeft;
-    Vec3f *pathRight;
-    f32 distance;
-    f32 segmentLength;
-    Vec3f previousDirection;
-    Vec3f direction;
-    Vec3f nextDirection;
+    s32 instance;            /*!< The scene instance used to draw the aeroplane. */
+    s32 trigger;             /*!< The trigger that starts a flight. */
+    s32 triggerLap;          /*!< The lap on which the flight begins. */
+    s32 flying;              /*!< Whether the aeroplane is in flight. */
+    s32 node;                /*!< The current flight-path node. */
+    s32 nodeCount;           /*!< The number of flight-path nodes. */
+    f32 scale;               /*!< The scale applied to the scene instance. */
+    Vec3f *pathLeft;         /*!< The left edge of the flight path. */
+    Vec3f *pathRight;        /*!< The right edge of the flight path. */
+    f32 distance;            /*!< The distance travelled along the current segment. */
+    f32 segmentLength;       /*!< The length of the current path segment. */
+    Vec3f previousDirection; /*!< The direction of the previous segment. */
+    Vec3f direction;         /*!< The direction of the current segment. */
+    Vec3f nextDirection;     /*!< The direction of the next segment. */
 } AirplaneState;
 
 /** @ghidraAddress BRD3D: 0x10680618 */

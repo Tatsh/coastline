@@ -7,20 +7,23 @@
 extern "C" {
 #endif
 
+/** The indexed lines read from a launcher INI file. */
 typedef struct LauncherStringList {
-    int count;
-    int *indices;
-    char **lines;
+    int count;    /*!< The number of lines. */
+    int *indices; /*!< The source index of each line. */
+    char **lines; /*!< The text of each line. */
 } LauncherStringList;
 
+/** The current line and indexed contents of a launcher INI file. */
 typedef struct LauncherIniFile {
-    LauncherStringList *list;
-    int currentLine;
+    LauncherStringList *list; /*!< The indexed lines of the file. */
+    int currentLine;          /*!< The current line index. */
 } LauncherIniFile;
 
+/** A cursor over sections in a launcher INI file. */
 typedef struct LauncherIniSectionIterator {
-    LauncherIniFile *file;
-    int sectionIndex;
+    LauncherIniFile *file; /*!< The file being searched. */
+    int sectionIndex;      /*!< The current section index. */
 } LauncherIniSectionIterator;
 
 /**

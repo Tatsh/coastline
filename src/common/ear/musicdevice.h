@@ -13,6 +13,7 @@ extern "C" {
  * Result of the most recent CD open through OpenEarMusicDevice(), cleared by CloseCdAudioDevice().
  * @ghidraAddress EAR: 0x1003b7bc
  */
+/** @cond */
 extern int32_t g_bCdAudioInitialized;
 
 /**
@@ -55,6 +56,7 @@ extern DWORD g_dwConfiguredCdMixerLineId;
  * @ghidraAddress EAR: 0x100360e4
  */
 extern DWORD g_dwConfiguredMidiMixerLineId;
+/** @endcond */
 
 /**
  * Open the mixers and then the CD audio device or the MIDI sequencer.

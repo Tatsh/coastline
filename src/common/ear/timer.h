@@ -50,6 +50,7 @@ int __stdcall EarStartTimerExportWrapper(void);
  * Windows multimedia playback timer identifier, or zero when no timer is registered.
  * @ghidraAddress EAR: 0x1003b4a0
  */
+/** @cond */
 extern UINT g_uPlaybackTimerId;
 
 /**
@@ -63,12 +64,15 @@ extern WORD g_wTimerResolutionMs;
  * @ghidraAddress EAR: 0x1003b578
  */
 extern TIMECAPS g_earTimerCapabilities;
+/** @endcond */
 #else
 /**
  * SDL playback timer identifier, or zero when no timer is registered.
  * @ghidraAddress EAR: 0x1003b4a0
  */
+/** @cond */
 extern SDL_TimerID g_uPlaybackTimerId;
+/** @endcond */
 
 /**
  * The clock of EAR, in milliseconds, as timeGetTime() gives it in the original. A mixer that
@@ -83,6 +87,7 @@ DWORD GetEarTimeMilliseconds(void);
  * Previous playback-update clock reading in milliseconds for unsigned elapsed-time calculation.
  * @ghidraAddress EAR: 0x1003b45c
  */
+/** @cond */
 extern DWORD g_dwPreviousPlaybackUpdateTimeMs;
 
 /**
@@ -91,6 +96,7 @@ extern DWORD g_dwPreviousPlaybackUpdateTimeMs;
  * @ghidraAddress EAR: 0x1003b4d4
  */
 extern DWORD g_dwPlaybackUpdateTimeMs;
+/** @endcond */
 
 #ifdef __cplusplus
 }

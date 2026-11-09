@@ -12,14 +12,16 @@ extern "C" {
 
 struct SoundBufferNode;
 
+/** A channel word before and after sound buffers load. */
 typedef union {
-    uint32_t initialValue;
-    struct SoundBufferNode *buffer;
+    uint32_t initialValue;          /*!< The channel's value in the initial table. */
+    struct SoundBufferNode *buffer; /*!< The loaded sound buffer. */
 } SoundChannelSlot;
 
+/** The loaded buffers and frequency multiplier of one sound sample. */
 typedef struct {
-    SoundChannelSlot channelBuffers[SOUND_CHANNEL_COUNT];
-    double dFrequencyScale;
+    SoundChannelSlot channelBuffers[SOUND_CHANNEL_COUNT]; /*!< The sample's channel buffers. */
+    double dFrequencyScale;                               /*!< The sample's frequency multiplier. */
 } SoundSample;
 
 /**

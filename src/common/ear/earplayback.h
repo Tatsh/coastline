@@ -557,6 +557,8 @@ protected:
  * Next EAR event identifier, initially one and incremented with 16-bit wraparound.
  * @ghidraAddress EAR: 0x10036144
  */
+/** @cond */
 extern std::uint16_t g_wEarObjectHandleCounter;
+/** @endcond */
 
 #endif /* COASTLINE_EAR_EARPLAYBACK_H */

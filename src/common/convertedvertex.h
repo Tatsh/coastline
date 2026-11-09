@@ -3,16 +3,17 @@
 
 #include "common/vecmath.h"
 
+/** A model vertex converted into the renderer's working format. */
 typedef struct ConvertedModelVertex {
-    Vec3f position;
-    Vec2f texture;
+    Vec3f position; /*!< The vertex position. */
+    Vec2f texture;  /*!< The texture coordinates. */
 #if TGR_BOSS_RALLY
     union {
-        Vec3f normal;
-        Vec3f color;
+        Vec3f normal; /*!< The surface normal for lit geometry. */
+        Vec3f color;  /*!< The vertex colour for unlit geometry. */
     };
 #else
-    Vec3f normal;
+    Vec3f normal; /*!< The surface normal. */
 #endif
 } ConvertedModelVertex;
 

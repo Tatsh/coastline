@@ -154,6 +154,7 @@ UINT EarRiffAscend(EarRiffFile *file, const EarRiffChunk *chunk);
  * Shared scratch descriptor for the current RIFF/WAVE container during media preparation.
  * @ghidraAddress EAR: 0x1003b880
  */
+/** @cond */
 extern EarRiffChunk g_RiffWaveChunk;
 /**
  * Shared scratch descriptor for the current wave sample-data chunk.
@@ -170,6 +171,7 @@ extern EarRiffChunk g_WaveFormatChunk;
  * @ghidraAddress EAR: 0x10037268
  */
 extern uint16_t g_earMaximumStreamingBufferBytes;
+/** @endcond */
 
 #ifdef __cplusplus
 }

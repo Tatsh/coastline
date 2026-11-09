@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-/* Move a triangle into the unit cube of a box, and find its normal there. */
+/** Move @p t into the unit cube of @p box and calculate its normal there. */
 static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4], TrackTriangle *t) {
     Vec3f e1, e2;
 #if TGR_BOSS_RALLY

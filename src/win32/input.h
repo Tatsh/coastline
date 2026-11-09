@@ -33,24 +33,31 @@ private:
     IDirectInputDeviceA *pDevice; /*!< The DirectInput device of the mouse. */
 
 public:
+    /** @return The horizontal cursor position. */
     int GetCursorX() const {
         return nCursorX;
     }
+    /** @return The vertical cursor position. */
     int GetCursorY() const {
         return nCursorY;
     }
+    /** @return The previous vertical cursor position. */
     int GetPreviousCursorY() const {
         return nPrevCursorY;
     }
+    /** Set the horizontal cursor position. */
     void SetCursorX(int value) {
         nCursorX = value;
     }
+    /** Set the vertical cursor position. */
     void SetCursorY(int value) {
         nCursorY = value;
     }
+    /** @return Whether button @p index is held. */
     bool IsButtonHeld(int index) const {
         return abHeld[index] != 0;
     }
+    /** @return The underlying DirectInput mouse device. */
     IDirectInputDeviceA *GetDirectInputDevice() const {
         return pDevice;
     }
@@ -267,13 +274,13 @@ bool ShutdownDirectInput(void);
 
 /** Mouse axes, accumulated movement, and buttons from input polling. */
 struct MouseInputState {
-    LONG lX;
-    LONG lY;
-    LONG lZ;
-    LONG lAccumulatedX;
-    LONG lAccumulatedY;
-    LONG lAccumulatedZ;
-    unsigned char abButtons[4];
+    LONG lX;                    /*!< The latest horizontal movement. */
+    LONG lY;                    /*!< The latest vertical movement. */
+    LONG lZ;                    /*!< The latest wheel movement. */
+    LONG lAccumulatedX;         /*!< The horizontal movement since the last reset. */
+    LONG lAccumulatedY;         /*!< The vertical movement since the last reset. */
+    LONG lAccumulatedZ;         /*!< The wheel movement since the last reset. */
+    unsigned char abButtons[4]; /*!< The pressed mouse buttons. */
 };
 
 /**

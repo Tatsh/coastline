@@ -15,11 +15,12 @@
 extern "C" {
 #endif
 
+/** A bitmap of RGB 565 pixels with a transparent colour key. */
 typedef struct Rgb565Image {
-    uint16_t *pixels;
-    int width;
-    int height;
-    uint16_t colorKey;
+    uint16_t *pixels;  /*!< The pixel buffer. */
+    int width;         /*!< The image width in pixels. */
+    int height;        /*!< The image height in pixels. */
+    uint16_t colorKey; /*!< The pixel value treated as transparent. */
 } Rgb565Image;
 
 /** @ghidraAddress BRGlide: 0x10001130 */

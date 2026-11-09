@@ -685,16 +685,16 @@ typedef struct GbiVertexSource GbiVertexSource;
 
 /** The vertex a command of the display lists loaded. The layout is not recovered in full. */
 struct GbiVertexSource {
-    GbiVertexSource *pNext;
-    float fX;
-    float fY;
-    float fZ;
-    float fS; /*!< The s of the texture before g_fTexCoordScaleS. */
-    float fT; /*!< The t of the texture before g_fTexCoordScaleT. */
-    float fW;
-    float fRed;
-    float fGreen;
-    float fBlue;
+    GbiVertexSource *pNext; /*!< The next vertex in a clipping list. */
+    float fX;               /*!< The vertex x coordinate. */
+    float fY;               /*!< The vertex y coordinate. */
+    float fZ;               /*!< The vertex z coordinate. */
+    float fS;               /*!< The s of the texture before g_fTexCoordScaleS. */
+    float fT;               /*!< The t of the texture before g_fTexCoordScaleT. */
+    float fW;               /*!< The homogeneous coordinate. */
+    float fRed;             /*!< The red colour component. */
+    float fGreen;           /*!< The green colour component. */
+    float fBlue;            /*!< The blue colour component. */
 };
 
 #if TGR_BRD3D
@@ -839,8 +839,8 @@ LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond
 
 /** A circular list of vertices undergoing homogeneous clipping. */
 struct GbiClipPolygon {
-    GbiVertexSource *pHead;
-    int nCount;
+    GbiVertexSource *pHead; /*!< The first vertex in the circular list. */
+    int nCount;             /*!< The number of vertices. */
 };
 
 /**

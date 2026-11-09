@@ -26,12 +26,12 @@ extern "C" {
 /** The bitmaps, selection option and rectangle of a car paint set. */
 typedef struct CarPaintTextureSet {
     void *apBitmaps[CAR_PAINT_BITMAP_COUNT]; /*!< The bitmaps, from malloc(). */
-    int nOption10;
-    int nLeft;
-    int nRight;
-    int nTop;
-    int nBottom;
-    const char *pszBitmapName;
+    int nOption10;             /*!< The paint option associated with the bitmap set. */
+    int nLeft;                 /*!< The rectangle's left edge. */
+    int nRight;                /*!< The rectangle's right edge. */
+    int nTop;                  /*!< The rectangle's top edge. */
+    int nBottom;               /*!< The rectangle's bottom edge. */
+    const char *pszBitmapName; /*!< The source bitmap name. */
 } CarPaintTextureSet;
 
 /**

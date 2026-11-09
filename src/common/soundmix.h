@@ -11,12 +11,14 @@ extern "C" {
 #define STEP_ONE 4294967296.0
 
 #if TGR_BOSS_RALLY
+/** The precision used for Boss Rally sound-mixing calculations. */
 typedef long double SoundReal;
 #else
+/** The precision used for Nintendo 64 sound-mixing calculations. */
 typedef f32 SoundReal;
 #endif
 
-/* The step of a channel that plays a frequency. */
+/** @return The 32.32 sample-position step for @p frequency. */
 static inline u64 FrequencyStep(SoundReal frequency) {
 #if TGR_BOSS_RALLY
     long double scaled = frequency * (1.0f / SAMPLE_RATE) * STEP_ONE;
@@ -26,12 +28,12 @@ static inline u64 FrequencyStep(SoundReal frequency) {
 #endif
 }
 
-/* The upper half of the volume of a channel, before the lower is added. */
+/** @return The upper half of a channel's packed volume. */
 static inline f32 UpperVolume(s32 volume, f32 upper) {
     return (f32)((s32)((f32)volume * upper) << 16);
 }
 
-/* Pack a volume panned between the two halves of the volume of a channel. */
+/** @return The packed volume panned between its upper and lower halves. */
 static inline u32 PackVolume(s32 volume, f32 upper, f32 lower) {
 #if TGR_BOSS_RALLY
     long double upperProduct = (long double)volume * upper;

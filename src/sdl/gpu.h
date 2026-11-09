@@ -330,12 +330,16 @@ private:
     void AddGpuMemory(const void *object, Uint64 bytes);
     void RemoveGpuMemory(const void *object);
 
+    /** Release an SDL window owned by a smart pointer. */
     struct WindowDeleter {
+        /** Release @p window. */
         void operator()(SDL_Window *window) const {
             SDL_DestroyWindow(window);
         }
     };
+    /** Release an SDL GPU device owned by a smart pointer. */
     struct DeviceDeleter {
+        /** Release @p device. */
         void operator()(SDL_GPUDevice *device) const {
             SDL_DestroyGPUDevice(device);
         }

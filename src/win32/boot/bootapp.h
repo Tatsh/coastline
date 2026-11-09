@@ -3,6 +3,7 @@
 
 #include <afxwin.h>
 
+/** The Boss Rally disc launcher and its process lifecycle. */
 class CBootApp : public CWinApp {
 public:
     /** @ghidraAddress Boot: 0x00401010 */

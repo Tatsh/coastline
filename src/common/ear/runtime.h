@@ -51,6 +51,7 @@ void __stdcall EAR_DLL_UpdateEar(void);
  *
  * @ghidraAddress EAR: 0x1003b79c
  */
+/** @cond */
 extern volatile int32_t g_bEarProcessAttached;
 
 /**
@@ -95,6 +96,7 @@ extern int32_t g_bEarComponentsInitialized;
  * @ghidraAddress EAR: 0x1003b7a8
  */
 extern int32_t g_bEarInitializationComplete;
+/** @endcond */
 
 #ifdef __cplusplus
 }

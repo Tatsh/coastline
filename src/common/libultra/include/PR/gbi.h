@@ -42,8 +42,10 @@ typedef struct {
 
 /** The texture coordinates of the two specular highlights. */
 typedef struct {
-    s32 x1, y1, x2, y2; /*!< The s and t of the first highlight, then of the second, in 10.2
-                             fixed point texels. */
+    s32 x1; /*!< The first highlight's s coordinate in 10.2 fixed-point texels. */
+    s32 y1; /*!< The first highlight's t coordinate in 10.2 fixed-point texels. */
+    s32 x2; /*!< The second highlight's s coordinate in 10.2 fixed-point texels. */
+    s32 y2; /*!< The second highlight's t coordinate in 10.2 fixed-point texels. */
 } Hilite_t;
 
 /** The coordinates of two specular highlights, aligned for the RSP. */

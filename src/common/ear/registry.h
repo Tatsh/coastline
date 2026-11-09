@@ -174,6 +174,7 @@ private:
  * Borrowed spatial environments indexed by 16-bit environment handle.
  * @ghidraAddress EAR: 0x1003b4a8
  */
+/** @cond */
 extern EarWordPointerRegistry<EarEnvironment> g_EnvironmentRegistry;
 /**
  * Borrowed wave samples indexed by 16-bit preset handle.
@@ -202,5 +203,6 @@ extern EarWordPointerRegistry<EarChannel> g_ChannelRegistry;
  * @ghidraAddress EAR: 0x1003b370
  */
 extern EarWordPointerRegistry<EarPresetTable> g_MatrixRegistry;
+/** @endcond */
 
 #endif /* COASTLINE_EAR_REGISTRY_H */

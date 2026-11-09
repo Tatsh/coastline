@@ -5,15 +5,15 @@
 
 /** A clipping link with a pointer to its attributes and inline vertex storage. */
 typedef struct ShadowClipVertex {
-    struct ShadowClipVertex *pNext;
-    ConvertedModelVertex *pVertex;
-    ConvertedModelVertex vertex;
+    struct ShadowClipVertex *pNext; /*!< The next vertex in the clipping list. */
+    ConvertedModelVertex *pVertex;  /*!< The vertex attributes in use. */
+    ConvertedModelVertex vertex;    /*!< Inline storage for an interpolated vertex. */
 } ShadowClipVertex;
 
 /** A circular list of shadow vertices being clipped to a texture boundary. */
 typedef struct ShadowClipPolygon {
-    ShadowClipVertex *pHead;
-    s32 nCount;
+    ShadowClipVertex *pHead; /*!< The first vertex in the circular list. */
+    s32 nCount;              /*!< The number of vertices. */
 } ShadowClipPolygon;
 
 #ifdef __cplusplus
@@ -39,6 +39,7 @@ extern ShadowClipVertex g_aShadowClipVertexPool[SHADOW_CLIP_VERTEX_COUNT];
  */
 extern ShadowClipVertex *g_pShadowClipVertexFreeList;
 
+/** Compute a vertex's signed distance from a shadow-clipping boundary. */
 typedef long double (*ShadowClipDistance)(const ConvertedModelVertex *vertex);
 
 /**

@@ -334,36 +334,38 @@ private:
     static constexpr std::string_view REPOSITORY_URL = "https://github.com/Tatsh/coastline";
     bool m_repositoryHovered = false;
     bool m_repositoryPressed = false;
+    /** The editable path and validation cache of one wizard text box. */
     struct TextField {
-        std::u32string text;
-        std::size_t caret = 0;
-        std::size_t scroll = 0;
-        std::optional<std::size_t> anchor;
-        bool valid = false;
-        std::optional<WizardCartridge> release;
-        std::string reason;
-        // The text and the size and time of its file at the last check.
-        std::u32string checked;
-        std::uintmax_t size = 0;
-        std::filesystem::file_time_type time{};
-        bool checkedOnce = false;
+        std::u32string text;                    /*!< The path entered by the user. */
+        std::size_t caret = 0;                  /*!< The insertion position. */
+        std::size_t scroll = 0;                 /*!< The first visible character. */
+        std::optional<std::size_t> anchor;      /*!< The selection anchor, if present. */
+        bool valid = false;                     /*!< Whether the current path passed validation. */
+        std::optional<WizardCartridge> release; /*!< The detected ROM release. */
+        std::string reason;                     /*!< The validation failure text. */
+        std::u32string checked;                 /*!< The path at the last validation. */
+        std::uintmax_t size = 0;                /*!< The file size at the last validation. */
+        std::filesystem::file_time_type time{}; /*!< The file time at the last validation. */
+        bool checkedOnce = false;               /*!< Whether a validation has run. */
     };
+    /** The folder picker and its current selection. */
     struct Browser {
-        WizardControlId target = WizardControlId::DiscText;
-        std::filesystem::path directory;
-        std::vector<BrowserEntry> entries;
-        int selected = 0;
-        int top = 0;
-        bool allFiles = false;
-        std::string typed;
-        std::uint64_t typedAt = 0;
-        std::uint64_t clickedAt = 0;
-        int clicked = -1;
-        bool dragging = false;
+        WizardControlId target = WizardControlId::DiscText; /*!< The field being edited. */
+        std::filesystem::path directory;                    /*!< The directory displayed. */
+        std::vector<BrowserEntry> entries;                  /*!< The directory entries displayed. */
+        int selected = 0;                                   /*!< The selected entry index. */
+        int top = 0;                                        /*!< The first visible entry index. */
+        bool allFiles = false;       /*!< Whether file-type filtering is disabled. */
+        std::string typed;           /*!< The incremental search text. */
+        std::uint64_t typedAt = 0;   /*!< The time of the last search character. */
+        std::uint64_t clickedAt = 0; /*!< The time of the last pointer click. */
+        int clicked = -1;            /*!< The entry selected by the last click. */
+        bool dragging = false;       /*!< Whether the scrollbar is being dragged. */
     };
+    /** A wizard alert with an optional choice. */
     struct Message {
-        std::vector<std::string> lines;
-        bool question = false;
+        std::vector<std::string> lines; /*!< The lines displayed in the alert. */
+        bool question = false;          /*!< Whether the alert requests a choice. */
     };
     struct ImportState;
 

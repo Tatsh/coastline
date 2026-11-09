@@ -108,20 +108,21 @@ public:
     int Width(std::string_view text, int size, bool doubled = true) const;
 
 private:
+    /** A rasterised menu font and its text gradients. */
     struct Font {
-        std::unique_ptr<RenderTexture> image;
-        std::unique_ptr<RenderTexture> gradient;
-        std::unique_ptr<RenderTexture> shadowGradient;
-        int cell = 0;
-        int padding = 0;
-        std::vector<int> glyphStarts;
+        std::unique_ptr<RenderTexture> image;          /*!< The glyph atlas. */
+        std::unique_ptr<RenderTexture> gradient;       /*!< The foreground gradient. */
+        std::unique_ptr<RenderTexture> shadowGradient; /*!< The shadow gradient. */
+        int cell = 0;                                  /*!< The atlas cell size. */
+        int padding = 0;                               /*!< The padding around each glyph. */
+        std::vector<int> glyphStarts; /*!< The horizontal start of each glyph in its cell. */
     };
-    // The glyphs of the Japanese text of the Japanese release, of one width, in rows of an image.
+    /** The fixed-width Japanese glyphs of the Japanese release, stored in atlas rows. */
     struct JapaneseFont {
-        std::unique_ptr<RenderTexture> image;
-        int width = 0;
-        int columns = 0;
-        std::unordered_map<char32_t, int> glyphs;
+        std::unique_ptr<RenderTexture> image;     /*!< The glyph atlas. */
+        int width = 0;                            /*!< The width of one glyph. */
+        int columns = 0;                          /*!< The number of atlas columns. */
+        std::unordered_map<char32_t, int> glyphs; /*!< Atlas positions indexed by code point. */
     };
     MenuText() = default;
     const Font &FontFor(int size) const;

@@ -26,6 +26,7 @@ static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
 }
 #endif /* TGR_BOSS_RALLY */
 
+/** @return @p color in the byte order used by the selected renderer. */
 static inline u16 PackMaterialPaletteColor(u16 color) {
 #if TGR_BOSS_RALLY
     return (color >> 8) | (color << 8);
@@ -34,6 +35,7 @@ static inline u16 PackMaterialPaletteColor(u16 color) {
 #endif
 }
 
+/** @return The indexed or direct format of @p texture. */
 static inline s32 GetMaterialTextureFormat(const ModelTexture *texture) {
 #if TGR_BOSS_RALLY
     return (texture->textureFlags >> 24) & 0xf;
@@ -42,6 +44,7 @@ static inline s32 GetMaterialTextureFormat(const ModelTexture *texture) {
 #endif
 }
 
+/** Set the material palettes of @p model to the requested red, green, and blue colour. */
 static inline void SetMaterialPaletteColors(VehicleModel *model, s32 red, s32 green, s32 blue) {
     ModelTexture *texture;
     u16 *palette;

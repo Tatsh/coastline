@@ -20,6 +20,7 @@ extern "C" {
  * Borrowed Windows notification and message-dialog window handle, or null when unassigned.
  * @ghidraAddress EAR: 0x1003b618
  */
+/** @cond */
 extern HWND g_hEarNotifyWindow;
 
 /**
@@ -51,6 +52,7 @@ extern UINT g_uEarNotifyMessage;
  * @ghidraAddress EAR: 0x10036150
  */
 extern char g_earProductName[];
+/** @endcond */
 
 /**
  * Show a message over the window of the game.

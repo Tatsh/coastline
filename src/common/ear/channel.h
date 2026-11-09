@@ -66,6 +66,7 @@ public:
  * CD audio channel identifier recorded during registration, cleared when the channel is deleted.
  * @ghidraAddress EAR: 0x1003b6e0
  */
+/** @cond */
 extern uint32_t g_dwCdAudioChannelId;
 /**
  * MIDI channel identifier recorded during registration, cleared when the channel is deleted.
@@ -78,6 +79,7 @@ extern uint32_t g_dwMidiChannelId;
  * @ghidraAddress EAR: 0x1003b8c4
  */
 extern uint32_t g_earChannelControlResultFlags;
+/** @endcond */
 
 extern "C" {
 #endif

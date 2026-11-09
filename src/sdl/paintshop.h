@@ -64,8 +64,8 @@ struct PaintShopInput {
     bool redo = false;
     bool constrain = false; /*!< Whether Shift or controller Z constrains a shape. */
     /**
-     * The characters typed on a keyboard this frame in UTF-8, with Backspace as `'\b'` and Enter
-     * as `'\r'`, in the order typed.
+     * The characters typed on a keyboard this frame in UTF-8, with Backspace as code point 8 and
+     * Enter as code point 13, in the order typed.
      */
     std::string text;
 };

@@ -19,8 +19,10 @@ union ConfigLoadArgument {
     unsigned value;   /*!< The flag, or the byte count for a custom read. */
     const char *path; /*!< The path for an unrecognised configuration type. */
 
+    /** Construct a flag argument indicating whether failure is allowed. */
     ConfigLoadArgument(bool bAllowFailure) : value(bAllowFailure ? 1 : 0) {
     }
+    /** Construct an argument containing a custom path. */
     ConfigLoadArgument(const char *pszPath) : path(pszPath) {
     }
 };

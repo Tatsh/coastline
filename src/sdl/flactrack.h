@@ -31,7 +31,9 @@ public:
     bool Decode(std::vector<std::int16_t> &output, std::size_t frames);
 
 private:
+    /** Release a FLAC decoder through its library API. */
     struct DecoderDeleter {
+        /** Release @p decoder. */
         void operator()(FLAC__StreamDecoder *decoder) const;
     };
     static FLAC__StreamDecoderWriteStatus Write(const FLAC__StreamDecoder *,

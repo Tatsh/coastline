@@ -22,7 +22,7 @@ struct DirectPlayInfo {
     HANDLE hPlayerEvent;        /*!< Signalled when a message for the local player arrives. */
     DPID dpidPlayer;            /*!< The local player. */
     BOOL bIsHost;               /*!< Whether the game hosts the session. */
-    BOOL bIgnoreMessages;
+    BOOL bIgnoreMessages;       /*!< Whether incoming messages are ignored. */
 };
 
 /** A service provider of DirectPlay found by EnumConnections. */
@@ -457,10 +457,10 @@ struct NetworkSessionSettings {
 
 /** The local user and optional authentication fields used when joining a session. */
 struct NetworkJoinCredentials {
-    char localUserName[200];
-    char userName[200];
-    char password[200];
-    char domain[200];
+    char localUserName[200]; /*!< The local player's displayed name. */
+    char userName[200];      /*!< The authentication user name. */
+    char password[200];      /*!< The authentication password. */
+    char domain[200];        /*!< The authentication domain. */
 };
 
 /**
@@ -796,29 +796,30 @@ extern int g_dwNetworkCarSetupShown;
 
 /** A peer of a network game. The layout is not recovered past the members below. */
 struct NetPeerSlot {
-    HANDLE hMutex;
-    DPID dpidPlayer;
-    unsigned dwLastUpdateTime;
-    unsigned adwSnapshotTimes[8];
-    int dwStatus;
-    int nCar;
-    unsigned char color[3];
-    unsigned adwSnapshotTypes[8];
-    KeyframeState aSnapshots[8];
-    unsigned nSnapshotCount;
-    int nCurrentSnapshot;
-    int nAppliedSnapshot;
-    unsigned dwPredictionFrame;
-    int nRepeatedSnapshotFrames;
-    int nLateSnapshotFrames;
-    char szName[0x400];
-    unsigned dwRaceTime;
-    int dwPingMs;
+    HANDLE hMutex;                /*!< The lock protecting the peer record. */
+    DPID dpidPlayer;              /*!< The peer's DirectPlay identifier. */
+    unsigned dwLastUpdateTime;    /*!< The time of the latest update. */
+    unsigned adwSnapshotTimes[8]; /*!< The timestamps of buffered snapshots. */
+    int dwStatus;                 /*!< The peer status. */
+    int nCar;                     /*!< The selected car. */
+    unsigned char color[3];       /*!< The car's red, green, and blue colour. */
+    unsigned adwSnapshotTypes[8]; /*!< The type of each buffered snapshot. */
+    KeyframeState aSnapshots[8];  /*!< The buffered car states. */
+    unsigned nSnapshotCount;      /*!< The number of buffered snapshots. */
+    int nCurrentSnapshot;         /*!< The current snapshot index. */
+    int nAppliedSnapshot;         /*!< The last applied snapshot index. */
+    unsigned dwPredictionFrame;   /*!< The frame being predicted. */
+    int nRepeatedSnapshotFrames;  /*!< The number of repeated snapshot frames. */
+    int nLateSnapshotFrames;      /*!< The number of late snapshot frames. */
+    char szName[0x400];           /*!< The peer's displayed name. */
+    unsigned dwRaceTime;          /*!< The peer's race time. */
+    int dwPingMs;                 /*!< The measured latency in milliseconds. */
 };
 
+/** A server-frame timestamp paired with the local clock. */
 struct NetClockSample {
-    unsigned dwServerFrame;
-    unsigned dwLocalTime;
+    unsigned dwServerFrame; /*!< The frame number received from the server. */
+    unsigned dwLocalTime;   /*!< The local time of the sample. */
 };
 
 /**
@@ -1426,23 +1427,23 @@ void ResetSessionSlotTable(void);
 
 /** A network player of a race. */
 struct NetPlayerSlot {
-    HANDLE hMutex;  /*!< The mutex of the slot. */
-    DPID dpidOwner; /*!< The player of the session that controls the slot. */
-    DWORD dwLastUpdateTime;
-    unsigned adwSnapshotTimes[8];
-    int dwState; /*!< The state of the slot in its low 6 bits, 0 for free. */
-    int nStatusValue;
-    unsigned char bStatusOptionA;
-    unsigned char bStatusOptionB;
-    unsigned char bStatusOptionC;
-    unsigned adwSnapshotTypes[8];
-    KeyframeState aSnapshots[8];
-    int nCurrentSnapshot;
-    char szPlayerName[0x400];
-    unsigned dwLastTimeSync;
-    unsigned dwRaceTime;
-    unsigned dwTimeSyncValue;
-    unsigned dwFinishTime;
+    HANDLE hMutex;                /*!< The mutex of the slot. */
+    DPID dpidOwner;               /*!< The player of the session that controls the slot. */
+    DWORD dwLastUpdateTime;       /*!< The time of the latest update. */
+    unsigned adwSnapshotTimes[8]; /*!< The timestamps of buffered snapshots. */
+    int dwState;                  /*!< The state of the slot in its low 6 bits, 0 for free. */
+    int nStatusValue;             /*!< The network status value. */
+    unsigned char bStatusOptionA; /*!< The first status option. */
+    unsigned char bStatusOptionB; /*!< The second status option. */
+    unsigned char bStatusOptionC; /*!< The third status option. */
+    unsigned adwSnapshotTypes[8]; /*!< The type of each buffered snapshot. */
+    KeyframeState aSnapshots[8];  /*!< The buffered car states. */
+    int nCurrentSnapshot;         /*!< The current snapshot index. */
+    char szPlayerName[0x400];     /*!< The player's displayed name. */
+    unsigned dwLastTimeSync;      /*!< The time of the latest clock synchronisation. */
+    unsigned dwRaceTime;          /*!< The player's race time. */
+    unsigned dwTimeSyncValue;     /*!< The value of the latest clock synchronisation. */
+    unsigned dwFinishTime;        /*!< The player's finish time. */
 };
 
 /** The number of entries of g_aNetPlayerSlots. */

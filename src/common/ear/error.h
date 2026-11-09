@@ -44,6 +44,7 @@ void __stdcall EAR_DLL_ShowLastError(void);
  * Nonzero when SetEarLastError() automatically displays stored nonzero errors.
  * @ghidraAddress EAR: 0x1003b7e8
  */
+/** @cond */
 extern uint32_t g_bShowEarErrors;
 
 /**
@@ -52,6 +53,7 @@ extern uint32_t g_bShowEarErrors;
  * @ghidraAddress EAR: 0x10036840
  */
 extern const char *const g_earErrorMessages[47];
+/** @endcond */
 
 #ifdef __cplusplus
 }

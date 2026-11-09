@@ -29,42 +29,42 @@ typedef int(WINAPI *EarAssignHwndProc)(HWND hWnd);
 
 /** Parameters shared with the EAR event mixer. */
 struct EarPlayParams {
-    unsigned short wSize;
-    unsigned short wType;
-    int nTrack;
-    WPARAM hEvent;
-    unsigned short wChannel;
-    unsigned short matrixHandle;
-    unsigned short minimumGain;
-    unsigned short maximumGain;
-    unsigned maximumDistance;
-    unsigned minimumDistance;
-    unsigned dwPlayFlags;
-    unsigned unknown20; /* +0x20 */
-    unsigned reservedControl;
-    unsigned short direction;
-    unsigned short startDelay;
-    int lifetime;
-    int activeTime;
-    unsigned queueControl;
-    unsigned short environmentHandle;
-    unsigned short unknown3a; /* +0x3a */
-    unsigned short priority;
-    unsigned short frequencyScale;
-    unsigned short baseFrequencyScale;
-    unsigned short startPosition;
-    unsigned short limitDistance;
-    unsigned short unknown46; /* +0x46 */
-    unsigned unknown48;       /* +0x48 */
-    unsigned short pitchVariation;
-    unsigned short backendParameter;
-    unsigned unknown50[4]; /* +0x50 */
-    unsigned distanceUnit;
-    int positionX;
-    int positionY;
-    int positionZ;
-    unsigned short distanceBands[7];
-    unsigned short wUnknown7e; /* +0x7e */
+    unsigned short wSize;              /*!< The size of the parameter block. */
+    unsigned short wType;              /*!< The source type and its flags. */
+    int nTrack;                        /*!< The source track or sample index. */
+    WPARAM hEvent;                     /*!< The event handle. */
+    unsigned short wChannel;           /*!< The channel playing the event. */
+    unsigned short matrixHandle;       /*!< The directional matrix. */
+    unsigned short minimumGain;        /*!< The gain at maximum distance. */
+    unsigned short maximumGain;        /*!< The gain at minimum distance. */
+    unsigned maximumDistance;          /*!< The distance of minimum gain. */
+    unsigned minimumDistance;          /*!< The distance of maximum gain. */
+    unsigned dwPlayFlags;              /*!< The EarEventParamsFlag values. */
+    unsigned unknown20;                /*!< Unreconstructed data at offset 0x20. */
+    unsigned reservedControl;          /*!< The reserved source control. */
+    unsigned short direction;          /*!< The direction of a non-directional event. */
+    unsigned short startDelay;         /*!< The start delay in milliseconds. */
+    int lifetime;                      /*!< The event lifetime in milliseconds. */
+    int activeTime;                    /*!< The playable duration in milliseconds. */
+    unsigned queueControl;             /*!< The queue mode and related event. */
+    unsigned short environmentHandle;  /*!< The environment. */
+    unsigned short unknown3a;          /*!< Unreconstructed data at offset 0x3A. */
+    unsigned short priority;           /*!< The event priority. */
+    unsigned short frequencyScale;     /*!< The frequency scale in ten-thousandths. */
+    unsigned short baseFrequencyScale; /*!< The base-frequency scale in ten-thousandths. */
+    unsigned short startPosition;      /*!< The playback start position in ten-thousandths. */
+    unsigned short limitDistance;      /*!< The distance beyond which playback stops. */
+    unsigned short unknown46;          /*!< Unreconstructed data at offset 0x46. */
+    unsigned unknown48;                /*!< Unreconstructed data at offset 0x48. */
+    unsigned short pitchVariation;     /*!< The allowed pitch variation. */
+    unsigned short backendParameter;   /*!< The backend parameter in ten-thousandths. */
+    unsigned unknown50[4];             /*!< Unreconstructed data at offset 0x50. */
+    unsigned distanceUnit;             /*!< The distance-unit table index. */
+    int positionX;                     /*!< The source position across the listener. */
+    int positionY;                     /*!< The source position above the listener. */
+    int positionZ;                     /*!< The source position ahead of the listener. */
+    unsigned short distanceBands[7];   /*!< The distance-band boundaries. */
+    unsigned short wUnknown7e;         /*!< Unreconstructed data at offset 0x7E. */
 };
 
 static_assert(sizeof(EarPlayParams) == 0x80);

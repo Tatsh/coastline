@@ -31,7 +31,7 @@ struct PodEntry {
     unsigned dwSize;                  /*!< The size of the data. */
     unsigned char bAttrA;             /*!< The first attribute the writer records. */
     unsigned char bAttrB;             /*!< The second attribute the writer records. */
-    char abUnknownA[2];               /* +0x0a */
+    char abUnknownA[2];               /*!< Unreconstructed bytes at offset 0x0A. */
     char szName[POD_ENTRY_NAME_SIZE]; /*!< The name, in capitals. */
 };
 

@@ -64,9 +64,9 @@ typedef struct {
     union {
         f32 matrix[4][4]; /*!< Where and how the model is placed. */
         struct {
-            Vec3f vector;
-            f32 w;
-        } rows[4];
+            Vec3f vector; /*!< The first three components of a matrix row. */
+            f32 w;        /*!< The fourth component of a matrix row. */
+        } rows[4];        /*!< The placement matrix as four rows. */
     };
     f32 invScale; /*!< One over the length of the x axis of the matrix, the inverse of the scale. */
 #if TGR_BOSS_RALLY
@@ -212,21 +212,21 @@ typedef struct {
     TGR_PTR(u16)
     gridTriangles; /*!< The triangles of each cell of the 64 by 64 grid, cell by cell. */
     TGR_PTR(u16)
-    gridCellStarts; /*!< Where the list of each cell starts in gridTriangles, by cell. */
-    f32 minX;       /*!< The least x of the track. */
-    f32 maxX;       /*!< The greatest x of the track. */
-    f32 minY;
-    f32 maxY;
+    gridCellStarts;      /*!< Where the list of each cell starts in gridTriangles, by cell. */
+    f32 minX;            /*!< The least x of the track. */
+    f32 maxX;            /*!< The greatest x of the track. */
+    f32 minY;            /*!< The least y of the track. */
+    f32 maxY;            /*!< The greatest y of the track. */
     f32 minZ;            /*!< The least z of the track, where lightning strikes from. */
     f32 maxZ;            /*!< The greatest z of the track. */
     Vec3f startPosition; /*!< The point the vehicles of the starting grid are placed from. */
     f32 startHeading;    /*!< The heading of the vehicles on the grid of the start, in radians. */
 #if TGR_BOSS_RALLY
-    TGR_PTR(GbiCommand) skyDisplayList;
+    TGR_PTR(GbiCommand) skyDisplayList; /*!< The display list of the sky. */
 #else
     Gfx *skyDisplayList; /*!< The display list of the sky, or NULL for a sky of the fog colour. */
 #endif
-    TGR_PTR(u8) reservedSkyData[2]; /* +0x54 */
+    TGR_PTR(u8) reservedSkyData[2]; /*!< Unreconstructed sky pointers at offset 0x54. */
     TGR_PTR(TGR_PTR(const char))
     instanceNames;                    /*!< The names of the placed models, by index, or NULL. */
     TGR_PTR(TrackInstance) instances; /*!< The placed models. */
@@ -238,7 +238,7 @@ typedef struct {
     TGR_PTR(TrackSection)
     rootSection;                   /*!< The section at the start line, whose first point gives the
                                 distance of a lap. */
-    TGR_PTR(u8) reservedRouteData; /* +0x74 */
+    TGR_PTR(u8) reservedRouteData; /*!< Unreconstructed route pointer at offset 0x74. */
     TGR_PTR(TGR_PTR(TrackSection)) sections; /*!< Every section, for a search. */
     s32 sectionCount;                        /*!< The number of sections. */
     u8 fogColor[3]; /*!< The colour of the fog of the track, red, green, and blue from 0 to 255. */
@@ -254,7 +254,7 @@ typedef struct {
     s32 gateCount;                /*!< The number of gates. */
     TrackSpecial specials[TRACK_SPECIALS]; /*!< The objects of the track that move or sound. */
     s32 specialCount;                      /*!< The number of specials. */
-    u8 unreconstructed228[0x230 - 0x228];  /* +0x228 */
+    u8 unreconstructed228[0x230 - 0x228];  /*!< Unreconstructed bytes at offset 0x228. */
 } TrackHeader;
 
 /**

@@ -4,11 +4,12 @@
 extern "C" {
 #endif
 
+/** A menu-font glyph's dimensions and image index. */
 typedef struct MenuGlyph {
-    short nWidth;
-    short nHeight;
-    short nImage;
-    char abUnknown6[6]; /* +0x06 */
+    short nWidth;       /*!< The glyph width. */
+    short nHeight;      /*!< The glyph height. */
+    short nImage;       /*!< The glyph image index. */
+    char abUnknown6[6]; /*!< The remaining glyph-record bytes at offset 0x06. */
 } MenuGlyph;
 
 /** @ghidraAddress BRD3D: 0x100ac6e4 */

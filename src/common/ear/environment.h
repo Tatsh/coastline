@@ -79,7 +79,9 @@ int __stdcall EAR_DLL_ShutDownEnvironment(uint32_t environment);
  *
  * @ghidraAddress EAR: 0x100360f0
  */
+/** @cond */
 extern int32_t g_bDefaultEnvironmentRegistered;
+/** @endcond */
 #ifdef __cplusplus
 }
 #endif

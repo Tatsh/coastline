@@ -105,30 +105,39 @@ private:
     int FlushDirect3DDeviceList();
 
 public:
+    /** @return The driver's capability flags. */
     unsigned GetFlags() const {
         return dwFlags;
     }
+    /** @return The driver's GUID. */
     const GUID *GetGuid() const {
         return &guid;
     }
+    /** @return The driver's displayed name. */
     const char *GetName() const {
         return pszName;
     }
+    /** @return The number of display modes. */
     unsigned GetDisplayModeCount() const {
         return static_cast<unsigned>(nDisplayModeCount);
     }
+    /** @return The first display mode. */
     DisplayMode *GetDisplayModesHead() const {
         return pDisplayModesHead;
     }
+    /** @return The previous driver in the list. */
     DirectDrawDriver *GetPrevious() const {
         return pPrev;
     }
+    /** @return The next driver in the list. */
     DirectDrawDriver *GetNext() const {
         return pNext;
     }
+    /** Link the preceding @p driver. */
     void SetPrevious(DirectDrawDriver *driver) {
         pPrev = driver;
     }
+    /** Link the following @p driver. */
     void SetNext(DirectDrawDriver *driver) {
         pNext = driver;
     }
@@ -303,24 +312,31 @@ private:
     void FlushTextureFormatList();
 
 public:
+    /** @return The device's GUID. */
     GUID *GetGuid() {
         return &guid;
     }
+    /** @return The device's hardware capabilities. */
     const D3DDEVICEDESC *GetHardwareDescription() const {
         return &hardwareDesc;
     }
+    /** @return The device's software capabilities. */
     const D3DDEVICEDESC *GetSoftwareDescription() const {
         return &softwareDesc;
     }
+    /** @return The previous device in the list. */
     D3DDeviceNode *GetPrevious() const {
         return pPrev;
     }
+    /** @return The next device in the list. */
     D3DDeviceNode *GetNext() const {
         return pNext;
     }
+    /** Link the preceding @p device. */
     void SetPrevious(D3DDeviceNode *device) {
         pPrev = device;
     }
+    /** Link the following @p device. */
     void SetNext(D3DDeviceNode *device) {
         pNext = device;
     }
@@ -419,18 +435,23 @@ private:
     int GetSurfaceDescBitDepth();
 
 public:
+    /** Replace the mode's DirectDraw surface description. */
     void SetDescription(const DDSURFACEDESC &description) {
         desc = description;
     }
+    /** @return The previous display mode in the list. */
     DisplayMode *GetPrevious() const {
         return pPrev;
     }
+    /** @return The next display mode in the list. */
     DisplayMode *GetNext() const {
         return pNext;
     }
+    /** Link the preceding @p mode. */
     void SetPrevious(DisplayMode *mode) {
         pPrev = mode;
     }
+    /** Link the following @p mode. */
     void SetNext(DisplayMode *mode) {
         pNext = mode;
     }
@@ -484,10 +505,12 @@ private:
     int bDirty;                    /*!< Whether desc changed since it was given to pMaterial. */
 
 public:
+    /** @return The material handle for the device. */
     D3DMATERIALHANDLE GetMaterialHandle() const {
         return hMaterial;
     }
 
+    /** Set the diffuse red, green, and blue components and mark the material dirty. */
     void SetDiffuseColor(float red, float green, float blue) {
         desc.dcvDiffuse.r = red;
         desc.dcvDiffuse.g = green;
@@ -495,10 +518,12 @@ public:
         bDirty = 1;
     }
 
+    /** Set the material's colour-ramp size. */
     void SetRampSize(DWORD size) {
         desc.dwRampSize = size;
     }
 
+    /** Apply the material description to the Direct3D material. */
     HRESULT ApplyDescription() {
         bDirty = 0;
         return pMaterial->SetMaterial(&desc);
@@ -539,6 +564,7 @@ private:
     [[maybe_unused]] unsigned char abUnknown10[0x10];
 
 public:
+    /** @return The texture handle for the device. */
     D3DTEXTUREHANDLE GetTextureHandle() const {
         return hTexture;
     }
@@ -818,51 +844,67 @@ private:
     HRESULT RestoreGamePaletteEntries();
 
 public:
+    /** @return The renderer's active material. */
     D3DMaterial *GetMaterial() const {
         return pMaterial;
     }
+    /** @return The device initialisation state. */
     int GetDeviceInit() const {
         return dwDeviceInit;
     }
+    /** @return The renderer flags. */
     int GetFlags() const {
         return dwFlags;
     }
+    /** Add @p flags to the renderer flags. */
     void AddFlags(int flags) {
         dwFlags |= flags;
     }
+    /** Remove @p flags from the renderer flags. */
     void RemoveFlags(int flags) {
         dwFlags &= ~flags;
     }
+    /** @return The active render-state flags. */
     int GetRenderStateFlags() const {
         return dwRenderStateFlags;
     }
+    /** @return The count of requests to display GDI mode. */
     int GetGdiModeRefCount() const {
         return nGdiModeRefCount;
     }
+    /** @return The selected DirectDraw driver. */
     DirectDrawDriver *GetDriver() const {
         return pDriver;
     }
+    /** @return The selected display mode. */
     DisplayMode *GetMode() const {
         return pMode;
     }
+    /** @return The selected Direct3D device. */
     D3DDeviceNode *GetDevice() const {
         return pDevice;
     }
+    /** @return The DirectDraw 2 interface. */
     IDirectDraw2 *GetDirectDraw2() const {
         return pDirectDraw2;
     }
+    /** @return The Direct3D 2 interface. */
     IDirect3D2 *GetDirect3D2() const {
         return pDirect3D2;
     }
+    /** @return The primary DirectDraw surface. */
     IDirectDrawSurface *GetPrimarySurface() const {
         return pPrimarySurface;
     }
+    /** @return The back buffer. */
     IDirectDrawSurface *GetBackBuffer() const {
         return pBackBuffer;
     }
+    /** @return The Direct3D device interface. */
     IDirect3DDevice2 *GetD3DDevice() const {
         return pD3DDevice;
     }
+    /** @return The Direct3D viewport. */
     IDirect3DViewport2 *GetViewport() const {
         return pViewport;
     }
@@ -1007,6 +1049,7 @@ private:
     HRESULT ValidateObjectRenderResources();
 
 public:
+    /** @return The renderer of the main window. */
     DirectDrawRenderer *GetRenderer() const {
         return pRenderer;
     }

@@ -24,6 +24,7 @@ typedef struct EarCdTrackPosition {
  * An independently closed mixer does not clear the native marker.
  * @ghidraAddress EAR: 0x1003b7c4
  */
+/** @cond */
 extern int32_t g_bCdAudioMixerInitialized;
 /**
  * MIDI mixer initialisation marker, also set when mixer access is disabled.
@@ -145,6 +146,7 @@ extern DWORD g_dwCdVolumeMaximum;
  * @ghidraAddress EAR: 0x1003b6ec
  */
 extern DWORD g_dwMidiVolumeMaximum;
+/** @endcond */
 
 /**
  * Stop and close the MIDI sequencer.

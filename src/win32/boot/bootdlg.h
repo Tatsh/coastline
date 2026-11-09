@@ -3,6 +3,7 @@
 
 #include <afxwin.h>
 
+/** The launcher dialog for installation and display setup. */
 class CBootDlg : public CDialog {
 public:
     /** @ghidraAddress Boot: 0x00401860 */

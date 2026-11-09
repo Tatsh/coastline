@@ -130,10 +130,10 @@ void StartForceFeedbackJolt(void);
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** Action and pause requests for one SDL input configuration. */
 typedef struct {
-    unsigned buttonMask;
-    int readyToStartSent;
-    int paused;
-    int respawnRequested;
+    unsigned buttonMask;  /*!< The pressed race-action buttons. */
+    int readyToStartSent; /*!< Whether the start-ready request was sent. */
+    int paused;           /*!< Whether the game is paused. */
+    int respawnRequested; /*!< Whether the player requested a respawn. */
 } SdlRaceInputState;
 
 /** @return Action storage for the active SDL input configuration. */

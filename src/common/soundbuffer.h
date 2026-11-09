@@ -77,10 +77,10 @@ struct SoundBufferNode {
     int nVolume;            /*!< The volume before the volume of the sound effects. */
     int bLooping;           /*!< Whether the buffer plays in a loop. */
     int bPlaying;           /*!< Whether the buffer plays. */
-    char abUnknown20[4];    /* +0x20 */
+    char abUnknown20[4];    /*!< Unreconstructed bytes at offset 0x20. */
     int bHardware;          /*!< Whether the buffer is in the memory of the sound card. */
     int bStickyFocus;       /*!< Whether the buffer plays while the window is not active. */
-    char abUnknown2c[0x70]; /* +0x2c */
+    char abUnknown2c[0x70]; /*!< Unreconstructed bytes at offset 0x2C. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     IDirectSoundBuffer *pBuffer; /*!< The buffer of DirectSound. */
     int nNameOffset;             /*!< The offset in szPath of the name of the file, or 0. */
@@ -487,6 +487,7 @@ bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels);
  * it created.
  *
  * @param pszPath The path of the file.
+ * @param sample The SDL sample index, or -1 for no assigned sample.
  * @return The node, or null.
  * @ghidraAddress BRD3D: 0x10072ca0
  * @ghidraAddress BRGlide: 0x1006bc10

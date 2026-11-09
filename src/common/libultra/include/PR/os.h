@@ -256,14 +256,21 @@ typedef struct {
 #define PI_DOMAIN1 0 /*!< Domain 1, the cartridge ROM. */
 #define PI_DOMAIN2 1 /*!< Domain 2, SRAM and the 64DD. */
 
-/* Boot parameters IPL3 writes at the start of RAM. */
+/** The television standard reported by IPL3. */
 extern u32 osTvType;
+/** The cartridge ROM type reported by IPL3. */
 extern u32 osRomType;
+/** The cartridge ROM base address reported by IPL3. */
 extern u32 osRomBase;
+/** The reset type reported by IPL3. */
 extern u32 osResetType;
+/** The cartridge CIC identifier reported by IPL3. */
 extern u32 osCicId;
+/** The operating-system version reported by IPL3. */
 extern u32 osVersion;
+/** The installed memory size reported by IPL3. */
 extern u32 osMemSize;
+/** The application buffer retained across an NMI reset. */
 extern u8 osAppNMIBuffer[64];
 
 /* The television standards of osTvType. */

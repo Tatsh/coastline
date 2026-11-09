@@ -48,17 +48,19 @@ public:
     void Draw(SceneRenderer &renderer, const MenuText &text) const;
 
 private:
+    /** A caption displayed during the credits race. */
     struct Caption {
-        std::string title;
-        float duration;
-        std::vector<std::string> lines;
+        std::string title;              /*!< The caption heading. */
+        float duration;                 /*!< The display duration in seconds. */
+        std::vector<std::string> lines; /*!< The lines below the heading. */
     };
 
+    /** A line in the scrolling end credits. */
     struct ScrollLine {
-        int y;
-        int size;
-        int gap;
-        std::string text;
+        int y;            /*!< The current vertical position. */
+        int size;         /*!< The text size. */
+        int gap;          /*!< The spacing after the line. */
+        std::string text; /*!< The line text. */
     };
 
     bool CaptionsShow() const;

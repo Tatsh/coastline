@@ -14,8 +14,8 @@ extern "C" {
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** Ring endpoints for each skid trail in one active engine runtime. */
 typedef struct SdlSkidMarkState {
-    int heads[SKID_MARK_TRACK_COUNT];
-    int tails[SKID_MARK_TRACK_COUNT];
+    int heads[SKID_MARK_TRACK_COUNT]; /*!< The first mark of each skid trail. */
+    int tails[SKID_MARK_TRACK_COUNT]; /*!< The last mark of each skid trail. */
 } SdlSkidMarkState;
 
 /** @return Skid trail endpoints for the active engine runtime. */

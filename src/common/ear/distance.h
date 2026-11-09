@@ -30,7 +30,9 @@ void __stdcall EAR_DLL_SetUserDistanceUnit(uint32_t unitIndex, uint32_t value);
  * Centimetres per event-distance unit for indices 0..3, initially one for every entry.
  * @ghidraAddress EAR: 0x100360e8
  */
+/** @cond */
 extern double g_adDistanceUnitToCentimeters[4];
+/** @endcond */
 
 /**
  * @param params The parameters of the event.

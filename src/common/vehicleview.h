@@ -69,10 +69,10 @@ extern s32 g_dwVehicleViewModeIndex;
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** Sky images and reflection descriptors for one SDL texture collection. */
 typedef struct {
-    u8 daySky[2048];
-    u8 nightSky[2048];
-    VehicleReflectionTexture textures[4];
-    s8 selection[3][2];
+    u8 daySky[2048];                      /*!< The daytime sky reflection image. */
+    u8 nightSky[2048];                    /*!< The night-time sky reflection image. */
+    VehicleReflectionTexture textures[4]; /*!< The reflection texture descriptors. */
+    s8 selection[3][2];                   /*!< The selected reflections by view and sky. */
 } SdlVehicleReflections;
 
 /** @return Reflection storage for the active SDL texture collection. */

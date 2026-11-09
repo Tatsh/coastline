@@ -12,7 +12,9 @@ extern "C" {
 /** @ghidraAddress Boot: 0x004010a0 */
 BOOL EnsureGameNotRunning(void);
 
+/** @return Whether @p drive has the Boss Rally installation disc. */
 bool ProbeInstallerCd(int drive);
+/** Start @p application in @p directory and wait for it to exit. */
 DWORD RunInstallerProcess(const char *directory, const char *application, char *commandLine);
 
 /** @ghidraAddress Boot: 0x00421d98 */

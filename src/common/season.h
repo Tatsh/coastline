@@ -56,28 +56,28 @@ void ExitRaceAndProcessSeasonResults(void);
 
 /** A local player's retained championship race result. */
 struct SeasonRacePlayerResult {
-    int resultValue;
-    int position;
-    int points;
-    float raceTime;
-    float lapTimes[12];
+    int resultValue;    /*!< The result value retained from the race. */
+    int position;       /*!< The finishing position. */
+    int points;         /*!< The points awarded for the race. */
+    float raceTime;     /*!< The total race time. */
+    float lapTimes[12]; /*!< The recorded lap times. */
 };
 
 /** The result record retained when returning from a championship race. */
 struct SeasonRaceResult {
-    int state;   /*!< The front-end resume state. */
-    int season;  /*!< The championship class. */
-    int round;   /*!< The race within the class. */
-    int year;    /*!< The championship year. */
-    int track;   /*!< The track just raced. */
-    int weather; /*!< The weather just raced. */
-    SeasonRacePlayerResult player;
-    u8 unreconstructed58[0xb0 - 0x58]; /* +0x58 */
+    int state;                         /*!< The front-end resume state. */
+    int season;                        /*!< The championship class. */
+    int round;                         /*!< The race within the class. */
+    int year;                          /*!< The championship year. */
+    int track;                         /*!< The track just raced. */
+    int weather;                       /*!< The weather just raced. */
+    SeasonRacePlayerResult player;     /*!< The local player's result. */
+    u8 unreconstructed58[0xb0 - 0x58]; /*!< Unreconstructed bytes from offset 0x58. */
 };
 
 /** The result prefix and additional state reset when returning from a race. */
 struct SeasonResumeState : SeasonRaceResult {
-    u8 unreconstructedB0[0x68]; /* +0xb0 */
+    u8 unreconstructedB0[0x68]; /*!< Unreconstructed bytes from offset 0xB0. */
 };
 
 /**

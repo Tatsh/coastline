@@ -7,10 +7,10 @@
 extern "C" {
 #endif
 
-/* The speed a hit is counted up to for its sound. */
+/** The speed a hit is counted up to for its sound. */
 #define MAX_IMPACT_SPEED 27.0f
 
-/* The loudness of a hit at a speed, which the sound of a crash plays at. */
+/** @return The crash-sound volume corresponding to @p speed. */
 static inline u8 ImpactVolume(f32 speed) {
 #if TGR_BOSS_RALLY
     /* __ftol truncates through 64 bits, which gives 0 for a NaN speed. */
@@ -20,7 +20,7 @@ static inline u8 ImpactVolume(f32 speed) {
 #endif
 }
 
-/* Record a hard hit at a speed into a surface for its sound, and where it was. */
+/** Record a hard impact and its contact point in @p body. */
 static inline void RecordImpact(RigidBody *body, f32 speed) {
 #if TGR_BOSS_RALLY
     /* __ftol truncates through 64 bits, which gives 0 for a NaN speed. */
@@ -40,7 +40,7 @@ static inline void RecordImpact(RigidBody *body, f32 speed) {
     }
 }
 
-/* Retain the loudest hit for the sound. */
+/** Retain the loudest impact sound for @p body. */
 static inline void RecordImpactVolume(RigidBody *body, f32 speed) {
     u8 volume = ImpactVolume(speed);
 

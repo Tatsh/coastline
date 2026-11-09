@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+/** Initialise dashboard textures for the selected vehicle and weather. */
 void InitializeDashboardTextures(void);
 
 #ifdef __cplusplus

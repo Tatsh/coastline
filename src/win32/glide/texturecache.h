@@ -21,7 +21,7 @@
 
 /** A texture in the memory of a texture mapping unit. */
 typedef struct GlideTextureSlot {
-    int nUnknown0;        /* +0x00 */
+    int nUnknown0;        /*!< Unreconstructed word at offset 0x00. */
     int bInUse;           /*!< Whether the slot holds a texture. */
     int nWidth;           /*!< The width of the texture, in texels. */
     int nHeight;          /*!< The height of the texture, in texels. */
@@ -33,8 +33,8 @@ typedef struct GlideTextureSlot {
     int nMinifyFilter;    /*!< The minification filter, a GrTextureFilterMode_t. */
     int nClampS;          /*!< The clamping of s, a GrTextureClampMode_t. */
     int nClampT;          /*!< The clamping of t, a GrTextureClampMode_t. */
-    int nUnknown30;       /* +0x30 */
-    int nUnknown34;       /* +0x34 */
+    int nUnknown30;       /*!< Unreconstructed word at offset 0x30. */
+    int nUnknown34;       /*!< Unreconstructed word at offset 0x34. */
     unsigned dwLodBias;   /*!< The level of detail bias, in quarters. */
     int nSmallLod;        /*!< The smallest level of detail, a GrLOD_t. */
     int nLargeLod;        /*!< The largest level of detail, a GrLOD_t. */
@@ -42,7 +42,7 @@ typedef struct GlideTextureSlot {
     int nEvenOdd;         /*!< The levels of detail present, a GR_MIPMAPLEVELMASK_* value. */
     FxU32 dwStartAddress; /*!< The address of the texture in the memory of the unit. */
     int nLodBlend;        /*!< Whether the levels of detail blend, an FxBool. */
-    unsigned char abUnknown54[0x70]; /* +0x54 */
+    unsigned char abUnknown54[0x70]; /*!< Unreconstructed bytes at offset 0x54. */
     GrTexInfo info;                  /*!< The description of the texture that Glide downloads. */
 } GlideTextureSlot;
 

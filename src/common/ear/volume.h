@@ -38,7 +38,9 @@ int32_t __stdcall ConvertPercentGainToRightPan(double gain);
  * Linear master attenuation multiplier applied to PCM gain, initially one.
  * @ghidraAddress EAR: 0x10036148
  */
+/** @cond */
 extern double g_dMasterAttenuationLevel;
+/** @endcond */
 
 #ifdef __cplusplus
 }

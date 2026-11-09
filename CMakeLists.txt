@@ -169,10 +169,12 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   )
   set(DOXYGEN_EXTRACT_ALL YES)
   set(DOXYGEN_EXTRACT_STATIC YES)
+  set(DOXYGEN_EXCLUDE_SYMBOLS "_*" "*::_*")
   set(DOXYGEN_SORT_MEMBER_DOCS NO)
   set(DOXYGEN_ENABLE_PREPROCESSING YES)
   set(DOXYGEN_MACRO_EXPANSION YES)
   set(DOXYGEN_EXPAND_ONLY_PREDEF YES)
+  set(DOXYGEN_PREDEFINED "TGR_PTR(x)=x*")
   # Every reconstructed routine records the address it was recovered from with this tag.
   set(DOXYGEN_VERBATIM_VARS DOXYGEN_ALIASES)
   # A routine whose body is only a placeholder is tagged @stub until it is reconstructed, and
@@ -180,7 +182,8 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_ALIASES [[ghidraAddress="\par Ghidra address:^^"]]
                       [[stub="\par Stub:^^The body is a placeholder, not reconstructed yet."]]
                       [[stub{1}="\par Stub:^^Not reconstructed yet for \1."]])
-  set(DOXYGEN_EXCLUDE_PATTERNS "*/node_modules/*" "*/build/*")
+  set(DOXYGEN_EXCLUDE_PATTERNS "*/node_modules/*" "*/build/*"
+                               "*/src/n64/race-internal.h")
   # Headers sit beside their implementations under src, and only headers are documented. The
   # progress report and its parts become pages of the site, named after their paths in the tree.
   set(DOXYGEN_FILE_PATTERNS "*.h" "*.md")

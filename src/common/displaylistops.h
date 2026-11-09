@@ -14,8 +14,10 @@
 #endif
 
 #if TGR_BOSS_RALLY
+/** A display-list command in the Boss Rally renderer. */
 typedef GbiCommand DisplayListCommand;
 #else
+/** A display-list command in the Nintendo 64 renderer. */
 typedef Gfx DisplayListCommand;
 #endif
 

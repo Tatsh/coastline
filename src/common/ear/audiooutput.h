@@ -41,7 +41,9 @@ private:
  * ShutdownEarAudioOutput() deletes the instance and invalidates borrowed interfaces.
  * @ghidraAddress EAR: 0x1003b99c
  */
+/** @cond */
 extern EarDirectSoundOutput *g_pEarDirectSoundOutput;
+/** @endcond */
 #endif
 
 #ifdef __cplusplus

@@ -9,8 +9,10 @@
 extern "C" {
 #endif
 
+/** A command of a game display list. */
 typedef struct GbiCommand GbiCommand;
 
+/** A display-list viewport. */
 typedef Vp GbiViewport;
 
 /** A row of the floating-point matrix a command loads. */
@@ -18,9 +20,10 @@ typedef float GbiMatrixRow[4];
 
 struct ConvertedModelVertex;
 
+/** The source or converted vertex data referenced by a display-list command. */
 typedef union ModelVertexData {
-    TGR_PTR(Vtx) pSource;
-    TGR_PTR(struct ConvertedModelVertex) pConverted;
+    TGR_PTR(Vtx) pSource;                            /*!< The source vertex data. */
+    TGR_PTR(struct ConvertedModelVertex) pConverted; /*!< The converted vertex data. */
 } ModelVertexData;
 
 /** A command of a display list of the game. */
@@ -36,10 +39,10 @@ struct GbiCommand {
                 unsigned w1;                   /*!< The second word. */
                 float f1;                      /*!< The second word as a float. */
                 TGR_PTR(GbiCommand) pTarget;   /*!< The display list a branch or a call runs. */
-                ModelVertexData vertexData;
+                ModelVertexData vertexData;    /*!< The source or converted vertex data. */
             };
         };
-        Gwords words;
+        Gwords words; /*!< The command as two raw words. */
     };
 };
 
