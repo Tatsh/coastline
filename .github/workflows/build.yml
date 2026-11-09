@@ -53,7 +53,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build zlib1g-dev
-          curl -sSL -o gcc-toolchain-mips64-x86_64.deb \
+          curl -fSL --retry 5 --retry-all-errors --retry-delay 5 \
+            -o gcc-toolchain-mips64-x86_64.deb \
             https://github.com/DragonMinded/libdragon/releases/download/toolchain-continuous-prerelease/gcc-toolchain-mips64-x86_64.deb
           echo 'fac8e6572493a66468b7d45df41b042f90b1a630ec96aa218bd5fb1f320a0a4d  gcc-toolchain-mips64-x86_64.deb' \
             | sha256sum -c
@@ -119,13 +120,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build zlib1g-dev
-          curl -sSL -o gcc-toolchain-mips64-x86_64.deb \
+          curl -fSL --retry 5 --retry-all-errors --retry-delay 5 \
+            -o gcc-toolchain-mips64-x86_64.deb \
             https://github.com/DragonMinded/libdragon/releases/download/toolchain-continuous-prerelease/gcc-toolchain-mips64-x86_64.deb
           echo 'fac8e6572493a66468b7d45df41b042f90b1a630ec96aa218bd5fb1f320a0a4d  gcc-toolchain-mips64-x86_64.deb' \
             | sha256sum -c
           sudo apt-get install -y ./gcc-toolchain-mips64-x86_64.deb
           mkdir -p .wiswa-ci/ido/5.3
-          curl -sSL -o .wiswa-ci/ido-5.3.tar.gz \
+          curl -fSL --retry 5 --retry-all-errors --retry-delay 5 \
+            -o .wiswa-ci/ido-5.3.tar.gz \
             https://github.com/decompals/ido-static-recomp/releases/download/v1.2/ido-5.3-recomp-linux.tar.gz
           echo 'ab5c741561f80913d58c8b074771f23941a3edd312505a8ebed6d1dfeb65e506  .wiswa-ci/ido-5.3.tar.gz' \
             | sha256sum -c
@@ -366,17 +369,20 @@ jobs:
         name: 'Build the AppImage'
         run: |
           arch="$(uname -m)"
-          curl -sSL -o linuxdeploy.AppImage \
+          curl -fSL --retry 5 --retry-all-errors --retry-delay 5 -o linuxdeploy.AppImage \
             "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20251107-1/linuxdeploy-$arch.AppImage"
           echo "$LINUXDEPLOY_SHA256  linuxdeploy.AppImage" | sha256sum -c
           chmod +x linuxdeploy.AppImage
           DESTDIR=AppDir cmake --install build/coastline --prefix /usr --strip
+          appstreamcli validate --no-net \
+            AppDir/usr/share/metainfo/sh.tat.coastline.metainfo.xml
           cp AppDir/usr/share/metainfo/sh.tat.coastline.metainfo.xml \
             AppDir/usr/share/metainfo/sh.tat.coastline.appdata.xml
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir \
             --desktop-file=AppDir/usr/share/applications/sh.tat.coastline.desktop --output appimage
         env:
           LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
+          LDAI_NO_APPSTREAM: '1'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
       - if: runner.os == 'Linux' && github.event_name != 'pull_request'

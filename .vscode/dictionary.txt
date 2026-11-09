@@ -31,6 +31,7 @@ appicon
 appimage
 appl
 appnotstarted
+appstreamcli
 apsz
 aptex
 arcadetimes

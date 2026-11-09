@@ -46,7 +46,7 @@ coastline_dependency(
   SDL3
   PACKAGE SDL3
   FIND_ARGS CONFIG
-  URL https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz
+  URL https://libsdl.org/release/SDL3-3.4.18.tar.gz
   HASH 9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3
   OPTIONS SDL_SHARED=OFF SDL_STATIC=ON SDL_TEST_LIBRARY=OFF SDL_EXAMPLES=OFF SDL_TESTS=OFF
           SDL_INSTALL=OFF)
