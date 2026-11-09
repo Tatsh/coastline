@@ -138,6 +138,8 @@ extern u8 *g_pPakDataBuffer;
 extern u8 g_abSaveLoadSeasonNoteName[16];
 
 /**
+ * The Controller Pak note name for a saved ghost car in the save and load menu.
+ *
  * @ghidraAddress USA: 0x80272514
  * @ghidraAddress Asia: 0x80272064
  * @ghidraAddress EUR: 0x802744c4
@@ -146,6 +148,8 @@ extern u8 g_abSaveLoadSeasonNoteName[16];
 extern u8 g_abSaveLoadGhostNoteName[16];
 
 /**
+ * The Controller Pak note name for saved options in the save and load menu.
+ *
  * @ghidraAddress USA: 0x80272524
  * @ghidraAddress Asia: 0x80272074
  * @ghidraAddress EUR: 0x802744d4
@@ -235,6 +239,8 @@ extern u8 g_bSaveLoadStep;
 extern u8 g_abPakDataSeasonNoteName[16];
 
 /**
+ * The Controller Pak note name for a saved ghost car on the Pak data screen.
+ *
  * @ghidraAddress USA: 0x80272568
  * @ghidraAddress Asia: 0x802720B8
  * @ghidraAddress EUR: 0x802745d0
@@ -243,6 +249,8 @@ extern u8 g_abPakDataSeasonNoteName[16];
 extern u8 g_abPakDataGhostNoteName[16];
 
 /**
+ * The Controller Pak note name for a saved configuration on the Pak data screen.
+ *
  * @ghidraAddress USA: 0x80272578
  * @ghidraAddress Asia: 0x802720C8
  * @ghidraAddress EUR: 0x802745e0
@@ -251,6 +259,8 @@ extern u8 g_abPakDataGhostNoteName[16];
 extern u8 g_abPakDataConfigurationNoteName[16];
 
 /**
+ * The empty extension of the Controller Pak notes on the Pak data screen.
+ *
  * @ghidraAddress USA: 0x80272588
  * @ghidraAddress Asia: 0x802720D8
  * @ghidraAddress EUR: 0x802745f0
@@ -269,6 +279,8 @@ extern u8 g_abPakDataNoteExtension[4];
 extern s32 g_bLoadConfigurationPending;
 
 /**
+ * Whether the options menu opens the screen that saves the configuration.
+ *
  * @ghidraAddress USA: 0x803163a4
  * @ghidraAddress Asia: 0x80315E54
  * @ghidraAddress EUR: 0x80318084
@@ -287,6 +299,8 @@ extern s32 g_bSaveConfigurationPending;
 extern char g_szBgmVolumeTextBuf[0x18];
 
 /**
+ * The text of the sound effects volume item in the options menu.
+ *
  * @ghidraAddress USA: 0x803163c8
  * @ghidraAddress Asia: 0x80315E78
  * @ghidraAddress EUR: 0x803180a8

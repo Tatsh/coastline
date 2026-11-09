@@ -109,6 +109,8 @@ typedef struct CollisionTriangleNode {
 #define COLLISION_TRIANGLE_NODES 200
 
 /**
+ * The nodes available for the triangles crossing the box of a body.
+ *
  * @ghidraAddress BRD3D: 0x11754e50
  * @ghidraAddress BRGlide: 0x117781b0
  * @ghidraAddress USA: 0x80379940
@@ -191,6 +193,8 @@ extern s32 g_bTrackCollisionFrameToggle;
 extern f32 g_afSurfaceGrip[GRIP_WEATHERS][TRACK_SURFACES];
 
 /**
+ * The tyre load at which the surface grip stops increasing, by weather and surface.
+ *
  * @ghidraAddress USA: 0x802a4a98
  * @ghidraAddress Asia: 0x802A45E8
  * @ghidraAddress EUR: 0x802a7258
@@ -199,6 +203,8 @@ extern f32 g_afSurfaceGrip[GRIP_WEATHERS][TRACK_SURFACES];
 extern f32 g_afSurfaceMaxLoad[GRIP_WEATHERS][TRACK_SURFACES];
 
 /**
+ * The minimum tyre load used when calculating sliding grip, by weather and surface.
+ *
  * @ghidraAddress USA: 0x802a4af8
  * @ghidraAddress Asia: 0x802A4648
  * @ghidraAddress EUR: 0x802a72b8
@@ -216,6 +222,8 @@ extern f32 g_afSurfaceSlipLoad[GRIP_WEATHERS][TRACK_SURFACES];
 extern Vec3f g_vecUnitX;
 
 /**
+ * The unit vector along the positive Y axis.
+ *
  * @ghidraAddress USA: 0x802a4b64
  * @ghidraAddress Asia: 0x802A46B4
  * @ghidraAddress EUR: 0x802a7324
@@ -224,6 +232,8 @@ extern Vec3f g_vecUnitX;
 extern Vec3f g_vecUnitY;
 
 /**
+ * The unit vector along the positive Z axis.
+ *
  * @ghidraAddress USA: 0x802a4b70
  * @ghidraAddress Asia: 0x802A46C0
  * @ghidraAddress EUR: 0x802a7330
@@ -232,6 +242,8 @@ extern Vec3f g_vecUnitY;
 extern Vec3f g_vecUnitZ;
 
 /**
+ * The unit vector along the negative Z axis.
+ *
  * @ghidraAddress USA: 0x802a4b94
  * @ghidraAddress Asia: 0x802A46E4
  * @ghidraAddress EUR: 0x802a7354
