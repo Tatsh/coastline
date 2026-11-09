@@ -6,7 +6,7 @@ env:
   CODEQL_EXTRACTOR_CPP_AUTOINSTALL_DEPENDENCIES: 'false'
 jobs:
   analyze:
-    name: 'Analyze (${{ matrix.language }})'
+    name: '${{ matrix.job_name }}'
     permissions:
       actions: read
       contents: read
@@ -75,8 +75,10 @@ jobs:
       matrix:
         include:
           - build-mode: manual
+            job_name: 'Analyze coastline (Linux x86-64)'
             language: c-cpp
           - build-mode: none
+            job_name: 'Analyze (actions)'
             language: actions
   analyze-sdl:
     name: 'Analyze coastline (${{ matrix.platform.name }})'
@@ -103,23 +105,10 @@ jobs:
             slug: 'macos-x86-64'
             triplet: 'x64-osx'
           - arch: 'x64'
-            compiler: 'msvc'
             name: 'Windows x86-64'
             os: 'windows-2022'
             slug: 'windows-x86-64'
             triplet: 'x64-windows'
-          - arch: 'arm64'
-            compiler: 'msvc'
-            name: 'Windows aarch64'
-            os: 'windows-2022'
-            slug: 'windows-aarch64-cross'
-            triplet: 'arm64-windows'
-          - arch: 'arm64'
-            compiler: 'clang'
-            name: 'Windows aarch64 Clang'
-            os: 'windows-2022'
-            slug: 'windows-aarch64-clang-cross'
-            triplet: 'arm64-windows'
     env:
       CODEQL_EXTRACTOR_CPP_AUTOINSTALL_DEPENDENCIES: 'false'
       MACOSX_DEPLOYMENT_TARGET: '10.15'
@@ -186,26 +175,14 @@ jobs:
           Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=x64"
-          $compilerArgs = @()
-          if ($env:COMPILER -eq 'clang') {
-            $clang = (Get-Command clang-cl -ErrorAction Stop).Source
-            $compilerArgs = @("-DCMAKE_C_COMPILER=$clang", "-DCMAKE_CXX_COMPILER=$clang")
-            if ($env:ARCHITECTURE -eq 'arm64') {
-              $compilerArgs += @(
-                '-DCMAKE_C_COMPILER_TARGET=aarch64-pc-windows-msvc',
-                '-DCMAKE_CXX_COMPILER_TARGET=aarch64-pc-windows-msvc'
-              )
-            }
-          }
           cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON `
             -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' `
-            "-DVCPKG_TARGET_TRIPLET=$env:TRIPLET" @compilerArgs
+            "-DVCPKG_TARGET_TRIPLET=$env:TRIPLET"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build --preset coastline -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         env:
           ARCHITECTURE: '${{ matrix.platform.arch }}'
-          COMPILER: '${{ matrix.platform.compiler }}'
           TRIPLET: '${{ matrix.platform.triplet }}'
         shell: pwsh
       - if: >-
@@ -393,7 +370,7 @@ jobs:
           category: '/language:c-cpp/n64-${{ matrix.region }}'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
   analyze-win:
-    name: 'Analyze Boss Rally'
+    name: 'Analyze Boss Rally (MinGW)'
     permissions:
       actions: read
       contents: read

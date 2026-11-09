@@ -5,7 +5,7 @@ jobs:
         shell: bash
     env:
       VCPKG_ROOT: ${{ github.workspace }}/.vcpkg
-    name: scan-build
+    name: 'Analyze coastline (Linux x86-64, scan-build)'
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
             2>&1 | tee -a scan-build-report/build.log
       - env:
           ANALYSIS_OUTCOME: ${{ steps.analysis.outcome }}
-          ANALYSIS_SCOPE: Native sources selected by the configured build.
+          ANALYSIS_SCOPE: Coastline Linux x86-64 source files built by the coastline preset.
         if: ${{ !cancelled() }}
         name: Prepare report and verify analysis coverage
         run: |
