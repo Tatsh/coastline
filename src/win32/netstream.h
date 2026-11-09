@@ -281,6 +281,10 @@ extern int g_adwNetPlayerRankPosition[NET_PLAYER_STREAM_COUNT];
 bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer);
 
 /**
+ * Write a player's state, options, and owner, followed by a name or countdown for states that
+ * include them.
+ *
+ * @return Whether the packet fit within the maximum network packet size.
  * @ghidraAddress BRD3D: 0x10071f40
  * @ghidraAddress BRGlide: 0x1006aeb0
  */
@@ -295,6 +299,9 @@ bool WritePlayerStatusPacket(NetStream *pStream,
                              unsigned dwOwner);
 
 /**
+ * Write the maximum player count, track, weather, allowed cars, and tyre and suspension settings.
+ *
+ * @return Whether the settings packet fit within the maximum network packet size.
  * @ghidraAddress BRD3D: 0x10072080
  * @ghidraAddress BRGlide: 0x1006aff0
  */
@@ -309,12 +316,17 @@ extern int g_bNetGameSettingUnk_10221280;
 struct KeyframeState;
 
 /**
+ * Decode a full network vehicle keyframe from the bit stream into @p pState.
+ *
  * @ghidraAddress BRD3D: 0x10006ec0
  * @ghidraAddress BRGlide: 0x10007230
  */
 void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
 
 /**
+ * Accumulate vehicle state over three frames and send full or delta snapshots on schedule.
+ *
+ * @return Whether the update was deferred or its network send succeeded.
  * @ghidraAddress BRD3D: 0x10005130
  * @ghidraAddress BRGlide: 0x100054a0
  */
@@ -338,36 +350,51 @@ extern float g_afKeyframeAccumMax[7];
 extern int g_dwVehicleStateSendCounter;
 
 /**
+ * Send a complete vehicle keyframe as an unreliable network packet.
+ *
+ * @return Whether the send succeeded.
  * @ghidraAddress BRD3D: 0x10004c60
  * @ghidraAddress BRGlide: 0x10004fd0
  */
 unsigned SendKeyframePacket(KeyframeState *state);
 
 /**
+ * Send a vehicle keyframe compressed against @p base as an unreliable network packet.
+ *
+ * @return Whether the send succeeded.
  * @ghidraAddress BRD3D: 0x10004e50
  * @ghidraAddress BRGlide: 0x100051c0
  */
 unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base);
 
 /**
+ * Encode orientation, position, motion, progress, lights, and effects as a full keyframe.
+ *
  * @ghidraAddress BRD3D: 0x100061a0
  * @ghidraAddress BRGlide: 0x10006510
  */
 void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
 
 /**
+ * Interpolate or predict the vehicle state of a remote player from buffered snapshots.
+ *
+ * @return Zero when a remote slot has fewer than two snapshots; one otherwise.
  * @ghidraAddress BRD3D: 0x100054a0
  * @ghidraAddress BRGlide: 0x10005810
  */
 unsigned GetInterpolatedRemoteVehicleState(KeyframeState *state, int slotIndex);
 
 /**
+ * Encode a keyframe against @p base, shortening position and progress fields.
+ *
  * @ghidraAddress BRD3D: 0x10006830
  * @ghidraAddress BRGlide: 0x10006ba0
  */
 void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, KeyframeState *base);
 
 /**
+ * Reconstruct position and progress relative to @p pBase from a delta keyframe.
+ *
  * @ghidraAddress BRD3D: 0x100073e0
  * @ghidraAddress BRGlide: 0x10007750
  */
