@@ -99,26 +99,40 @@ jobs:
           required=()
           for platform in linux-x86-64 linux-aarch64; do
             required+=("coastline-${TAG}-${platform}-Release.tar.gz")
+            required+=("coastline-${TAG}-${platform}-Release-symbols.tar.gz")
           done
           for platform in windows-x86-64 windows-aarch64; do
             required+=("coastline-${TAG}-${platform}-Release.zip")
             required+=("coastline-${TAG}-${platform}-Release-setup.exe")
+            required+=("coastline-${TAG}-${platform}-Release-symbols.zip")
           done
           for platform in macos-aarch64 macos-x86-64; do
             required+=("Coastline-${TAG}-${platform}-Release.dmg")
+            required+=("coastline-${TAG}-${platform}-Release-symbols.zip")
+          done
+          for platform in appimage-aarch64 appimage-x86-64; do
+            required+=("coastline-${TAG}-${platform}-Release.AppImage")
+            required+=("coastline-${TAG}-${platform}-Release-symbols.tar.gz")
+          done
+          for platform in snap-aarch64 snap-x86-64; do
+            required+=("coastline-${TAG}-${platform}-Release.snap")
+            required+=("coastline-${TAG}-${platform}-symbols.tar.gz")
+          done
+          for platform in flatpak-aarch64 flatpak-x86-64; do
+            required+=("coastline-${TAG}-${platform}-Release.flatpak")
+            required+=("coastline-${TAG}-${platform}-Release-debug.flatpak")
           done
           required+=(
             "boss-rally-${TAG}-windows-x86-Release.zip"
             "boss-rally-${TAG}-windows-x86-setup.exe"
+            "boss-rally-${TAG}-windows-x86-symbols.zip"
+            "boss-rally-${TAG}-windows-x86-msvc-Release.zip"
+            "boss-rally-${TAG}-windows-x86-msvc-symbols.zip"
             "coastline-${TAG}-windows-aarch64-clang-Release.zip"
             "coastline-${TAG}-windows-aarch64-clang-Release-setup.exe"
+            "coastline-${TAG}-windows-aarch64-clang-Release-symbols.zip"
             "coastline-${TAG}-windows-x86-64-mingw-Release.zip"
-            "coastline-${TAG}-appimage-aarch64-Release.AppImage"
-            "coastline-${TAG}-appimage-x86-64-Release.AppImage"
-            "coastline-${TAG}-snap-aarch64-Release.snap"
-            "coastline-${TAG}-snap-x86-64-Release.snap"
-            "coastline-${TAG}-flatpak-aarch64-Release.flatpak"
-            "coastline-${TAG}-flatpak-x86-64-Release.flatpak"
+            "coastline-${TAG}-windows-x86-64-mingw-Release-symbols.zip"
           )
           mapfile -t attached < <(gh release view "$TAG" --json assets --jq '.assets[].name')
           echo "${TAG} has ${#attached[@]} packages attached."
@@ -136,7 +150,7 @@ jobs:
           for name in "${attached[@]}"; do
             if ! printf '%s\n' "${required[@]}" | grep -Fxq "$name"; then
               echo "::error::${TAG} has an unexpected asset ${name}." \
-                'Only Release PC packages are allowed.'
+                'Only Release packages and symbols are allowed.'
               exit 1
             fi
           done

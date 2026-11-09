@@ -413,12 +413,6 @@ jobs:
             ${{ env.PACKAGE }}-setup.exe
             ${{ env.PACKAGE }}.tar.gz
             ${{ env.PACKAGE }}.zip
-      - name: 'Upload the symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-symbols'
-          path: |
             ${{ env.PACKAGE }}-symbols.tar.gz
             ${{ env.PACKAGE }}-symbols.zip
       # The AppImage bundles the libraries the game links, and SDL opens those of the system for
@@ -438,11 +432,15 @@ jobs:
             AppDir/usr/share/metainfo/sh.tat.coastline.appdata.xml
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir \
             --desktop-file=AppDir/usr/share/applications/sh.tat.coastline.desktop --output appimage
+          cp "$PACKAGE-symbols.tar.gz" \
+            "coastline-$VERSION-appimage-$ARTIFACT_ARCH-Release-symbols.tar.gz"
         env:
+          ARTIFACT_ARCH: '${{ matrix.platform.artifact_arch }}'
           LDAI_OUTPUT: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release.AppImage'
           LDAI_NO_APPSTREAM: '1'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
+          VERSION: '${{ needs.version.outputs.version }}'
       - if: runner.os == 'Linux' && github.event_name != 'pull_request'
         name: 'Attest the AppImage'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
@@ -454,14 +452,9 @@ jobs:
         with:
           if-no-files-found: 'error'
           name: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release'
-          path: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release.AppImage'
-      - if: runner.os == 'Linux'
-        name: 'Upload the AppImage symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-symbols'
-          path: '${{ env.PACKAGE }}-symbols.tar.gz'
+          path: |
+            coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release.AppImage
+            coastline-${{ needs.version.outputs.version }}-appimage-${{ matrix.platform.artifact_arch }}-Release-symbols.tar.gz
   flatpak:
     env:
       NODE_OPTIONS: '--no-deprecation'
@@ -497,6 +490,10 @@ jobs:
           cache: false
           manifest-path: 'sh.tat.coastline.yml'
           upload-artifact: false
+      - name: 'Verify the Flatpak symbols'
+        env:
+          SYMBOLS_FILE: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release-debug.flatpak'
+        run: test -f "$SYMBOLS_FILE"
       - name: 'Attest the Flatpak'
         if: github.event_name != 'pull_request'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
@@ -507,13 +504,9 @@ jobs:
         with:
           if-no-files-found: 'error'
           name: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release'
-          path: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release.flatpak'
-      - name: 'Upload the Flatpak symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-symbols'
-          path: 'coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release-debug.flatpak'
+          path: |
+            coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release.flatpak
+            coastline-${{ needs.version.outputs.version }}-flatpak-${{ matrix.artifact_arch }}-Release-debug.flatpak
   snap:
     permissions:
       attestations: write
@@ -603,13 +596,9 @@ jobs:
         with:
           if-no-files-found: 'error'
           name: 'coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-Release'
-          path: '${{ env.SNAP_FILE }}'
-      - name: 'Upload the snap symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-symbols'
-          path: 'coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-symbols.tar.gz'
+          path: |
+            ${{ env.SNAP_FILE }}
+            coastline-${{ needs.version.outputs.version }}-snap-${{ matrix.artifact_arch }}-symbols.tar.gz
   sdl-mingw:
     permissions:
       attestations: write
@@ -689,13 +678,9 @@ jobs:
         with:
           if-no-files-found: 'error'
           name: 'coastline-${{ needs.version.outputs.version }}-windows-x86-64-mingw-Release'
-          path: '${{ env.PACKAGE }}.zip'
-      - name: 'Upload the symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'coastline-${{ needs.version.outputs.version }}-windows-x86-64-mingw-symbols'
-          path: '${{ env.PACKAGE }}-symbols.zip'
+          path: |
+            ${{ env.PACKAGE }}.zip
+            ${{ env.PACKAGE }}-symbols.zip
   win:
     permissions:
       attestations: write
@@ -769,12 +754,7 @@ jobs:
           path: |
             boss-rally-${{ needs.version.outputs.version }}-windows-x86-Release.zip
             boss-rally-${{ needs.version.outputs.version }}-windows-x86-setup.exe
-      - name: 'Upload the Boss Rally symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-symbols'
-          path: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-symbols.zip'
+            boss-rally-${{ needs.version.outputs.version }}-windows-x86-symbols.zip
   win-msvc:
     name: 'Boss Rally (MSVC)'
     needs: 'version'
@@ -853,19 +833,15 @@ jobs:
         with:
           if-no-files-found: 'error'
           name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-Release'
-          path: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-Release.zip'
-      - name: 'Upload the MSVC symbols'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-symbols'
-          path: 'boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-symbols.zip'
-  # On a tag, PC packages go to the draft. N64 artifacts remain on the CI run.
+          path: |
+            boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-Release.zip
+            boss-rally-${{ needs.version.outputs.version }}-windows-x86-msvc-symbols.zip
+  # On a tag, packages and symbols go to the draft. N64 ROMs remain on the CI run.
   # The Release workflow publishes the draft once every workflow of the commit succeeds.
   release:
     if: "github.ref_type == 'tag'"
     name: 'Attach to the release'
-    needs: ['flatpak', 'n64', 'sdl', 'sdl-mingw', 'snap', 'win']
+    needs: ['flatpak', 'n64', 'sdl', 'sdl-mingw', 'snap', 'win', 'win-msvc']
     permissions:
       attestations: 'write'
       contents: 'write'
@@ -877,11 +853,12 @@ jobs:
           merge-multiple: true
           path: 'packages'
           pattern: >-
-            {coastline-*-{linux,windows,macos,appimage,flatpak,snap}-*-Release,boss-rally-*-windows-x86-Release}
+            {coastline-*-{linux,windows,macos,appimage,flatpak,snap}-*-Release,boss-rally-*-windows-x86*-Release}
       - name: 'List the packages'
         run: |
           find packages -maxdepth 1 -type f \( -name '*.AppImage' -o -name '*.dmg' -o -name '*.exe' \
-            -o -name '*.flatpak' -o -name '*.snap' -o -name '*.tar.gz' -o -name '*.zip' \) \
+            -o -name '*.flatpak' -o -name '*.snap' -o -name '*.tar.gz' \
+            -o -name '*.zip' \) \
             | sort > packages.txt
           cat packages.txt
       - uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
