@@ -582,6 +582,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y squashfs-tools
+          mkdir -p .wiswa-ci
           unsquashfs -no-progress -d .wiswa-ci/snap-symbols "$SNAP_FILE" usr/bin/coastline
           readelf --debug-dump=info .wiswa-ci/snap-symbols/usr/bin/coastline \
             | grep -q 'DW_AT_comp_dir'
