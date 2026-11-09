@@ -50,6 +50,7 @@ extern Sprite g_texPaintWholeCar;
  */
 extern Sprite g_texPanelLeftDoor;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028cc00
  * @ghidraAddress Asia: 0x8028C750
@@ -121,6 +122,7 @@ extern Sprite g_texPanel8;
  * @ghidraAddress JPN: 0x8028ef30
  */
 extern Sprite g_texPanel9;
+/** @endcond */
 
 /**
  * The lights drawn over the buttons of panels 8 and 9.
@@ -132,6 +134,7 @@ extern Sprite g_texPanel9;
  */
 extern Sprite g_texPanel8Overlay;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028cde0
  * @ghidraAddress Asia: 0x8028C930
@@ -139,6 +142,7 @@ extern Sprite g_texPanel8Overlay;
  * @ghidraAddress JPN: 0x8028ef90
  */
 extern Sprite g_texPanel9Overlay;
+/** @endcond */
 
 /**
  * The brush sizes of the round brush, top to bottom.
@@ -171,6 +175,7 @@ extern Sprite g_texBrushSizeSquare;
  */
 extern Sprite g_texPaintToolMirror;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028d140
  * @ghidraAddress Asia: 0x8028CC90
@@ -210,6 +215,7 @@ extern Sprite g_texPaintTextCursor;
  * @ghidraAddress JPN: 0x8028f3d0
  */
 extern Sprite g_texPaintEyedropperCursor;
+/** @endcond */
 
 /**
  * The keyboard of the text tool.
@@ -316,6 +322,7 @@ extern u8 g_bEyedropperActive;
  */
 extern Vec3f s_aPanelViewDirections[DECAL_SLOTS];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028dc80
  * @ghidraAddress Asia: 0x8028D7D0
@@ -323,6 +330,7 @@ extern Vec3f s_aPanelViewDirections[DECAL_SLOTS];
  * @ghidraAddress JPN: 0x8028fe50
  */
 extern s8 g_bPaintShopInitialized;
+/** @endcond */
 
 /**
  * The texels of the decal a mirror copies from.
@@ -334,6 +342,7 @@ extern s8 g_bPaintShopInitialized;
  */
 extern u8 *s_pMirrorSource;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028dcbc
  * @ghidraAddress Asia: 0x8028D80C
@@ -341,6 +350,7 @@ extern u8 *s_pMirrorSource;
  * @ghidraAddress JPN: 0x8028fedc
  */
 extern u8 g_bPakDialogActive;
+/** @endcond */
 
 /**
  * Whether the file of the decals is created first.
@@ -382,6 +392,7 @@ extern u8 g_bMirrorTargetPanel;
  */
 extern u8 g_bPakRumbleSwapped;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80369e51
  * @ghidraAddress Asia: 0x80369901
@@ -405,6 +416,7 @@ extern s32 g_dwPakError;
  * @ghidraAddress JPN: 0x8036afb8
  */
 extern s32 g_dwPakFileNo;
+/** @endcond */
 
 /**
  * The bytes of the chunk last moved.
@@ -416,6 +428,7 @@ extern s32 g_dwPakFileNo;
  */
 extern s32 g_dwPakChunkSize;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80369e60
  * @ghidraAddress Asia: 0x80369910
@@ -423,6 +436,7 @@ extern s32 g_dwPakChunkSize;
  * @ghidraAddress JPN: 0x8036afc0
  */
 extern u8 g_bPakDialogState;
+/** @endcond */
 
 /**
  * The decal being moved.
@@ -434,6 +448,7 @@ extern u8 g_bPakDialogState;
  */
 extern u8 g_bPakDecalIndex;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80369e62
  * @ghidraAddress Asia: 0x80369912
@@ -441,6 +456,7 @@ extern u8 g_bPakDecalIndex;
  * @ghidraAddress JPN: 0x8036afc2
  */
 extern u8 g_bPakWaitFrames;
+/** @endcond */
 
 /**
  * The text typed.

@@ -186,6 +186,7 @@ extern s32 g_bCarSelectDone;
  */
 extern s8 *g_pScrollSoundBuf;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x803162a0
  * @ghidraAddress Asia: 0x80315D50
@@ -209,6 +210,7 @@ extern s8 *g_pSelectSoundBuf;
  * @ghidraAddress JPN: 0x80316bc0
  */
 extern u32 g_dwSelectSoundSize;
+/** @endcond */
 
 /**
  * The frames the title is still drawn once the screen has faded in. It is set to 2 each frame.
@@ -241,6 +243,7 @@ extern s32 g_adwCarSelectState[2];
  */
 extern s32 g_dwPakDialogActive;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x803162bc
  * @ghidraAddress Asia: 0x80315D6C
@@ -264,6 +267,7 @@ extern s32 g_dwPakDialogResult;
  * @ghidraAddress JPN: 0x80316bdc
  */
 extern u8 g_bPakDialogDone;
+/** @endcond */
 
 /**
  * The championship as the results show it: its season, round and flags, the track and the weather
@@ -276,6 +280,7 @@ extern u8 g_bPakDialogDone;
  */
 extern s32 g_dwResultsSeason;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80316300
  * @ghidraAddress Asia: 0x80315DB0
@@ -307,6 +312,7 @@ extern s32 g_dwResultsTrack;
  * @ghidraAddress JPN: 0x80316c24
  */
 extern s32 g_dwCarSelectWeather;
+/** @endcond */
 
 /**
  * Whether the season results were processed on this screen.
@@ -348,6 +354,7 @@ extern char g_szResultsBuf[0x58];
  */
 extern MenuItem *g_apHandlingOptions[];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x802720c4
  * @ghidraAddress Asia: 0x80271C14
@@ -403,6 +410,7 @@ extern MenuItem *g_apSuspensionOptions[];
  * @ghidraAddress JPN: 0x80273c28
  */
 extern s32 g_dwSuspensionOptionCount;
+/** @endcond */
 
 /**
  * The decals, by the DECALS_ values.
@@ -414,6 +422,7 @@ extern s32 g_dwSuspensionOptionCount;
  */
 extern MenuItem *g_apDecalOptions[];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x802721ec
  * @ghidraAddress Asia: 0x80271D3C
@@ -421,6 +430,7 @@ extern MenuItem *g_apDecalOptions[];
  * @ghidraAddress JPN: 0x80273c78
  */
 extern s32 g_dwDecalListCount;
+/** @endcond */
 
 /**
  * The names of the layouts of the engines and of the driven wheels.
@@ -452,6 +462,7 @@ extern const char *g_apszDriveTypes[];
  */
 extern Ambient g_CameraViewAmbientLight;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x802721f8
  * @ghidraAddress Asia: 0x80271D48
@@ -483,6 +494,7 @@ extern Light g_CameraViewLight3;
  * @ghidraAddress JPN: 0x80273cb8
  */
 extern Light g_CameraViewLight4;
+/** @endcond */
 
 /**
  * Draw a bar: a black frame, a dark green background, and its filling of a fraction in bright
