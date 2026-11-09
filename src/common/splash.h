@@ -46,6 +46,7 @@ extern s32 g_bSplashFadingOut;
  */
 extern Ambient g_SplashAmbientLight;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80270828
  * @ghidraAddress Asia: 0x80270378
@@ -53,6 +54,7 @@ extern Ambient g_SplashAmbientLight;
  * @ghidraAddress JPN: 0x802722d0
  */
 extern Light g_SplashDirectionalLight;
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_JP
 /**
@@ -106,6 +108,7 @@ extern u8 g_bControllerCheckStarted;
  */
 extern Model *g_pSplashFirstLogo;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80315e84
  */
@@ -118,6 +121,7 @@ extern Model *g_pSplashProducerLogo;
  * @ghidraAddress JPN: 0x803165b4
  */
 extern Model *g_pSplashDeveloperLogo;
+/** @endcond */
 
 /**
  * The parts of the title, in the order they show.
@@ -128,6 +132,7 @@ extern Model *g_pSplashDeveloperLogo;
  */
 extern Model *g_pSplashTitleModelA;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80315e90
  * @ghidraAddress Asia: 0x8031594C
@@ -148,6 +153,7 @@ extern Model *g_pSplashTitleModelD;
  * @ghidraAddress EUR: 0x80317b84
  */
 extern Model *g_pSplashTitleModelC;
+/** @endcond */
 
 /**
  * The time since the splash screens started, in seconds.
@@ -169,6 +175,7 @@ extern f32 g_fSplashTime;
  */
 extern u32 g_dwSplashSoundALength;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80315ea4
  * @ghidraAddress Asia: 0x80315960
@@ -176,6 +183,7 @@ extern u32 g_dwSplashSoundALength;
  * @ghidraAddress JPN: 0x803167c0
  */
 extern s8 *g_pSplashSoundA;
+/** @endcond */
 
 /**
  * The second sound a logo makes as it flies in, and its length.
@@ -187,6 +195,7 @@ extern s8 *g_pSplashSoundA;
  */
 extern u32 g_dwSplashSoundBLength;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80315eac
  * @ghidraAddress Asia: 0x80315968
@@ -194,6 +203,7 @@ extern u32 g_dwSplashSoundBLength;
  * @ghidraAddress JPN: 0x803167c8
  */
 extern s8 *g_pSplashSoundB;
+/** @endcond */
 
 /**
  * For each logo: the channel of the sound it makes as it leaves, how far its first sound has gone
@@ -207,6 +217,7 @@ extern s8 *g_pSplashSoundB;
  */
 extern s32 g_dwSplashFirstLogoVoice;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80315eb4
  * @ghidraAddress Asia: 0x80315970
@@ -261,6 +272,7 @@ extern s32 g_dwSplashDeveloperSoundA;
  * @ghidraAddress JPN: 0x803167e0
  */
 extern s32 g_bSplashDeveloperSoundB;
+/** @endcond */
 
 /**
  * Whether a player skipped the splash screens, which then lead to the main menu.

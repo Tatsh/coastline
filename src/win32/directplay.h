@@ -831,11 +831,13 @@ int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
                          int nState,
                          unsigned char bTag);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x1022aefc
  * @ghidraAddress BRGlide: 0x10226a2c
  */
 extern unsigned g_dwNetRaceStartTimeMs;
+/** @endcond */
 
 /**
  * Give a message of the main window to the network play.
@@ -887,6 +889,7 @@ struct NetPeerSlot {
     int dwPingMs;                 /*!< The measured latency in milliseconds. */
 };
 
+/** @cond */
 /** A server-frame timestamp paired with the local clock. */
 struct NetClockSample {
     unsigned dwServerFrame; /*!< The frame number received from the server. */
@@ -922,6 +925,7 @@ extern char g_szSlotPlayerNameBuffer[0x400];
  * @ghidraAddress BRGlide: 0x10226a28
  */
 extern int g_nPendingNetSoundEffect;
+/** @endcond */
 
 /**
  * Copy a player's name under its slot mutex into the shared name buffer.
@@ -1331,6 +1335,7 @@ void CreateNetworkPlayerSlotMutexes(void);
  */
 void ResetAllPlayerSlots(void);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x1178feec
  * @ghidraAddress BRGlide: 0x117b324c
@@ -1342,6 +1347,7 @@ extern DWORD g_dwNetSlotResetTime;
  * @ghidraAddress BRGlide: 0x11849e58
  */
 extern unsigned g_dwNetNextFinishPosition;
+/** @endcond */
 
 /**
  * Broadcast a player's finishing position with guaranteed delivery.
@@ -1582,11 +1588,13 @@ extern NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
  */
 extern NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT_COUNT];
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x1178fef0
  * @ghidraAddress BRGlide: 0x117b3250
  */
 extern int g_bNetRaceStarted;
+/** @endcond */
 
 /**
  * The state of a network player of a race, under the mutex of its slot.
@@ -1809,11 +1817,13 @@ extern int g_dwNetworkEscapePending;
  */
 int ToggleSelectedSessionSlotFlag(void);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x100aac48
  * @ghidraAddress BRGlide: 0x100aa3e8
  */
 extern const char *g_apszPlaceNames[8];
+/** @endcond */
 
 /**
  * End the network play of a game. The host stops its worker thread, the session of DirectPlay
