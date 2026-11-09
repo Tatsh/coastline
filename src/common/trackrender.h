@@ -116,6 +116,8 @@ extern u8 g_abInstanceVisibilityMask[];
 extern s32 g_nVisibleCellIdxNear;
 
 /**
+ * Where the middle-distance model group starts, or -1.
+ *
  * @ghidraAddress USA: 0x8028c788
  * @ghidraAddress Asia: 0x8028C2D8
  * @ghidraAddress EUR: 0x8028eee8
@@ -126,6 +128,8 @@ extern s32 g_nVisibleCellIdxNear;
 extern s32 g_nVisibleCellIdxMid;
 
 /**
+ * Where the models of cells within three cells of the far plane start, or -1.
+ *
  * @ghidraAddress USA: 0x8028c780
  * @ghidraAddress Asia: 0x8028C2D0
  * @ghidraAddress EUR: 0x8028eee0
@@ -150,6 +154,7 @@ extern s32 g_nVisibleCellIdxFar;
 extern s32 g_nTrackTransparentStartIdx;
 #endif /* !TGR_BOSS_RALLY */
 
+/** @cond */
 #if !TGR_BOSS_RALLY
 /**
  * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
@@ -175,6 +180,7 @@ extern s32 g_nTrackTransparentStartIdxNear;
  */
 extern s32 g_nTrackTransparentStartIdxFar;
 #endif /* !TGR_BOSS_RALLY */
+/** @endcond */
 
 #if !TGR_BOSS_RALLY
 /**
@@ -239,6 +245,8 @@ extern s32 g_bDebugHideInstance;
 extern u32 g_dwTrackOtherModeLBlend;
 
 /**
+ * The render-mode flags applied with g_dwTrackOtherModeLBlend.
+ *
  * @ghidraAddress USA: 0x8028c750
  * @ghidraAddress Asia: 0x8028C2A0
  * @ghidraAddress EUR: 0x8028eeb0
@@ -262,6 +270,8 @@ extern s32 g_nNearbyVehicleCount;
 #endif /* !TGR_BOSS_RALLY */
 
 /**
+ * The indices of the vehicles near enough to cast shadows on placed models.
+ *
  * @ghidraAddress USA: 0x8035d4e8
  * @ghidraAddress Asia: 0x8035CF98
  * @ghidraAddress EUR: 0x8035f9e8
@@ -329,6 +339,8 @@ extern LookAt *g_pTrackLookAt;
 extern Lights1 g_aTrackLights[4];
 
 /**
+ * The index of the light buffer used to draw the track this frame.
+ *
  * @ghidraAddress USA: 0x8028c6a0
  * @ghidraAddress Asia: 0x8028C1F0
  * @ghidraAddress EUR: 0x8028ee00

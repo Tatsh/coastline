@@ -94,6 +94,8 @@ typedef struct {
 #define CAR_MODELS 13
 
 /**
+ * The model and dashboard definitions of the cars the players can choose.
+ *
  * @ghidraAddress USA: 0x8028ae0c
  * @ghidraAddress Asia: 0x8028A95C
  * @ghidraAddress EUR: 0x8028d0bc
@@ -112,6 +114,8 @@ extern CarModel g_aCarModels[CAR_MODELS];
 extern s32 g_dwCarCount;
 
 /**
+ * The handling and engine specifications of the cars the players can choose.
+ *
  * @ghidraAddress USA: 0x8028b330
  * @ghidraAddress Asia: 0x8028AE80
  * @ghidraAddress EUR: 0x8028d5e0
@@ -350,6 +354,8 @@ struct Vehicle {
 };
 
 /**
+ * The active vehicles of a race, with players in the first slots.
+ *
  * @ghidraAddress USA: 0x8031b760
  * @ghidraAddress Asia: 0x8031B210
  * @ghidraAddress EUR: 0x8031dc60
@@ -623,6 +629,8 @@ void DriveAiVehicle(Vehicle *vehicle);
 extern f32 g_fSteerLock;
 
 /**
+ * How quickly the steering angle changes per frame, in radians.
+ *
  * @ghidraAddress USA: 0x8028b724
  * @ghidraAddress Asia: 0x8028B274
  * @ghidraAddress EUR: 0x8028d9d4
@@ -631,6 +639,8 @@ extern f32 g_fSteerLock;
 extern f32 g_fSteerRate;
 
 /**
+ * How many degrees each unit of steering input turns the wheels.
+ *
  * @ghidraAddress USA: 0x8028b728
  * @ghidraAddress Asia: 0x8028B278
  * @ghidraAddress EUR: 0x8028d9d8
@@ -639,6 +649,8 @@ extern f32 g_fSteerRate;
 extern f32 g_fSteerGain;
 
 /**
+ * How many degrees of steering lock are lost as speed increases.
+ *
  * @ghidraAddress USA: 0x8028b72c
  * @ghidraAddress Asia: 0x8028B27C
  * @ghidraAddress EUR: 0x8028d9dc
