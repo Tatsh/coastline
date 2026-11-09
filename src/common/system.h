@@ -90,6 +90,7 @@ extern u8 g_aInflateHeapBuffer[];
  */
 extern u8 *g_pInflateHeapBase;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80368ac4
  * @ghidraAddress Asia: 0x80368574
@@ -97,6 +98,7 @@ extern u8 *g_pInflateHeapBase;
  * @ghidraAddress JPN: 0x80369c34
  */
 extern u8 *g_pInflateHeapEnd;
+/** @endcond */
 
 /**
  * The state of the allocator inflateInit2_() gives zlib.
@@ -370,6 +372,7 @@ extern s32 g_dwIoMessagePoolIndex;
  */
 extern OSMesgQueue g_DmaMessageQueue;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80319fa0
  * @ghidraAddress Asia: 0x80319A50
@@ -377,6 +380,7 @@ extern OSMesgQueue g_DmaMessageQueue;
  * @ghidraAddress JPN: 0x8031b0b0
  */
 extern OSMesg g_aDmaMsgBuf[32];
+/** @endcond */
 
 /**
  * The queue the RSP event reaches, and the queue the thread forwards it to.
@@ -414,6 +418,7 @@ extern OSMesg g_aRspEventMsgBuf[1];
  */
 extern OSMesgQueue g_RspDoneMsgQueue;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031a350
  * @ghidraAddress Asia: 0x80319E00
@@ -421,6 +426,7 @@ extern OSMesgQueue g_RspDoneMsgQueue;
  * @ghidraAddress JPN: 0x8031b460
  */
 extern OSMesg g_aRspDoneMsgBuf[1];
+/** @endcond */
 
 /**
  * The queue the RDP event reaches, and the queue the thread forwards it to.
@@ -458,6 +464,7 @@ extern OSMesg g_aRdpEventMsgBuf[1];
  */
 extern OSMesgQueue g_RdpDoneMsgQueue;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031a388
  * @ghidraAddress Asia: 0x80319E38
@@ -465,6 +472,7 @@ extern OSMesgQueue g_RdpDoneMsgQueue;
  * @ghidraAddress JPN: 0x8031b498
  */
 extern OSMesg g_aRdpDoneMsgBuf[1];
+/** @endcond */
 
 /**
  * The queue of the retrace of ViRetraceThread(), which nothing starts, and the queue each retrace
@@ -503,6 +511,7 @@ extern OSMesg g_ViRetracePollMesgBuf[1];
  */
 extern OSMesgQueue g_ViRetraceMesgQueue;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031a3a8
  * @ghidraAddress Asia: 0x80319E58
@@ -510,6 +519,7 @@ extern OSMesgQueue g_ViRetraceMesgQueue;
  * @ghidraAddress JPN: 0x8031b4d8
  */
 extern OSMesg g_ViRetraceMesgBuf[1];
+/** @endcond */
 
 /**
  * The value the events send.
@@ -539,6 +549,7 @@ extern u32 g_dwDummyOsMesg;
 extern s32 g_dwVblankCounter;
 #endif
 
+/** @cond */
 /**
  * The threads of the system.
  *
@@ -646,6 +657,7 @@ extern u32 g_adwIdleThreadStack[IDLE_STACK_WORDS];
  * @ghidraAddress JPN: 0x8031bee0
  */
 extern u32 g_adwFaultThreadStack[FAULT_STACK_WORDS];
+/** @endcond */
 
 /**
  * The memory the display lists are built in.
@@ -702,6 +714,7 @@ extern f32 g_fCountsPerMillisecond;
  */
 extern OSContStatus g_aContStatus[MAXCONTROLLERS];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80272d60
  * @ghidraAddress Asia: 0x802728B0
@@ -709,6 +722,7 @@ extern OSContStatus g_aContStatus[MAXCONTROLLERS];
  * @ghidraAddress JPN: 0x80274a30
  */
 extern OSMesg g_aSiEventMesgBuf[1];
+/** @endcond */
 
 /**
  * The clock of the frames, in counts of the CPU counter.
@@ -746,6 +760,7 @@ extern u32 g_dwFrameTimestamp;
  */
 extern s32 g_dwPrevElapsedTimeMs;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031b348
  * @ghidraAddress Asia: 0x8031ADF8
@@ -753,6 +768,7 @@ extern s32 g_dwPrevElapsedTimeMs;
  * @ghidraAddress JPN: 0x8031c498
  */
 extern u32 g_dwDmaChunkSize;
+/** @endcond */
 
 /**
  * The queue of the fault event and the thread that faulted.
@@ -764,6 +780,7 @@ extern u32 g_dwDmaChunkSize;
  */
 extern OSMesgQueue g_FaultMsgQueue;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031b1c8
  * @ghidraAddress Asia: 0x8031AC78
@@ -779,6 +796,7 @@ extern OSMesg g_aFaultMsgBuf[1];
  * @ghidraAddress JPN: 0x8031c2fc
  */
 extern OSThread *g_pFaultedThread;
+/** @endcond */
 
 /**
  * Cleared once by the fault thread.
@@ -811,6 +829,7 @@ extern char *g_apszBootArgv[];
  */
 extern char **g_ppszMainArgv;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8026ff00
  * @ghidraAddress Asia: 0x8026FA50
@@ -818,6 +837,7 @@ extern char **g_ppszMainArgv;
  * @ghidraAddress JPN: 0x80271980
  */
 extern s32 *g_pdwMainArgc;
+/** @endcond */
 
 /**
  * The queue of the commands of the PI manager.
@@ -829,6 +849,7 @@ extern s32 *g_pdwMainArgc;
  */
 extern OSMesgQueue g_PiMgrCmdQueue;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80319ee8
  * @ghidraAddress Asia: 0x80319998
@@ -836,6 +857,7 @@ extern OSMesgQueue g_PiMgrCmdQueue;
  * @ghidraAddress JPN: 0x8031aff8
  */
 extern OSMesg g_aPiMgrCmdMsgBuf[32];
+/** @endcond */
 
 /**
  * The video modes of the NTSC and the MPAL consoles.
@@ -930,11 +952,13 @@ void RdpDoneThread(void *arg);
  */
 extern OSMesgQueue g_PreNmiMesgQueue;
 
+/** @cond */
 /**
  * @ghidraAddress EUR: 0x8031c888
  * @ghidraAddress JPN: 0x8031b4b8
  */
 extern OSMesg g_aPreNmiMesgBuf[1];
+/** @endcond */
 
 /**
  * Set once the reset button has been pressed.
@@ -1101,6 +1125,7 @@ extern u64 g_aRspBootUcode[];
  */
 extern u64 g_aRspBootUcodeEnd[];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8026ead0
  * @ghidraAddress Asia: 0x8026E620
@@ -1108,6 +1133,7 @@ extern u64 g_aRspBootUcodeEnd[];
  * @ghidraAddress JPN: 0x80270550
  */
 extern u64 g_aGspUcodeText[];
+/** @endcond */
 
 /**
  * The data of the graphics microcode.
@@ -1187,6 +1213,7 @@ extern s32 g_dwPeakShadowCommandCount;
 #endif /* !TGR_BOSS_RALLY */
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028ab78
  * @ghidraAddress Asia: 0x8028A6C8
@@ -1208,6 +1235,7 @@ extern s32 g_dwPeakShadowVertexCount;
  * @ghidraAddress BRGlide: 0x106ed6f0
  */
 extern s32 g_dwPeakDisplayListCommands;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 #if !TGR_BOSS_RALLY
@@ -1240,6 +1268,7 @@ extern u32 g_dwFlushDuration;
 #endif /* !TGR_BOSS_RALLY */
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028aae0
  * @ghidraAddress Asia: 0x8028A630
@@ -1261,6 +1290,7 @@ extern u32 g_dwFlushInterval;
  * @ghidraAddress BRGlide: 0x106e7298
  */
 extern u32 g_dwFlushStartTime;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**
@@ -1276,6 +1306,7 @@ extern u32 g_dwFlushStartTime;
 extern u32 g_dwFlushValueSource;
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8028aa24
  * @ghidraAddress Asia: 0x8028A574
@@ -1285,6 +1316,7 @@ extern u32 g_dwFlushValueSource;
  * @ghidraAddress BRGlide: 0x106ec774
  */
 extern u32 g_dwLastFlushValue;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**
