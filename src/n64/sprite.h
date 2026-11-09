@@ -60,13 +60,14 @@ void LoadTextureFromRom(Sprite *sprite);
  * Draw a sprite at its origin, at its size on the screen.
  *
  * @param sprite The sprite to draw.
- * @param palette The palette of the texels, or NULL (European and Japanese releases only).
+ * European and Japanese releases also take the palette of the texels, or NULL.
  * @ghidraAddress USA: 0x80245470
  * @ghidraAddress Asia: 0x80244FC0
  * @ghidraAddress EUR: 0x80246994
  * @ghidraAddress JPN: 0x802464cc
  */
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/** @param palette The palette of the texels, or NULL. */
 void DrawSpriteAtOrigin(Sprite *sprite, u16 *palette);
 #else
 void DrawSpriteAtOrigin(Sprite *sprite);
@@ -126,8 +127,8 @@ void DrawSpriteRegion(
  *
  * @param sprite The sprite the strip belongs to.
  * @param pixels The texels of the strip.
- * @param palette The palette of a 4-bit strip of colour indices, or NULL for an intensity strip.
- *                The European and Japanese releases have this parameter.
+ * European and Japanese releases also take the palette of a 4-bit strip of colour indices, or
+ * NULL for an intensity strip.
  * @param width The width of the strip in texels.
  * @param height The height of the strip in texels.
  * @param x The left edge on the screen.
@@ -142,6 +143,9 @@ void DrawSpriteRegion(
  * @ghidraAddress EUR: 0x80247050
  * @ghidraAddress JPN: 0x80246b88
  */
+#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+/** @param palette The palette of a 4-bit strip of colour indices, or NULL for intensity. */
+#endif
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU

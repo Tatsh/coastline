@@ -83,6 +83,7 @@ extern "C" {
  * errno as a macro, and the member takes another name there.
  */
 #if TGR_BOSS_RALLY
+/** Select the host-compatible controller channel-error member. */
 #define CONT_ERRNO errnum
 #else
 /** Select the Nintendo 64 controller channel-error member. */

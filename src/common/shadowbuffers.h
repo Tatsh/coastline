@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 #if TGR_BOSS_RALLY
+/** The number of shadow commands per frame buffer in Boss Rally. */
 #define SHADOW_COMMANDS 10000
 #else
 /** The number of shadow commands per frame buffer on Nintendo 64. */
@@ -41,21 +42,28 @@ extern DisplayListCommand g_aShadowDisplayLists[2][SHADOW_COMMANDS];
  */
 extern ConvertedModelVertex g_aShadowVertices[2][SHADOW_VERTICES];
 
+/** The number of track-quad vertices per frame buffer. */
 #define TRACK_QUAD_VERTICES 8000
 
 /**
+ * The track-quad vertices of the two frame buffers.
+ *
  * @ghidraAddress BRD3D: 0x102e5f28
  * @ghidraAddress BRGlide: 0x102e1710
  */
 extern ConvertedModelVertex g_aTrackQuadVertices[2][TRACK_QUAD_VERTICES];
 
 /**
+ * The first track-quad vertex of the current frame.
+ *
  * @ghidraAddress BRD3D: 0x102e5ec4
  * @ghidraAddress BRGlide: 0x102e16ac
  */
 extern ConvertedModelVertex *g_pTrackQuadVertexStart;
 
 /**
+ * The next free track-quad vertex of the current frame.
+ *
  * @ghidraAddress BRD3D: 0x10363ff4
  * @ghidraAddress BRGlide: 0x1035f7dc
  */

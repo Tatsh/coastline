@@ -8,8 +8,16 @@ extern "C" {
 #endif
 
 #if TGR_BOSS_RALLY
+/** Refresh the painted material textures of a vehicle model.
+ * @param model The vehicle model.
+ */
 void RefreshVehicleMaterialTextures(VehicleModel *model);
 
+/** Set the palette entries used to light a vehicle.
+ * @param palette The palette to update.
+ * @param variant The lighting variant.
+ * @param dark Whether the dark palette is selected.
+ */
 static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
     if (variant == 0) {
         palette[15] = dark ? 0x0070 : 0x0190;

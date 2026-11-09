@@ -64,40 +64,64 @@ inline void *DecodePtr32(std::uint32_t offset) {
 template <typename T>
 class Ptr32 {
 public:
+    /** Store an encoded pointer.
+     * @param pointer The address to encode, or nullptr.
+     * @return This pointer.
+     */
     Ptr32 &operator=(T *pointer) {
         m_offset = EncodePtr32(pointer);
         return *this;
     }
+    /** Store a null pointer.
+     * @return This pointer.
+     */
     Ptr32 &operator=(std::nullptr_t) {
         m_offset = 0;
         return *this;
     }
 
+    /** @return The decoded address, or nullptr for a zero offset. */
     operator T *() const {
         return static_cast<T *>(DecodePtr32(m_offset));
     }
+    /** @return The decoded address for member access. */
     T *operator->() const {
         return *this;
     }
+    /** @return The object at the decoded address. */
     template <typename U = T>
         requires(!std::is_void_v<U>)
     U &operator*() const {
         return *static_cast<T *>(*this);
     }
+    /** Return an object relative to the decoded address.
+     * @param index The object offset from the decoded address.
+     * @return The object at the offset.
+     */
     template <typename U = T>
         requires(!std::is_void_v<U>)
     U &operator[](std::ptrdiff_t index) const {
         return static_cast<T *>(*this)[index];
     }
+    /** Advance by one object.
+     * @return This pointer after advancing.
+     */
     Ptr32 &operator++() {
         *this = static_cast<T *>(*this) + 1;
         return *this;
     }
+    /** Advance by one object.
+     * @return The pointer before advancing.
+     */
     Ptr32 operator++(int) {
         Ptr32 old = *this;
         ++*this;
         return old;
     }
+    /** Advance by a number of objects.
+     * @param count The number of objects to advance.
+     * @return This pointer after advancing.
+     */
     Ptr32 &operator+=(std::ptrdiff_t count) {
         *this = static_cast<T *>(*this) + count;
         return *this;

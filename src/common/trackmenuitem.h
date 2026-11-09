@@ -14,8 +14,8 @@ typedef struct {
     u32 flags;           /*!< The MENU_ITEM_* flags. */
     struct Model *model; /*!< The model of the item, or NULL to show its name. */
 #if TGR_BOSS_RALLY
-    const u32 *romStart;
-    const u32 *romEnd;
+    const u32 *romStart; /*!< The start address of the item's model data. */
+    const u32 *romEnd;   /*!< The end address of the item's model data. */
 #else
     u32 romStart; /*!< The cartridge offset of the model of the item. */
     u32 romEnd;   /*!< The cartridge offset of the end of the model of the item. */
@@ -37,8 +37,8 @@ typedef struct {
 #if TGR_BOSS_RALLY
 /** The adjacent palette and image filenames for a sky texture. */
 typedef struct {
-    char palette[32];
-    char image[32];
+    char palette[32]; /*!< The filename of the sky palette. */
+    char image[32];   /*!< The filename of the sky image. */
 } SkyTextureFiles;
 #endif
 
@@ -49,13 +49,13 @@ typedef struct {
  */
 typedef struct {
 #if TGR_BOSS_RALLY
-    MenuItem item;
-    const u32 *trackRom;
-    const u32 *trackRomEnd;
-    const SkyTextureFiles *daySkyFiles;
-    const u32 *daySkyRomEnd;
-    const SkyTextureFiles *nightSkyFiles;
-    const u32 *nightSkyRomEnd;
+    MenuItem item;                        /*!< The item of the track menu. */
+    const u32 *trackRom;                  /*!< The start address of the track geometry. */
+    const u32 *trackRomEnd;               /*!< The end address of the track geometry. */
+    const SkyTextureFiles *daySkyFiles;   /*!< The filenames of the daytime sky textures. */
+    const u32 *daySkyRomEnd;              /*!< The end address of the daytime sky data. */
+    const SkyTextureFiles *nightSkyFiles; /*!< The filenames of the night sky textures. */
+    const u32 *nightSkyRomEnd;            /*!< The end address of the night sky data. */
 #else
     MenuItem item;      /*!< The item of the track menu. */
     u32 trackRom;       /*!< The cartridge offset of the compressed geometry. */

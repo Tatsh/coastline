@@ -870,6 +870,8 @@ extern "C"
 
 #if TGR_BOSS_RALLY
 /**
+ * Run one frame of the active Boss Rally race screen.
+ *
  * @ghidraAddress BRD3D: 0x1002c500
  * @ghidraAddress BRGlide: 0x10019a70
  */

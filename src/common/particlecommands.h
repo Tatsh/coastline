@@ -51,6 +51,7 @@ extern "C" {
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE)
 
 #if TGR_BOSS_RALLY
+/** Set the combiner used by Windows particle and exhaust textures. */
 static inline void WriteParticleCombineMode(void) {
     PackCombineMode(gDisplayListPtr++,
                     0,
@@ -71,7 +72,7 @@ static inline void WriteParticleCombineMode(void) {
                     0);
 }
 
-/* Configure the primitive-colour particle texture for the Windows renderer. */
+/** Configure the primitive-colour particle texture for the Windows renderer. */
 static inline void ConfigureParticleTexture(void) {
     gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
     WriteParticleCombineMode();
@@ -80,6 +81,7 @@ static inline void ConfigureParticleTexture(void) {
                       1);
 }
 
+/** Configure the exhaust particle texture for the Windows renderer. */
 static inline void ConfigureExhaustParticleTexture(void) {
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);

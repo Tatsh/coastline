@@ -708,17 +708,21 @@ struct GbiVertexSource {
 #if TGR_BRD3D
 /** A vertex of the display lists after its transform. The layout is not recovered in full. */
 struct GbiVertex {
-    float fX;               /*!< The x on the screen. */
-    float fY;               /*!< The y on the screen. */
-    float fZ;               /*!< The depth. */
-    float fRed;             /*!< The red, from 0 to 1. */
-    float fGreen;           /*!< The green, from 0 to 1. */
-    float fBlue;            /*!< The blue, from 0 to 1. */
-    char abUnknown18[8];    /* +0x18 */
-    float fRhw;             /*!< The reciprocal of the homogeneous w. */
-    float fU;               /*!< The u of the texture. */
-    float fV;               /*!< The v of the texture. */
+    float fX;     /*!< The x on the screen. */
+    float fY;     /*!< The y on the screen. */
+    float fZ;     /*!< The depth. */
+    float fRed;   /*!< The red, from 0 to 1. */
+    float fGreen; /*!< The green, from 0 to 1. */
+    float fBlue;  /*!< The blue, from 0 to 1. */
+    /** @cond */
+    char abUnknown18[8]; /* +0x18 */
+    /** @endcond */
+    float fRhw; /*!< The reciprocal of the homogeneous w. */
+    float fU;   /*!< The u of the texture. */
+    float fV;   /*!< The v of the texture. */
+    /** @cond */
     char abUnknown2C[0x10]; /* +0x2C */
+    /** @endcond */
     int nClipFlags;         /*!< The planes of the view the vertex lies outside, a bit for each. */
     GbiVertexSource source; /*!< The vertex as the command loaded it. */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
@@ -796,10 +800,14 @@ void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVerte
 
 #if TGR_BRD3D
 /**
+ * The scale applied to transformed vertex depth before its viewport offset.
+ *
  * @ghidraAddress BRD3D: 0x100a79e0
  */
 extern float g_fDepthScale;
 /**
+ * The viewport offset added to transformed vertex depth.
+ *
  * @ghidraAddress BRD3D: 0x100a79e4
  */
 extern float g_fDepthOffset;
@@ -816,6 +824,13 @@ int ComputeVertexClipCodes(const GbiVertexSource *pVertex);
 
 #if TGR_BRD3D
 /**
+ * Transform a vertex inside the view into screen coordinates and assign its colour.
+ *
+ * @param pDest The vertex on the screen.
+ * @param pSource The vertex as it was loaded.
+ * @param fRed The red component, from 0 to 1.
+ * @param fGreen The green component, from 0 to 1.
+ * @param fBlue The blue component, from 0 to 1.
  * @ghidraAddress BRD3D: 0x100222d0
  */
 void TransformVertexToScreen(

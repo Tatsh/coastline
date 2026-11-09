@@ -82,7 +82,7 @@ typedef struct {
     s16 tileS1; /*!< The last texel column the tile covers. */
     u8 unreconstructed18[0x20 - 0x18]; /*!< Bytes not yet reconstructed. */
 #if TGR_BOSS_RALLY
-    u32 textureFlags;
+    u32 textureFlags; /*!< The texture size, animation flag, and texel format in packed bits. */
 #else
     union {
         struct {
@@ -102,8 +102,11 @@ typedef struct {
 } ModelTexture;
 
 #if TGR_BOSS_RALLY
+/** Whether a model texture advances through animation frames. */
 #define MODEL_TEXTURE_ANIMATED(texture) (((texture)->textureFlags >> 20) & 1u)
+/** The texel format of a model texture. */
 #define MODEL_TEXTURE_FORMAT(texture) (((texture)->textureFlags >> 24) & 0xfu)
+/** The size of a model texture, in bytes. */
 #define MODEL_TEXTURE_SIZE(texture) ((texture)->textureFlags & 0x3ffffu)
 #else
 /** Whether a model texture advances through animation frames. */
@@ -135,8 +138,8 @@ typedef struct {
     s32 height;       /*!< The height, in screen pixels. */
     s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
 #if TGR_BOSS_RALLY
-    s32 dashboardTextureEntries[16];
-    s32 dashboardGearTextureEntry;
+    s32 dashboardTextureEntries[16]; /*!< The texture entries of dashboard lighting levels. */
+    s32 dashboardGearTextureEntry;   /*!< The texture entry of the dashboard gear display. */
 #endif
 } ViewportRect;
 
@@ -170,6 +173,8 @@ extern f32 g_afMvpMatrix[4][4];
 
 #if TGR_BOSS_RALLY
 /**
+ * The matrix that rotates the camera for the current view.
+ *
  * @ghidraAddress BRD3D: 0x106c08e0
  * @ghidraAddress BRGlide: 0x106e7970
  */
@@ -1016,6 +1021,7 @@ void UnblankDisplay(void);
 /** Blank the video display. */
 #define BLANK_SCREEN() osViBlack(TRUE)
 #else
+/** Blank the video display. */
 #define BLANK_SCREEN() BlankDisplay()
 #endif
 

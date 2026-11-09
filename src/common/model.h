@@ -23,7 +23,7 @@ extern "C" {
 /** A part of a model: its display list, how it is drawn, and where. */
 typedef struct {
 #if TGR_BOSS_RALLY
-    TGR_PTR(GbiCommand) displayList;
+    TGR_PTR(GbiCommand) displayList; /*!< The display list that draws the part, or NULL. */
 #else
     TGR_PTR(Gfx) displayList; /*!< The display list that draws the part, or NULL. */
 #endif
@@ -64,7 +64,7 @@ typedef struct {
 typedef struct {
     s32 vertexCount; /*!< The number of vertices the animation moves. */
 #if TGR_BOSS_RALLY
-    ModelVertexData vertices;
+    ModelVertexData vertices; /*!< The vertices the animation moves. */
 #else
     TGR_PTR(Vtx) vertices; /*!< The vertices the animation moves. */
 #endif
@@ -90,8 +90,8 @@ typedef struct {
  */
 typedef struct Model {
 #if TGR_BOSS_RALLY
-    u16 wUnknown0; /* +0x00 */
-    u16 partCount;
+    u16 wUnknown0; /*!< The first 16-bit word of the model header, byte-swapped on load. */
+    u16 partCount; /*!< The number of parts. */
 #else
     u32 partCount; /*!< The number of parts. */
 #endif

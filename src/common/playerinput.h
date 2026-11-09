@@ -58,12 +58,17 @@ typedef struct PlayerInputState {
 
 #if TGR_BOSS_RALLY && defined(__cplusplus)
     /**
+     * Translate controller buttons and stick positions into race input.
+     *
      * @ghidraAddress BRD3D: 0x10035ce0
      * @ghidraAddress BRGlide: 0x1002f380
      */
     void TranslateControllerInput(void);
 
     /**
+     * Move the masked buttons out of the input until they are released.
+     *
+     * @param mask The buttons to move.
      * @ghidraAddress BRD3D: 0x10035fa0
      * @ghidraAddress BRGlide: 0x1002f640
      */

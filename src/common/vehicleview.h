@@ -22,6 +22,7 @@ typedef union VehicleReflectionTexture {
     unsigned entry; /*!< The texture entry of the reflection image. */
 } VehicleReflectionTexture;
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
+/** The four vehicle reflection textures in the Boss Rally renderer. */
 extern VehicleReflectionTexture g_apVehicleReflectionTextures[4];
 #endif
 #else

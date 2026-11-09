@@ -139,11 +139,13 @@ extern u32 g_dwDmaReadWordBuffer;
 /** @endcond */
 
 #if TGR_BOSS_RALLY
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x106c7c44
  * @ghidraAddress BRGlide: 0x106eecd4
  */
 extern s32 g_dwDmaReadPending;
+/** @endcond */
 #endif
 
 #ifdef __cplusplus

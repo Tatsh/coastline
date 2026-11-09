@@ -487,12 +487,12 @@ bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels);
  * it created.
  *
  * @param pszPath The path of the file.
- * @param sample The SDL sample index, or -1 for no assigned sample.
  * @return The node, or null.
  * @ghidraAddress BRD3D: 0x10072ca0
  * @ghidraAddress BRGlide: 0x1006bc10
  */
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** @param sample The SDL sample index, or -1 for no assigned sample. */
 SoundBufferNode *LoadAudioFile(const char *pszPath, int sample = -1);
 #else
 SoundBufferNode *LoadAudioFile(const char *pszPath);

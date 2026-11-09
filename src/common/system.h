@@ -396,6 +396,7 @@ extern OSMesg g_aDmaMsgBuf[32];
 extern OSMesgQueue g_RspEventMsgQueue;
 #endif
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031a354
  * @ghidraAddress Asia: 0x80319E04
@@ -405,6 +406,7 @@ extern OSMesgQueue g_RspEventMsgQueue;
  * @ghidraAddress JPN: 0x8031b464
  */
 extern OSMesg g_aRspEventMsgBuf[1];
+/** @endcond */
 
 /**
  * The queue of completed RSP tasks consumed by the frame renderer.
@@ -442,6 +444,7 @@ extern OSMesg g_aRspDoneMsgBuf[1];
 extern OSMesgQueue g_RdpEventMsgQueue;
 #endif
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031a38c
  * @ghidraAddress Asia: 0x80319E3C
@@ -451,6 +454,7 @@ extern OSMesgQueue g_RdpEventMsgQueue;
  * @ghidraAddress JPN: 0x8031b49c
  */
 extern OSMesg g_aRdpEventMsgBuf[1];
+/** @endcond */
 
 /**
  * The queue of completed RDP tasks consumed by the frame renderer.
@@ -489,6 +493,7 @@ extern OSMesg g_aRdpDoneMsgBuf[1];
 extern OSMesgQueue g_ViRetracePollMesgQueue;
 #endif
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x8031a3c8
  * @ghidraAddress Asia: 0x80319E78
@@ -498,6 +503,7 @@ extern OSMesgQueue g_ViRetracePollMesgQueue;
  * @ghidraAddress JPN: 0x8031b4f8
  */
 extern OSMesg g_ViRetracePollMesgBuf[1];
+/** @endcond */
 
 /**
  * The queue of video retrace events consumed by frame timing and display updates.
@@ -671,10 +677,13 @@ extern Gfx g_aGfxDisplayListPool[];
 
 #if TGR_BOSS_RALLY
 /**
+ * The display-list memory used by the Boss Rally renderers.
+ *
  * @ghidraAddress BRD3D: 0x10691018
  * @ghidraAddress BRGlide: 0x106b80a8
  */
 extern DisplayListCommand g_abDisplayListMemory[];
+/** The display-list pool in Boss Rally. */
 #define g_aGfxDisplayListPool g_abDisplayListMemory
 #endif
 
@@ -1071,6 +1080,7 @@ void BootIdleThread(void *arg);
  * @ghidraAddress BRGlide: 0x1002b997
  */
 #if TGR_BOSS_RALLY
+/** @param views The viewports used to initialise the list in Boss Rally. */
 void BeginDisplayList(ViewportRect *views, s32 highRes);
 #else
 void BeginDisplayList(s32 highRes);

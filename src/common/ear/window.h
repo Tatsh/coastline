@@ -15,12 +15,12 @@
 extern "C" {
 #endif
 
+/** @cond */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Borrowed Windows notification and message-dialog window handle, or null when unassigned.
  * @ghidraAddress EAR: 0x1003b618
  */
-/** @cond */
 extern HWND g_hEarNotifyWindow;
 
 /**

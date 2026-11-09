@@ -123,6 +123,8 @@ extern s32 g_bDisplayListSnowTint;
 
 #if TGR_BOSS_RALLY && TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
+ * The selected renderer's routine for updating fog parameters.
+ *
  * @ghidraAddress BRD3D: 0x10b501d4
  */
 extern void (*g_pfnRenderBackendUpdateFog)(void);
@@ -142,6 +144,9 @@ void ProcessAllDisplayLists(void);
 
 #if TGR_BOSS_RALLY
 /**
+ * Patch the render modes in a placed track model's display list.
+ *
+ * @param instance The placed track model.
  * @ghidraAddress BRD3D: 0x1003445a
  * @ghidraAddress BRGlide: 0x1002db0b
  */

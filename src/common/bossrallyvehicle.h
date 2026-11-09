@@ -33,6 +33,7 @@
  */
 class Vehicle {
 private:
+    /** @cond */
     union {
         CameraFrame frame;
         struct {
@@ -43,6 +44,7 @@ private:
             };
         };
     };
+    /** @endcond */
     s32 index;
     s32 gridIndex;
     char playerName[0x1a];

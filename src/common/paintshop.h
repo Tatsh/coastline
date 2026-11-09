@@ -252,6 +252,7 @@ extern int g_dwConvertedBitmapHeight;
 void CopyBgr24ToRgba32Flipped(
     unsigned char *pDest, const unsigned char *pSrc, int nWidth, int nHeight, int nStride);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Convert a bitmap of 24 bits to pixels of RGBA 8888 from malloc(), and record its size in
  * g_dwConvertedBitmapWidth and g_dwConvertedBitmapHeight.
@@ -261,7 +262,6 @@ void CopyBgr24ToRgba32Flipped(
  * @ghidraAddress BRD3D: 0x10060ea0
  * @ghidraAddress BRGlide: 0x10059f10
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap);
 #endif
 

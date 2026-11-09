@@ -32,6 +32,7 @@ extern "C" {
 #define TRACK_SURFACES 8
 
 #if TGR_BOSS_RALLY
+/** @cond */
 typedef union CollisionContactState {
     s32 type; /*!< The contact classification before correction. */
     f32 w;    /*!< The same word scaled as a float during correction. */
@@ -88,6 +89,7 @@ extern f32 g_afVehiclePhysicsTableC0[3][GRIP_WEATHERS][TRACK_SURFACES];
 
 /** @ghidraAddress BRD3D: 0x100b5848 */
 extern f32 g_afVehiclePhysicsTableC1[3][GRIP_WEATHERS][TRACK_SURFACES];
+/** @endcond */
 
 /**
  * Select tyre grip and load tables for the vehicle model.
@@ -792,6 +794,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
  * and the other vehicles, and count how long it has been upside down.
  * Windows also receives the vehicle for its driver and previous collision position.
  *
+ * @param vehicle The vehicle whose body advances.
  * @param body The body of the vehicle.
  * @ghidraAddress BRD3D: 0x1006ec80
  * @ghidraAddress BRGlide: 0x10067c30

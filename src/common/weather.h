@@ -165,6 +165,7 @@ extern s32 g_dwLightningFlashCounter;
 #define PARTICLE_NEAR 0.1f
 
 #if TGR_BRD3D
+/** The byte width of a rain-streak texel in the Direct3D renderer. */
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 4
 #else
 /** The byte width of a rain-streak texel outside the Direct3D renderer. */

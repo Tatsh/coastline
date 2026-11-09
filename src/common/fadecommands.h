@@ -10,6 +10,9 @@
 extern "C" {
 #endif
 
+/** Set primitive-colour blending for a fade's second cycle.
+ * @param secondCycle The second-cycle colour and alpha source.
+ */
 #define WriteFadeCombineMode(secondCycle)                                                          \
     PackCombineMode(gDisplayListPtr++,                                                             \
                     0,                                                                             \

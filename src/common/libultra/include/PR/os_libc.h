@@ -16,8 +16,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+/** Copy bytes between possibly overlapping buffers. */
 #define bcopy(src, dst, n) memmove((dst), (src), (size_t)(n))
+/** Compare two byte buffers. */
 #define bcmp(a, b, n) memcmp((a), (b), (size_t)(n))
+/** Clear a byte buffer. */
 #define bzero(p, n) memset((p), 0, (size_t)(n))
 #else
 

@@ -292,6 +292,7 @@ extern TrackSection *g_pRootTrackSection;
  */
 extern TrackGate g_aTrackGates[TRACK_GATES];
 #else
+/** The track gates in the loaded Boss Rally track. */
 #define g_aTrackGates g_LoadedTrack.gates
 #endif
 
@@ -451,6 +452,7 @@ void LoadTrackGeometryFromRom(s32 track);
 
 /* The limits of a track. */
 #if TGR_BOSS_RALLY
+/** The maximum bytes allowed for a Boss Rally track. */
 #define TRACK_MAX_SIZE 4000000
 #else
 #define TRACK_MAX_SIZE 0x171400 /*!< The most bytes a track may take. */
