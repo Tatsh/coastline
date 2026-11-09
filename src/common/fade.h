@@ -33,6 +33,8 @@ extern "C" {
 extern s32 g_dwFadeRectLeft;
 
 /**
+ * The right edge of the visible picture during a wipe, in pixels.
+ *
  * @ghidraAddress USA: 0x8028b744
  * @ghidraAddress Asia: 0x8028B294
  * @ghidraAddress EUR: 0x8028d9f4
@@ -43,6 +45,8 @@ extern s32 g_dwFadeRectLeft;
 extern s32 g_dwFadeRectRight;
 
 /**
+ * The top edge of the visible picture during a wipe, in pixels.
+ *
  * @ghidraAddress USA: 0x8028b748
  * @ghidraAddress Asia: 0x8028B298
  * @ghidraAddress EUR: 0x8028d9f8
@@ -53,6 +57,8 @@ extern s32 g_dwFadeRectRight;
 extern s32 g_dwFadeRectTop;
 
 /**
+ * The bottom edge of the visible picture during a wipe, in pixels.
+ *
  * @ghidraAddress USA: 0x8028b74c
  * @ghidraAddress Asia: 0x8028B29C
  * @ghidraAddress EUR: 0x8028d9fc
@@ -116,6 +122,8 @@ extern f32 g_fFadeTarget;
 extern f32 g_fFadeRate;
 
 /**
+ * The current screen fade level, from 0 for black to 1 for the full picture.
+ *
  * @ghidraAddress USA: 0x8028b75c
  * @ghidraAddress Asia: 0x8028B2AC
  * @ghidraAddress EUR: 0x8028da0c
@@ -138,6 +146,8 @@ extern f32 g_fFadeLevel;
 extern f32 g_fMusicFadeTarget;
 
 /**
+ * The change of music fade level per second.
+ *
  * @ghidraAddress USA: 0x8028b764
  * @ghidraAddress Asia: 0x8028B2B4
  * @ghidraAddress EUR: 0x8028da14
@@ -148,6 +158,8 @@ extern f32 g_fMusicFadeTarget;
 extern f32 g_fMusicFadeSpeed;
 
 /**
+ * The current music fade level, from 0 for silent to 1 for full volume.
+ *
  * @ghidraAddress USA: 0x8028b768
  * @ghidraAddress Asia: 0x8028B2B8
  * @ghidraAddress EUR: 0x8028da18
@@ -170,6 +182,8 @@ extern f32 g_fMusicFadeCurrent;
 extern f32 g_fSfxFadeTarget;
 
 /**
+ * The change of sound-effect fade level per second.
+ *
  * @ghidraAddress USA: 0x8028b770
  * @ghidraAddress Asia: 0x8028B2C0
  * @ghidraAddress EUR: 0x8028da20
@@ -180,6 +194,8 @@ extern f32 g_fSfxFadeTarget;
 extern f32 g_fSfxFadeSpeed;
 
 /**
+ * The current sound-effect fade level, from 0 for silent to 1 for full volume.
+ *
  * @ghidraAddress USA: 0x8028b774
  * @ghidraAddress Asia: 0x8028B2C4
  * @ghidraAddress EUR: 0x8028da24
@@ -203,6 +219,8 @@ extern f32 g_fSfxFadeCurrent;
 extern s32 g_dwFadeSkipFrame;
 
 /**
+ * Whether the next fade update skips changing the music level.
+ *
  * @ghidraAddress USA: 0x8028b77c
  * @ghidraAddress Asia: 0x8028B2CC
  * @ghidraAddress EUR: 0x8028da2c
@@ -213,6 +231,8 @@ extern s32 g_dwFadeSkipFrame;
 extern s32 g_dwMusicFadeSkipFrame;
 
 /**
+ * Whether the next fade update skips changing the sound-effect level.
+ *
  * @ghidraAddress USA: 0x8028b780
  * @ghidraAddress Asia: 0x8028B2D0
  * @ghidraAddress EUR: 0x8028da30
@@ -248,6 +268,8 @@ extern s32 g_dwFadeAutoReverse;
 extern s32 g_adwFadeRectLeftPerBuffer[2];
 
 /**
+ * The right edge of the wipe last drawn in each frame buffer, in pixels.
+ *
  * @ghidraAddress USA: 0x8031b418
  * @ghidraAddress Asia: 0x8031AEC8
  * @ghidraAddress EUR: 0x8031d918
