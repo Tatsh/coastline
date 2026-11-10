@@ -169,7 +169,7 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
     if (std::filesystem::is_directory(boss, error)) {
         return WriteJson(boss / "pack.json",
                          {{"intro",
-                           {{{"file", "intro/brally.mkv"}, {"type", "video"}},
+                           {{{"file", "intro/brally.mp4"}, {"type", "video"}},
                             {{"duration", 4.0}, {"file", "intro/legal.png"}, {"type", "image"}}}},
                           {"introOnce", true},
                           {"mainMenuAttractDemo", true},

@@ -875,7 +875,7 @@ regional splash screens when `intro` is absent. An empty array opens the menu im
 ```json
 {
   "intro": [
-    { "file": "intro/brally.mkv", "type": "video" },
+    { "file": "intro/brally.mp4", "type": "video" },
     { "duration": 4, "file": "intro/legal.png", "type": "image" }
   ],
   "introOnce": true,
@@ -912,13 +912,13 @@ demonstration directly after the timeout (default false), returning to the menu 
 Pure PC uses the settings above. N64 packs return to the title sequence after 20 seconds; an attract
 demo can follow from the title sequence.
 
-`COASTLINE_VIDEO=ON` detects optional libav decoding libraries; `OFF` excludes movie playback.
-With vcpkg, select manifest features `sdl;video` to build the libraries. The importer invokes
-external FFmpeg to convert the original Indeo movie to VP9 with PCM audio in Matroska. Linux uses
-FFmpeg from `PATH`. Windows and macOS use `PATH` first, otherwise download a temporary FFmpeg copy
-for the import and delete the tool afterwards. Windows uses Gyan builds; Apple Silicon uses
-OSXExperts, and Intel macOS uses Evermeet. Conversion does not require platform Indeo codecs.
-Downloaded tools use FFmpeg 9.0.2 from versioned URLs and pinned archive SHA-256 checksums.
+`COASTLINE_VIDEO=ON` enables intro movie playback; `OFF` excludes it. Linux uses libav for playback
+and for converting the original Indeo movie to H.264/AAC MP4. With vcpkg, select manifest features
+`sdl;video` to build libav and OpenH264. macOS and Windows play MP4 through AVFoundation and Media
+Foundation without linking libav. During import, these systems use FFmpeg from `PATH`, or download
+a temporary copy and delete it afterwards. Windows uses Gyan builds; Apple Silicon uses OSXExperts,
+and Intel macOS uses Evermeet. Downloaded tools use FFmpeg 9.0.2 from versioned URLs and pinned
+archive SHA-256 checksums.
 
 ### Command line
 

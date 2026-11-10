@@ -22,6 +22,12 @@
 
 namespace coastline {
 
+#if !defined(_WIN32) && !defined(__APPLE__) && COASTLINE_VIDEO
+std::optional<std::string> ConvertIntroMovieWithLibav(const std::filesystem::path &source,
+                                                      const std::filesystem::path &output,
+                                                      const ImportProgress &progress);
+#endif
+
 namespace {
 
 #if defined(_WIN32) || defined(__APPLE__)
@@ -83,6 +89,7 @@ bool VerifySha256(const std::filesystem::path &path, std::string_view expected) 
 }
 #endif
 
+#if defined(_WIN32) || defined(__APPLE__)
 using Process = std::unique_ptr<SDL_Process, decltype(&SDL_DestroyProcess)>;
 
 bool Run(const std::vector<std::string> &arguments, const ImportProgress &progress) {
@@ -124,6 +131,7 @@ struct TemporaryTools {
         std::filesystem::remove_all(path, error);
     }
 };
+#endif
 
 std::optional<std::string> ConvertLegalImage(const std::filesystem::path &directory) {
     std::ifstream file(directory / "splash.img", std::ios::binary);
@@ -186,6 +194,27 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
     if (!std::filesystem::is_regular_file(source, error)) {
         return std::nullopt;
     }
+    const auto output = directory / "intro/brally.mp4";
+#if !defined(_WIN32) && !defined(__APPLE__)
+#if COASTLINE_VIDEO
+    if (auto failure = ConvertIntroMovieWithLibav(source, output, progress)) {
+        std::filesystem::remove(output, error);
+        return failure;
+    }
+    if (!std::filesystem::is_regular_file(output, error) ||
+        std::filesystem::file_size(output, error) == 0 || error) {
+        return "The converted intro movie is empty.";
+    }
+    std::filesystem::remove(source, error);
+    std::filesystem::remove(directory / "splash.img", error);
+    return std::nullopt;
+#else
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                "libav is unavailable; skipping optional intro movie conversion.");
+    std::filesystem::remove(source, error);
+    return std::nullopt;
+#endif
+#else
     TemporaryTools tools;
     std::string executable = "ffmpeg";
     if (progress && !progress("Converting the intro movie", 0)) {
@@ -258,17 +287,11 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
         if (executable == "ffmpeg") {
             return "Temporary FFmpeg executable is missing.";
         }
-#else
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "FFmpeg is unavailable; skipping optional intro movie conversion.");
-        std::filesystem::remove(source, error);
-        return std::nullopt;
 #endif
     }
     if (progress && !progress("Converting the intro movie", 0.25)) {
         return "Import cancelled.";
     }
-    const auto output = directory / "intro/brally.mkv";
     if (!Run({executable,
               "-nostdin",
               "-y",
@@ -281,28 +304,24 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
               "-map",
               "0:a:0?",
               "-c:v",
-              "libvpx-vp9",
+              "libx264",
               "-crf",
               "18",
-              "-b:v",
-              "0",
-              "-deadline",
-              "good",
-              "-cpu-used",
-              "4",
               "-threads",
               "2",
               "-pix_fmt",
               "yuv420p",
               "-c:a",
-              "pcm_s16le",
+              "aac",
+              "-b:a",
+              "192k",
               "-ar",
               "48000",
               "-ac",
               "2",
               Utf8FromPath(output)},
              progress)) {
-        return "Cannot convert intro movie. Check FFmpeg VP9 support or import cancellation.";
+        return "Cannot convert intro movie. Check FFmpeg H.264 support or import cancellation.";
     }
     if (!std::filesystem::is_regular_file(output, error) ||
         std::filesystem::file_size(output, error) == 0 || error) {
@@ -311,6 +330,7 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
     std::filesystem::remove(source, error);
     std::filesystem::remove(directory / "splash.img", error);
     return std::nullopt;
+#endif
 }
 
 } // namespace coastline

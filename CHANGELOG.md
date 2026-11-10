@@ -22,6 +22,8 @@
 ### Changed
 
 - Use `boss-rally`, `coastline`, and `tgr-<region>` as the public CMake build presets.
+- Convert the Boss Rally intro to MP4 during import, using libav on Linux and temporary FFmpeg on
+  macOS and Windows. Play it with native media APIs on macOS and Windows.
 
 ### Fixed
 

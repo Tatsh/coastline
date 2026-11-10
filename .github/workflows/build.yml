@@ -255,7 +255,7 @@ jobs:
             cmake --preset coastline -B "build/coastline-$architecture" \
               -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
               -DTGR_DEBUG_SYMBOLS=ON -DCOASTLINE_DISCORD=ON \
-              '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
+              '-DVCPKG_MANIFEST_FEATURES=sdl' \
               -DCMAKE_OSX_ARCHITECTURES="$architecture" -DVCPKG_TARGET_TRIPLET="$triplet"
             cmake --build "build/coastline-$architecture" -- -k 0
           done
@@ -279,7 +279,7 @@ jobs:
           }
           cmake --preset coastline -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=ON `
             -DTGR_DEBUG_SYMBOLS=ON `
-            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' @compilerArgs
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl' @compilerArgs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build --preset coastline -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

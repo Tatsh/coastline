@@ -20,11 +20,11 @@
       "dependencies": [
         {
           "default-features": false,
-          "features": ["avcodec", "avformat", "swresample", "swscale"],
+          "features": ["avcodec", "avformat", "openh264", "swresample", "swscale"],
           "name": "ffmpeg"
         }
       ],
-      "description": "Decode optional asset-pack intro movies with libav."
+      "description": "Decode and encode optional intro movies with libav."
     },
     "sdl": {
       "dependencies": [

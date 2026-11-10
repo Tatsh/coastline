@@ -12,7 +12,7 @@ namespace coastline {
  * other files ImportDisc() converts, n64model.cpp included. Increase it with every change to the
  * output of the conversion, so that the game warns about data imported before the change.
  */
-inline constexpr int DISC_CONVERTER_VERSION = 1;
+inline constexpr int DISC_CONVERTER_VERSION = 2;
 
 /**
  * The version of the conversion of a Top Gear Rally cartridge: the models, the images, the music,

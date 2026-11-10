@@ -22,6 +22,14 @@ finish-args:
   - '--socket=pulseaudio'
   - '--socket=wayland'
 modules:
+  - buildsystem: 'simple'
+    build-commands:
+      - 'make USE_ASM=No PREFIX=/app install-shared'
+    name: 'openh264'
+    sources:
+      - sha256: '558544ad358283a7ab2930d69a9ceddf913f4a51ee9bf1bfb9e377322af81a69'
+        type: 'archive'
+        url: 'https://github.com/cisco/openh264/archive/v2.6.0.tar.gz'
   - build-options:
       cflags: '-w'
       cxxflags: '-w'
@@ -29,10 +37,11 @@ modules:
     config-opts:
       - '--disable-debug'
       - '--disable-doc'
+      - '--disable-ffmpeg'
       - '--disable-ffplay'
       - '--disable-ffprobe'
       - '--disable-static'
-      - '--enable-libvpx'
+      - '--enable-libopenh264'
       - '--enable-shared'
     name: 'ffmpeg'
     sources:

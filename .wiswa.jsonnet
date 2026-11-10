@@ -47,16 +47,27 @@
     ],
     modules: [
       {
-        // Intro playback links libav. Import uses the separate FFmpeg program for Indeo to VP9.
+        buildsystem: 'simple',
+        'build-commands': ['make USE_ASM=No PREFIX=/app install-shared'],
+        name: 'openh264',
+        sources: [{
+          sha256: '558544ad358283a7ab2930d69a9ceddf913f4a51ee9bf1bfb9e377322af81a69',
+          type: 'archive',
+          url: 'https://github.com/cisco/openh264/archive/v2.6.0.tar.gz',
+        }],
+      },
+      {
+        // Linux imports the Indeo movie through libav and encodes H.264 with OpenH264.
         'build-options': { cflags: '-w', cxxflags: '-w' },
         buildsystem: 'autotools',
         'config-opts': [
           '--disable-debug',
           '--disable-doc',
+          '--disable-ffmpeg',
           '--disable-ffplay',
           '--disable-ffprobe',
           '--disable-static',
-          '--enable-libvpx',
+          '--enable-libopenh264',
           '--enable-shared',
         ],
         name: 'ffmpeg',
@@ -214,14 +225,15 @@
         source: '.',
         // SDL and GameMode load these runtime libraries dynamically.
         'stage-packages': [
-          'ffmpeg',
           'libasound2t64',
+          'libavcodec60',
+          'libavformat60',
+          'libavutil58',
           'libdecor-0-0',
           'libgamemode0',
-          // FFmpeg's libcaca GL plugin also needs GLU and GLUT.
-          'libglu1-mesa',
-          'libglut3.12',
           'libpulse0',
+          'libswresample4',
+          'libswscale7',
           'libwayland-client0',
           'libwayland-cursor0',
           'libwayland-egl1',
@@ -437,11 +449,11 @@
         dependencies: [
           {
             'default-features': false,
-            features: ['avcodec', 'avformat', 'swresample', 'swscale'],
+            features: ['avcodec', 'avformat', 'openh264', 'swresample', 'swscale'],
             name: 'ffmpeg',
           },
         ],
-        description: 'Decode optional asset-pack intro movies with libav.',
+        description: 'Decode and encode optional intro movies with libav.',
       },
       sdl: {
         dependencies: [

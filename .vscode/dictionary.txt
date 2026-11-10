@@ -60,9 +60,12 @@ autoinstall
 autotools
 avcodec
 averror
+avfmt
 avformat
+avio
 avmedia
 avseek
+avurl
 backendversion
 badvaddr
 balign
@@ -175,6 +178,7 @@ coasttrk
 codecpar
 codepoints
 codesign
+coinit
 colc
 collidevehicles
 collisionstep
@@ -456,6 +460,7 @@ encryptionnotsupported
 enddl
 endforeach
 endfunction
+endofstream
 endr
 endwhile
 enginetextures
@@ -507,7 +512,9 @@ fistp
 fixedh
 flactrack
 flathub
+fltp
 fnmatch
+fobjc
 fogcolor
 fogenable
 fogtablemode
@@ -735,6 +742,7 @@ libglu
 libglut
 libltdl
 libnvidia
+libopenh
 libpulse
 librsvg
 libsonnet
@@ -742,7 +750,6 @@ libswresample
 libswscale
 libultra
 libunwind
-libvpx
 libwayland
 libx
 libxcursor
@@ -847,6 +854,9 @@ metainfo
 meyerhofer
 mfhi
 mflo
+mfplat
+mfreadwrite
+mfuuid
 midiline
 midimixer
 migratehost
@@ -965,7 +975,9 @@ objcxx
 objdump
 obji
 offscreenplain
+oformat
 oneline
+openh
 osversioninfoa
 otherlook
 outfun
@@ -1124,6 +1136,7 @@ rdppipesync
 rdptilesync
 rdram
 readelf
+readerf
 readlink
 readwrite
 rearload

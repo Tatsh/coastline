@@ -9,7 +9,7 @@ namespace coastline {
 class SceneRenderer;
 class RenderTexture;
 
-/** A software-decoded video and its audio, with bounded frame buffering. */
+/** A decoded video and its audio, with bounded frame buffering. */
 class VideoPlayer {
 public:
     /**
@@ -29,7 +29,7 @@ public:
     /**
      * Decode through elapsed movie time and update audio gain.
      * @param seconds Nonnegative elapsed seconds since opening.
-     * @param volume Audio gain from zero through one. Zero suppresses audio decoding.
+     * @param volume Audio gain from zero through one.
      * @return Whether playback should continue; false on completion or a decoding error.
      */
     bool Update(double seconds, float volume);
