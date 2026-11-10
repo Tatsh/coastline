@@ -544,15 +544,15 @@ if(WIN32)
            "RequestExecutionLevel user\n"
            "VIProductVersion ${COASTLINE_METADATA_VERSION_NUMERIC}\n"
            "VIFileVersion ${COASTLINE_METADATA_VERSION_NUMERIC}\n"
-           "VIAddVersionKey \"CompanyName\" \"Tatsh\"\n"
-           "VIAddVersionKey \"FileDescription\" \"Coastline installer\"\n"
-           "VIAddVersionKey \"FileVersion\" \"${COASTLINE_RESOURCE_VERSION}\"\n"
-           "VIAddVersionKey \"ProductName\" \"Coastline\"\n"
-           "VIAddVersionKey \"ProductVersion\" \"${COASTLINE_RESOURCE_VERSION}\"\n"
-           "VIAddVersionKey \"OriginalFilename\" \"Coastline-Setup.exe\"\n"
-           "VIAddVersionKey \"Comments\" \"https://github.com/Tatsh/coastline\"\n"
-           "VIAddVersionKey \"LegalCopyright\" \"Copyright (c) 2026 coastline authors. "
-           "MIT License.\"")
+           "VIAddVersionKey \\\"CompanyName\\\" \\\"Tatsh\\\"\n"
+           "VIAddVersionKey \\\"FileDescription\\\" \\\"Coastline installer\\\"\n"
+           "VIAddVersionKey \\\"FileVersion\\\" \\\"${COASTLINE_RESOURCE_VERSION}\\\"\n"
+           "VIAddVersionKey \\\"ProductName\\\" \\\"Coastline\\\"\n"
+           "VIAddVersionKey \\\"ProductVersion\\\" \\\"${COASTLINE_RESOURCE_VERSION}\\\"\n"
+           "VIAddVersionKey \\\"OriginalFilename\\\" \\\"Coastline-Setup.exe\\\"\n"
+           "VIAddVersionKey \\\"Comments\\\" \\\"https://github.com/Tatsh/coastline\\\"\n"
+           "VIAddVersionKey \\\"LegalCopyright\\\" \\\"Copyright (c) 2026 coastline "
+           "authors. MIT License.\\\"")
   set(CPACK_NSIS_DISPLAY_NAME "Coastline")
   set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
   set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
