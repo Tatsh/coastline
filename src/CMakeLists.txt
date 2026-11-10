@@ -23,6 +23,7 @@ target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
                                                      "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
 
 if(TGR_PLATFORM STREQUAL "win")
+  enable_language(RC)
   if(MSVC)
     set(CMAKE_CXX_STANDARD 23)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -204,6 +205,9 @@ if(TGR_PLATFORM STREQUAL "win")
   # libraries do.
   list(TRANSFORM _link_libraries REPLACE "^(coastline_win32.*)$" "$<LINK_LIBRARY:WHOLE_ARCHIVE,\\1>")
   add_library(${_library} SHARED $<TARGET_OBJECTS:coastline_main>)
+  coastline_add_win_version(${_library} "Rally" "SouthPeak Interactive" "Boss Rally"
+                            "Boss Rally.dll" "${_library}.dll"
+                            "Copyright (C) 1999 SouthPeak Interactive")
   if(TARGET earpds)
     add_dependencies(${_library} earpds)
   endif()

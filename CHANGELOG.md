@@ -13,6 +13,8 @@
   shortcuts.
 - Build a Boss Rally installer with both Windows renderer libraries that copies data from the
   original disc during installation.
+- Include version and attribution metadata in Windows installers, uninstallers, and Boss Rally
+  binaries.
 
 ### Changed
 

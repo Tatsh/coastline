@@ -55,6 +55,51 @@ elseif(NOT TGR_RENDERER MATCHES "^(d3d|glide)$")
   message(FATAL_ERROR "TGR_RENDERER must be d3d or glide.")
 endif()
 
+# The revision is needed by the Boss Rally superbuild as well as the binaries it builds.
+if(TGR_ENABLE_PATCHES)
+  set(_tgr_git_sha "")
+  set(_tgr_git_is_tag OFF)
+  find_package(Git QUIET)
+  if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" describe --tags --exact-match HEAD
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      OUTPUT_VARIABLE _tgr_git_sha
+      OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+    if(_tgr_git_sha)
+      set(_tgr_git_is_tag ON)
+      if(NOT _tgr_git_sha MATCHES "^v")
+        string(PREPEND _tgr_git_sha "v")
+      endif()
+    else()
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        OUTPUT_VARIABLE _tgr_git_sha
+        OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+      if(_tgr_git_sha)
+        string(SUBSTRING "${_tgr_git_sha}" 0 7 _tgr_git_sha)
+      endif()
+    endif()
+  endif()
+endif()
+set(COASTLINE_METADATA_VERSION "${CMAKE_PROJECT_VERSION}")
+set(COASTLINE_METADATA_VERSION_MAJOR "${CMAKE_PROJECT_VERSION_MAJOR}")
+set(COASTLINE_METADATA_VERSION_MINOR "${CMAKE_PROJECT_VERSION_MINOR}")
+set(COASTLINE_METADATA_VERSION_PATCH "${CMAKE_PROJECT_VERSION_PATCH}")
+if(_tgr_git_is_tag)
+  set(COASTLINE_METADATA_VERSION "${_tgr_git_sha}")
+  if(_tgr_git_sha MATCHES "^v([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+    set(COASTLINE_METADATA_VERSION_MAJOR "${CMAKE_MATCH_1}")
+    set(COASTLINE_METADATA_VERSION_MINOR "${CMAKE_MATCH_2}")
+    set(COASTLINE_METADATA_VERSION_PATCH "${CMAKE_MATCH_3}")
+  endif()
+elseif(_tgr_git_sha)
+  string(APPEND COASTLINE_METADATA_VERSION " (${_tgr_git_sha})")
+endif()
+string(CONCAT COASTLINE_METADATA_VERSION_NUMERIC "${COASTLINE_METADATA_VERSION_MAJOR}."
+              "${COASTLINE_METADATA_VERSION_MINOR}." "${COASTLINE_METADATA_VERSION_PATCH}.0")
+
 # Every variant TGR_VARIANTS lists is configured and built on its own under the build directory.
 if(TGR_VARIANTS)
   include(cmake/variants.cmake)
@@ -119,22 +164,6 @@ endif()
 # release tag (v1.2.3) when one names the commit, and the short commit otherwise. It is blank without
 # Git or outside a clone, such as from an archive of the sources.
 if(TGR_ENABLE_PATCHES)
-  set(_tgr_git_sha "")
-  find_package(Git QUIET)
-  if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
-    execute_process(
-      COMMAND "${GIT_EXECUTABLE}" describe --tags --exact-match --match "v*" HEAD
-      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-      OUTPUT_VARIABLE _tgr_git_sha
-      OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-    if(NOT _tgr_git_sha)
-      execute_process(
-        COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        OUTPUT_VARIABLE _tgr_git_sha
-        OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
-    endif()
-  endif()
   add_compile_definitions(ENABLE_PATCHES=1 COASTLINE_GIT_SHA="${_tgr_git_sha}")
 endif()
 

@@ -5,6 +5,16 @@ Unicode true
 
 Name "Boss Rally"
 OutFile "${OUTPUT}"
+VIProductVersion "${VERSION}"
+VIFileVersion "${VERSION}"
+VIAddVersionKey "CompanyName" "SouthPeak Interactive"
+VIAddVersionKey "FileDescription" "Boss Rally installer"
+VIAddVersionKey "FileVersion" "${VERSION_STRING}"
+VIAddVersionKey "ProductName" "Boss Rally"
+VIAddVersionKey "ProductVersion" "${VERSION_STRING}"
+VIAddVersionKey "OriginalFilename" "BossRally-Setup.exe"
+VIAddVersionKey "Comments" "Reconstruction by Tatsh. https://github.com/Tatsh/coastline."
+VIAddVersionKey "LegalCopyright" "Copyright (C) 1999"
 InstallDir "$PROGRAMFILES32\SouthPeak Interactive\Boss Rally"
 InstallDirRegKey HKLM "SOFTWARE\SouthPeak Interactive\Boss Rally" "Directory"
 RequestExecutionLevel admin

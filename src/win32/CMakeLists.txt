@@ -4,6 +4,26 @@
 
 # Each renderer's library exports RallyMain. Nothing refers to DllMain() or RallyMain by name, so the
 # link would drop them from an archive, and their objects go into each library directly.
+function(
+  coastline_add_win_version target description company product internal_name filename copyright)
+  set(COASTLINE_WIN_DESCRIPTION "${description}")
+  set(COASTLINE_WIN_COMPANY "${company}")
+  set(COASTLINE_WIN_PRODUCT "${product}")
+  set(COASTLINE_WIN_INTERNAL_NAME "${internal_name}")
+  set(COASTLINE_WIN_FILENAME "${filename}")
+  set(COASTLINE_WIN_COPYRIGHT "${copyright}")
+  set(COASTLINE_WIN_VERSION "${COASTLINE_METADATA_VERSION}")
+  get_target_property(_target_type ${target} TYPE)
+  if(_target_type STREQUAL "SHARED_LIBRARY")
+    set(COASTLINE_WIN_FILE_TYPE VFT_DLL)
+  else()
+    set(COASTLINE_WIN_FILE_TYPE VFT_APP)
+  endif()
+  set(_resource "${CMAKE_CURRENT_BINARY_DIR}/${target}-version.rc")
+  configure_file("${CMAKE_SOURCE_DIR}/src/win32/version.rc.in" "${_resource}" @ONLY)
+  target_sources(${target} PRIVATE "${_resource}")
+endfunction()
+
 add_library(coastline_main OBJECT dllmain.c)
 target_link_libraries(coastline_main PRIVATE coastline_options)
 

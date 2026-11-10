@@ -1,8 +1,9 @@
-enable_language(RC)
-
 add_executable(coastline_brally WIN32 brally.c brally.rc ini.c registry.c
                "${CMAKE_SOURCE_DIR}/src/common/fileio.c" ../diagnostics.c)
 set_target_properties(coastline_brally PROPERTIES OUTPUT_NAME BRally C_STANDARD 23)
+coastline_add_win_version(coastline_brally "Boss Rally launcher" "SouthPeak Interactive"
+                          "Boss Rally" "BRally.exe" "BRally.exe"
+                          "Copyright (C) 1999 SouthPeak Interactive")
 if(NOT MSVC)
   target_compile_options(coastline_brally PRIVATE -Wall -Wextra -Wno-unused-parameter)
 endif()
@@ -23,6 +24,9 @@ endif()
 add_executable(coastline_setvideo WIN32 setvideo.c "${_setvideo_resource}" ini.c registry.c filewrite.c
                                          "${CMAKE_SOURCE_DIR}/src/common/fileio.c")
 set_target_properties(coastline_setvideo PROPERTIES OUTPUT_NAME SetVideo C_STANDARD 23)
+coastline_add_win_version(coastline_setvideo "Boss Rally Display Wizard"
+                          "SouthPeak Interactive" "Boss Rally" "SetVideo.exe" "SetVideo.exe"
+                          "Copyright (C) 1999 SouthPeak Interactive")
 if(NOT MSVC)
   target_compile_options(coastline_setvideo PRIVATE -Wall -Wextra -Wno-unused-parameter)
 endif()
@@ -31,6 +35,9 @@ target_link_libraries(coastline_setvideo PRIVATE advapi32 kernel32 user32)
 
 add_executable(coastline_bossrally WIN32 bossrally.cpp bossrally.rc)
 set_target_properties(coastline_bossrally PROPERTIES OUTPUT_NAME BossRally CXX_STANDARD 23)
+coastline_add_win_version(coastline_bossrally "Boss Rally intro launcher"
+                          "SouthPeak Interactive" "Boss Rally" "BossRally.exe" "BossRally.exe"
+                          "Copyright (C) 1999 SouthPeak Interactive")
 if(NOT MSVC)
   target_compile_options(coastline_bossrally PRIVATE -Wall -Wextra -Wno-unused-parameter)
 endif()
@@ -51,6 +58,9 @@ if(TGR_BUILD_MFC_BOOT)
   set(CMAKE_MFC_FLAG 1)
   add_executable(coastline_boot WIN32 bootapp.cpp bootdlg.cpp boot.rc)
   set_target_properties(coastline_boot PROPERTIES OUTPUT_NAME Boot CXX_STANDARD 23)
+  coastline_add_win_version(coastline_boot "Boot MFC Application" "SouthPeak Interactive"
+                            "Boss Rally" "Boot.exe" "Boot.exe"
+                            "Copyright (C) 1999 SouthPeak Interactive")
   target_compile_definitions(coastline_boot PRIVATE _MBCS)
   target_link_libraries(coastline_boot PRIVATE coastline_boot_helpers advapi32)
 endif()

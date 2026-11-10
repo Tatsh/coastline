@@ -65,6 +65,8 @@ add_custom_command(
   COMMAND
     "${TGR_MAKENSIS}"
     "${_nsis_define}OUTPUT=${_boss_rally_installer}"
+    "${_nsis_define}VERSION=${COASTLINE_METADATA_VERSION_NUMERIC}"
+    "${_nsis_define}VERSION_STRING=${COASTLINE_METADATA_VERSION}"
     "${_nsis_define}BRD3D_DLL=${_nsis_brd3d}"
     "${_nsis_define}BRGLIDE_DLL=${_nsis_brglide}"
     "${_nsis_define}EARPDS_DLL=${_nsis_earpds}"

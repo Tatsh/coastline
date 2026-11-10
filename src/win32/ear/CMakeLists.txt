@@ -34,6 +34,9 @@ if(MSVC)
 endif()
 add_library(earpds SHARED dllmain.c "${_ear_exports}")
 set_target_properties(earpds PROPERTIES PREFIX "" LINKER_LANGUAGE CXX)
+coastline_add_win_version(earpds "earpds.dll for Microsoft DirectX 5-6"
+                          "Extreme Audio Reality, Inc." "EAR_PDS ear_ds" "earpds.dll" "earpds.dll"
+                          "Copyright (C) 1997-1999 Extreme Audio Reality, Inc.")
 target_link_libraries(
   earpds PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_ear>"
                  "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_win32_ear>" dxguid kernel32 ole32 user32

@@ -406,10 +406,7 @@ else()
 endif()
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_common>")
 
-set(COASTLINE_RESOURCE_VERSION "${CMAKE_PROJECT_VERSION}")
-if(_tgr_git_sha)
-  string(APPEND COASTLINE_RESOURCE_VERSION " (${_tgr_git_sha})")
-endif()
+set(COASTLINE_RESOURCE_VERSION "${COASTLINE_METADATA_VERSION}")
 
 if(APPLE)
   set_target_properties(
@@ -519,7 +516,20 @@ if(WIN32)
   # option of PATH lets the game be run from a terminal to import the data.
   set(CPACK_CREATE_DESKTOP_LINKS ${CMAKE_PROJECT_NAME})
   set(CPACK_GENERATOR NSIS)
-  set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+  string(
+    CONCAT CPACK_NSIS_DEFINES
+           "RequestExecutionLevel user\n"
+           "VIProductVersion ${COASTLINE_METADATA_VERSION_NUMERIC}\n"
+           "VIFileVersion ${COASTLINE_METADATA_VERSION_NUMERIC}\n"
+           "VIAddVersionKey \"CompanyName\" \"Tatsh\"\n"
+           "VIAddVersionKey \"FileDescription\" \"Coastline installer\"\n"
+           "VIAddVersionKey \"FileVersion\" \"${COASTLINE_RESOURCE_VERSION}\"\n"
+           "VIAddVersionKey \"ProductName\" \"Coastline\"\n"
+           "VIAddVersionKey \"ProductVersion\" \"${COASTLINE_RESOURCE_VERSION}\"\n"
+           "VIAddVersionKey \"OriginalFilename\" \"Coastline-Setup.exe\"\n"
+           "VIAddVersionKey \"Comments\" \"https://github.com/Tatsh/coastline\"\n"
+           "VIAddVersionKey \"LegalCopyright\" \"Copyright (c) 2026 coastline authors. "
+           "MIT License.\"")
   set(CPACK_NSIS_DISPLAY_NAME "Coastline")
   set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
   set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
