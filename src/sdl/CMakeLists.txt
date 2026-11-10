@@ -409,14 +409,37 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIV
 set(COASTLINE_RESOURCE_VERSION "${COASTLINE_METADATA_VERSION}")
 
 if(APPLE)
+  string(CONCAT COASTLINE_MAC_VERSION "${COASTLINE_METADATA_VERSION_MAJOR}."
+                "${COASTLINE_METADATA_VERSION_MINOR}." "${COASTLINE_METADATA_VERSION_PATCH}")
+  if(DEFINED ENV{GITHUB_RUN_NUMBER} AND "$ENV{GITHUB_RUN_NUMBER}" MATCHES "^[0-9]+$")
+    set(COASTLINE_MAC_BUILD "$ENV{GITHUB_RUN_NUMBER}")
+  elseif(GIT_EXECUTABLE)
+    execute_process(
+      COMMAND "${GIT_EXECUTABLE}" rev-list --count HEAD
+      WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+      OUTPUT_VARIABLE COASTLINE_MAC_BUILD
+      OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+  endif()
+  if(NOT COASTLINE_MAC_BUILD MATCHES "^[0-9]+$")
+    set(COASTLINE_MAC_BUILD 1)
+  endif()
+  set(COASTLINE_MAC_REVISION "${_tgr_git_sha}")
+  if(NOT COASTLINE_MAC_REVISION)
+    set(COASTLINE_MAC_REVISION "${COASTLINE_MAC_VERSION}")
+  endif()
+  foreach(_value COASTLINE_MAC_REVISION COASTLINE_BUILD_TIMESTAMP)
+    string(REPLACE "&" "&amp;" ${_value} "${${_value}}")
+    string(REPLACE "<" "&lt;" ${_value} "${${_value}}")
+    string(REPLACE ">" "&gt;" ${_value} "${${_value}}")
+  endforeach()
   set_target_properties(
     ${CMAKE_PROJECT_NAME}
     PROPERTIES MACOSX_BUNDLE TRUE
                MACOSX_BUNDLE_BUNDLE_NAME "Coastline"
-               MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}"
+               MACOSX_BUNDLE_BUNDLE_VERSION "${COASTLINE_MAC_BUILD}"
                MACOSX_BUNDLE_GUI_IDENTIFIER "sh.tat.coastline"
                MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
-               MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+               MACOSX_BUNDLE_SHORT_VERSION_STRING "${COASTLINE_MAC_VERSION}"
                OUTPUT_NAME "Coastline")
   # The icon of the bundle is made from the SVG when librsvg and iconutil are present.
   find_program(COASTLINE_RSVG_CONVERT rsvg-convert)

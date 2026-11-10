@@ -207,6 +207,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: 'Prepare the vcpkg binary cache'
         run: mkdir -p .wiswa-ci/vcpkg-cache
@@ -347,6 +348,22 @@ jobs:
         name: 'Package'
         run: |
           codesign --verify --deep --strict staging/Coastline.app
+          info=staging/Coastline.app/Contents/Info.plist
+          revision="${GITHUB_SHA:0:7}"
+          if tag=$(git describe --tags --exact-match HEAD 2>/dev/null); then
+            revision="v${tag#v}"
+          fi
+          test "$(plutil -extract CLRevision raw -o - "$info")" = "$revision"
+          test "$(plutil -extract CLDeveloper raw -o - "$info")" = Tatsh
+          test "$(plutil -extract CLWebsite raw -o - "$info")" = \
+            https://github.com/Tatsh/coastline
+          test "$(plutil -extract CFBundleVersion raw -o - "$info")" = \
+            "$GITHUB_RUN_NUMBER"
+          [[ "$(plutil -extract CFBundleShortVersionString raw -o - "$info")" =~ \
+            ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$(plutil -extract CLBuildDate raw -o - "$info")" =~ \
+            ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]]
+          test -f staging/Coastline.app/Contents/Resources/Coastline.icns
           mkdir dmg-root
           ditto staging/Coastline.app dmg-root/Coastline.app
           ln -s /Applications dmg-root/Applications
@@ -495,6 +512,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: 'flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3'
         with:
@@ -716,6 +734,7 @@ jobs:
           suppress-deprecation-warnings: 'msystem-mingw32'
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
+          fetch-depth: 0
           persist-credentials: false
       - name: 'Toolchain versions'
         run: |
@@ -780,6 +799,7 @@ jobs:
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
+          fetch-depth: 0
           persist-credentials: false
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:

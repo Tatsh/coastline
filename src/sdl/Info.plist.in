@@ -4,14 +4,18 @@
 <dict>
   <key>CFBundleDevelopmentRegion</key>
   <string>en</string>
-  <key>CoastlineDescription</key>
-  <string>Top Gear Rally and Boss Rally in one stand-alone game</string>
-  <key>CoastlineDeveloper</key>
+  <key>CLBuildDate</key>
+  <string>${COASTLINE_BUILD_TIMESTAMP}</string>
+  <key>CLDeveloper</key>
   <string>Tatsh</string>
-  <key>CoastlineWebsite</key>
+  <key>CLRevision</key>
+  <string>${COASTLINE_MAC_REVISION}</string>
+  <key>CLWebsite</key>
   <string>https://github.com/Tatsh/coastline</string>
   <key>CFBundleDisplayName</key>
   <string>${MACOSX_BUNDLE_BUNDLE_NAME}</string>
+  <key>CFBundleGetInfoString</key>
+  <string>Top Gear Rally and Boss Rally in one stand-alone game</string>
   <key>CFBundleExecutable</key>
   <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
   <key>CFBundleIconFile</key>

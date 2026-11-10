@@ -15,6 +15,8 @@
   original disc during installation.
 - Include version and attribution metadata in Windows installers, uninstallers, and Boss Rally
   binaries.
+- Include a numeric build version, tag or revision, build date, and attribution in the macOS app
+  bundle metadata.
 
 ### Changed
 
