@@ -5,7 +5,7 @@
 [![C](https://img.shields.io/badge/C-00599C?logo=c)](<https://en.wikipedia.org/wiki/C_(programming_language)>)
 [![GitHub tag (with filter)](https://img.shields.io/github/v/tag/Tatsh/coastline)](https://github.com/Tatsh/coastline/tags)
 [![License](https://img.shields.io/github/license/Tatsh/coastline)](https://github.com/Tatsh/coastline/blob/master/LICENSE.txt)
-[![GitHub commits since latest release (by SemVer including pre-releases)](https://img.shields.io/github/commits-since/Tatsh/coastline/v0.0.0/master)](https://github.com/Tatsh/coastline/compare/v0.0.0...master)
+[![GitHub commits since latest release (by SemVer including pre-releases)](https://img.shields.io/github/commits-since/Tatsh/coastline/v0.0.1/master)](https://github.com/Tatsh/coastline/compare/v0.0.1...master)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-blue?logo=dependabot)](https://github.com/dependabot)
 [![Stargazers](https://img.shields.io/github/stars/Tatsh/coastline?logo=github&style=flat)](https://github.com/Tatsh/coastline/stargazers)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Tatsh/coastline/master.svg)](https://results.pre-commit.ci/latest/github/Tatsh/coastline/master)
