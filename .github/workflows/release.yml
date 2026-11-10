@@ -106,10 +106,8 @@ jobs:
             required+=("coastline-${TAG}-${platform}-Release-setup.exe")
             required+=("coastline-${TAG}-${platform}-Release-symbols.zip")
           done
-          for platform in macos-aarch64 macos-x86-64; do
-            required+=("Coastline-${TAG}-${platform}-Release.dmg")
-            required+=("coastline-${TAG}-${platform}-Release-symbols.zip")
-          done
+          required+=("Coastline-${TAG}-macos-universal-Release.dmg")
+          required+=("coastline-${TAG}-macos-universal-Release-symbols.zip")
           for platform in appimage-aarch64 appimage-x86-64; do
             required+=("coastline-${TAG}-${platform}-Release.AppImage")
             required+=("coastline-${TAG}-${platform}-Release-symbols.tar.gz")
