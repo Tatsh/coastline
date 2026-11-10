@@ -19,6 +19,8 @@
 
 #include "shaders/fxaa_frag_msl.h"
 #include "shaders/fxaa_frag_spirv.h"
+#include "shaders/hdr_frag_msl.h"
+#include "shaders/hdr_frag_spirv.h"
 #include "shaders/post_vert_msl.h"
 #include "shaders/post_vert_spirv.h"
 #include "shaders/presentation_frag_msl.h"
@@ -289,7 +291,24 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
         m_pacedToRefresh = true;
     }
     SDL_GPUPresentMode presentMode = SupportedPresentMode(m_device.get(), m_window.get(), wanted);
-    if (!SDL_SetGPUSwapchainParameters(
+    const auto properties = SDL_GetWindowProperties(m_window.get());
+    const bool hdrAvailable =
+        SDL_GetBooleanProperty(properties, SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN, false) &&
+        SDL_WindowSupportsGPUSwapchainComposition(
+            m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR) &&
+        (m_hdrPipeline != nullptr || CreateHdrPass());
+    m_hdrActive = hdrAvailable &&
+                  SDL_SetGPUSwapchainParameters(m_device.get(),
+                                                m_window.get(),
+                                                SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
+                                                presentMode);
+    if (m_hdrActive && SDL_GetGPUSwapchainTextureFormat(m_device.get(), m_window.get()) !=
+                           SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU, "HDR swapchain has an unexpected texture format.");
+        m_hdrActive = false;
+    }
+    if (!m_hdrActive &&
+        !SDL_SetGPUSwapchainParameters(
             m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_SDR, presentMode) &&
         presentMode != SDL_GPU_PRESENTMODE_VSYNC) {
         SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
@@ -309,6 +328,7 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
     SDL_Log("Presenting frames with %s%s.",
             PresentModeName(presentMode),
             m_pacedToRefresh ? " at display refresh rate" : "");
+    SDL_Log("HDR output %s.", m_hdrActive ? "enabled" : "disabled");
 }
 
 bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
@@ -492,6 +512,52 @@ bool GpuWindow::CreatePresentationPass() {
     return true;
 }
 
+bool GpuWindow::CreateHdrPass() {
+    auto *device = m_device.get();
+    auto *vertex =
+        CreatePostShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL);
+    auto *fragment =
+        CreatePostShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, HDR_FRAG_SPIRV, HDR_FRAG_MSL);
+    SDL_GPUGraphicsPipeline *pipeline = nullptr;
+    if (vertex != nullptr && fragment != nullptr) {
+        SDL_GPUColorTargetDescription target{};
+        target.format = SDL_GPU_TEXTUREFORMAT_R16G16B16A16_FLOAT;
+        SDL_GPUGraphicsPipelineCreateInfo info{};
+        info.vertex_shader = vertex;
+        info.fragment_shader = fragment;
+        info.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
+        info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
+        info.target_info.color_target_descriptions = &target;
+        info.target_info.num_color_targets = 1;
+        pipeline = SDL_CreateGPUGraphicsPipeline(device, &info);
+    }
+    for (auto *shader : {vertex, fragment}) {
+        if (shader != nullptr) {
+            SDL_ReleaseGPUShader(device, shader);
+        }
+    }
+    SDL_GPUSamplerCreateInfo info{};
+    info.min_filter = SDL_GPU_FILTER_LINEAR;
+    info.mag_filter = SDL_GPU_FILTER_LINEAR;
+    info.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    info.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    auto *sampler = SDL_CreateGPUSampler(device, &info);
+    if (pipeline == nullptr || sampler == nullptr) {
+        if (pipeline != nullptr) {
+            SDL_ReleaseGPUGraphicsPipeline(device, pipeline);
+        }
+        if (sampler != nullptr) {
+            SDL_ReleaseGPUSampler(device, sampler);
+        }
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU, "Cannot create HDR output: %s", SDL_GetError());
+        return false;
+    }
+    m_hdrPipeline = pipeline;
+    m_hdrSampler = sampler;
+    return true;
+}
+
 SDL_GPUTexture *GpuWindow::FilterFrame(SDL_GPUCommandBuffer *commands,
                                        SDL_GPUTexture *source,
                                        Uint32 width,
@@ -610,6 +676,12 @@ GpuWindow::~GpuWindow() {
         }
         if (m_presentationSampler != nullptr) {
             SDL_ReleaseGPUSampler(m_device.get(), m_presentationSampler);
+        }
+        if (m_hdrPipeline != nullptr) {
+            SDL_ReleaseGPUGraphicsPipeline(m_device.get(), m_hdrPipeline);
+        }
+        if (m_hdrSampler != nullptr) {
+            SDL_ReleaseGPUSampler(m_device.get(), m_hdrSampler);
         }
         if (m_window) {
             SDL_ReleaseWindowFromGPUDevice(m_device.get(), m_window.get());
@@ -783,20 +855,48 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands,
         m_compositeWidth = m_compositeHeight = 0;
     }
     if (acquired && swapchain != nullptr) {
-        SDL_GPUBlitInfo blit{};
-        blit.source.texture = source;
-        blit.source.w = sourceWidth;
-        blit.source.h = sourceHeight;
-        blit.destination.texture = swapchain;
-        blit.destination.x = (width - fittedWidth) / 2;
-        blit.destination.y = (height - fittedHeight) / 2;
-        blit.destination.w = fittedWidth;
-        blit.destination.h = fittedHeight;
-        blit.load_op = SDL_GPU_LOADOP_CLEAR;
-        blit.clear_color = SDL_FColor{0.0f, 0.0f, 0.0f, 1.0f};
-        blit.filter = m_options.scaleFilter == ScaleFilter::Nearest ? SDL_GPU_FILTER_NEAREST :
-                                                                      SDL_GPU_FILTER_LINEAR;
-        SDL_BlitGPUTexture(commands, &blit);
+        if (m_hdrActive) {
+            SDL_GPUColorTargetInfo target{};
+            target.texture = swapchain;
+            target.clear_color = SDL_FColor{0.0f, 0.0f, 0.0f, 1.0f};
+            target.load_op = SDL_GPU_LOADOP_CLEAR;
+            target.store_op = SDL_GPU_STOREOP_STORE;
+            auto *pass = SDL_BeginGPURenderPass(commands, &target, 1, nullptr);
+            SDL_GPUViewport viewport{static_cast<float>((width - fittedWidth) / 2),
+                                     static_cast<float>((height - fittedHeight) / 2),
+                                     static_cast<float>(fittedWidth),
+                                     static_cast<float>(fittedHeight),
+                                     0.0f,
+                                     1.0f};
+            SDL_SetGPUViewport(pass, &viewport);
+            SDL_BindGPUGraphicsPipeline(pass, m_hdrPipeline);
+            SDL_GPUTextureSamplerBinding binding{source, m_hdrSampler};
+            SDL_BindGPUFragmentSamplers(pass, 0, &binding, 1);
+            const auto properties = SDL_GetWindowProperties(m_window.get());
+            const std::array<float, 4> uniforms{
+                SDL_GetFloatProperty(properties, SDL_PROP_WINDOW_SDR_WHITE_LEVEL_FLOAT, 1.0f),
+                SDL_GetFloatProperty(properties, SDL_PROP_WINDOW_HDR_HEADROOM_FLOAT, 1.0f),
+                m_options.screenShader != ScreenShader::None ? 1.0f : 0.0f,
+                m_options.scaleFilter == ScaleFilter::Nearest ? 1.0f : 0.0f};
+            SDL_PushGPUFragmentUniformData(commands, 0, uniforms.data(), sizeof(uniforms));
+            SDL_DrawGPUPrimitives(pass, 3, 1, 0, 0);
+            SDL_EndGPURenderPass(pass);
+        } else {
+            SDL_GPUBlitInfo blit{};
+            blit.source.texture = source;
+            blit.source.w = sourceWidth;
+            blit.source.h = sourceHeight;
+            blit.destination.texture = swapchain;
+            blit.destination.x = (width - fittedWidth) / 2;
+            blit.destination.y = (height - fittedHeight) / 2;
+            blit.destination.w = fittedWidth;
+            blit.destination.h = fittedHeight;
+            blit.load_op = SDL_GPU_LOADOP_CLEAR;
+            blit.clear_color = SDL_FColor{0.0f, 0.0f, 0.0f, 1.0f};
+            blit.filter = m_options.scaleFilter == ScaleFilter::Nearest ? SDL_GPU_FILTER_NEAREST :
+                                                                          SDL_GPU_FILTER_LINEAR;
+            SDL_BlitGPUTexture(commands, &blit);
+        }
     }
     if (capture != nullptr) {
         return SaveFrame(commands, source, sourceWidth, sourceHeight, *capture);

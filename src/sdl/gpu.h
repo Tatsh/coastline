@@ -355,6 +355,7 @@ private:
     bool CreatePostPasses();
     SDL_GPUTexture *AntialiasFrame(SDL_GPUCommandBuffer *commands);
     bool CreatePresentationPass();
+    bool CreateHdrPass();
     SDL_GPUTexture *FilterFrame(SDL_GPUCommandBuffer *commands,
                                 SDL_GPUTexture *source,
                                 Uint32 width,
@@ -373,6 +374,8 @@ private:
     SDL_GPUTexture *m_filtered = nullptr;
     SDL_GPUGraphicsPipeline *m_presentationPipeline = nullptr;
     SDL_GPUSampler *m_presentationSampler = nullptr;
+    SDL_GPUGraphicsPipeline *m_hdrPipeline = nullptr;
+    SDL_GPUSampler *m_hdrSampler = nullptr;
     Uint32 m_filteredWidth = 0;
     Uint32 m_filteredHeight = 0;
     SDL_GPUTexture *m_composite = nullptr;
@@ -386,6 +389,7 @@ private:
     bool m_exclusive = false;
     int m_refreshRate = 0;
     bool m_pacedToRefresh = false;
+    bool m_hdrActive = false;
 };
 
 /**

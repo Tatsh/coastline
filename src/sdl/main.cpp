@@ -1867,6 +1867,9 @@ int main(int argc, char *argv[]) {
                         if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
                             focusLost = true;
                         }
+                        if (event.type == SDL_EVENT_WINDOW_HDR_STATE_CHANGED) {
+                            window->SetPresentMode(window->PresentMode());
+                        }
                         // F9 takes the frame as well, as a desktop such as Plasma keeps Print
                         // Screen.
                         if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
