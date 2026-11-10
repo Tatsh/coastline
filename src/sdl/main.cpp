@@ -216,6 +216,12 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
         options.scaleFilter = coastline::ScaleFilter::EdgeAdaptive;
     }
     const auto screenShader = config.Get("Video", "ScreenShader");
+    const auto hdrOutput = config.Get("Video", "HdrOutput");
+    if (hdrOutput == "on") {
+        options.hdrOutput = coastline::HdrOutput::On;
+    } else if (hdrOutput == "off") {
+        options.hdrOutput = coastline::HdrOutput::Off;
+    }
     if (screenShader == "consumer-crt") {
         options.screenShader = coastline::ScreenShader::ConsumerCrt;
     } else if (screenShader == "pvm") {
@@ -1411,6 +1417,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "GraphicsPreset", "custom"},
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "ScreenShader", "none"},
+                                              {"Video", "HdrOutput", "auto"},
                                               {"Video", "FieldOfView", "1"},
                                               {"Video", "DrawDistance", "1"},
                                               {"Video", "TextureFilter", "modern"},

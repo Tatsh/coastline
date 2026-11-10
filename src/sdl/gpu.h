@@ -40,6 +40,13 @@ enum class ScreenShader {
     PcCrt           /*!< Simulate a progressive PC monitor. */
 };
 
+/** Whether HDR output follows the window, is requested, or is disabled. */
+enum class HdrOutput {
+    Auto, /*!< Use HDR when the window reports additional display headroom. */
+    On,   /*!< Request HDR when the swapchain supports it. */
+    Off   /*!< Use SDR output. */
+};
+
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
     bool n64Effects = false; /*!< Console particle textures, opacity, and skid-mark visibility. */
@@ -49,6 +56,7 @@ struct DisplayOptions {
     float fieldOfViewScale = 1.0f;     /*!< Multiplier of the race camera's field of view. */
     float drawDistanceScale = 1.0f;    /*!< Multiplier of the race view and mirror distances. */
     std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
+    HdrOutput hdrOutput = HdrOutput::Auto; /*!< Selection of HDR swapchain output. */
     bool unlockedFramerate =
         false;           /*!< Disable presentation pacing and the software frame limit. */
     int width = 1280;    /*!< The width of the window and of the exclusive mode in pixels. */

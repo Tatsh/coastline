@@ -74,6 +74,7 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     config.Set("Video", "FrameRateLimit", ultra ? "0" : br || lowPower ? "60" : "30");
     config.Set("Video", "UnlockedFramerate", "0");
     config.Set("Video", "VSync", "1");
+    config.Set("Video", "HdrOutput", "auto");
     config.Set("Video", "WideMenus", ultra ? "auto" : "0");
     return true;
 }
@@ -235,6 +236,8 @@ GameSettings::GameSettings(GameConfig &config,
                           {"pvm", "PVM"},
                           {"aperture-grille", "Aperture grille"},
                           {"pc-crt", "PC CRT"}}});
+    m_options.push_back(
+        {"HDR output", "Video", "HdrOutput", {{"auto", "Auto"}, {"on", "On"}, {"off", "Off"}}});
     m_options.push_back({"Aspect ratio",
                          "Video",
                          "AspectRatio",
@@ -262,7 +265,7 @@ GameSettings::GameSettings(GameConfig &config,
             option.key == "FieldOfView" || option.key == "DrawDistance" ||
             option.key == "InternalWidth" || option.key == "AntialiasPost" ||
             option.key == "ScaleFilter" || option.key == "ScreenShader" ||
-            option.key == "AspectRatio") {
+            option.key == "AspectRatio" || option.key == "HdrOutput") {
             option.restart = false;
         }
     }

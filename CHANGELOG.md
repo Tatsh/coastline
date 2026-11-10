@@ -18,6 +18,7 @@
 - Include a numeric build version, tag or revision, build date, and attribution in the macOS app
   bundle metadata.
 - Use HDR display headroom for CRT highlights when the window supports HDR output.
+- Select HDR output automatically, request it when supported, or turn it off in Options.
 
 ### Changed
 

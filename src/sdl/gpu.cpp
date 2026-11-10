@@ -292,8 +292,12 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
     }
     SDL_GPUPresentMode presentMode = SupportedPresentMode(m_device.get(), m_window.get(), wanted);
     const auto properties = SDL_GetWindowProperties(m_window.get());
+    const bool hdrRequested =
+        m_options.hdrOutput == HdrOutput::On ||
+        (m_options.hdrOutput == HdrOutput::Auto &&
+         SDL_GetBooleanProperty(properties, SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN, false));
     const bool hdrAvailable =
-        SDL_GetBooleanProperty(properties, SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN, false) &&
+        hdrRequested &&
         SDL_WindowSupportsGPUSwapchainComposition(
             m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR) &&
         (m_hdrPipeline != nullptr || CreateHdrPass());
@@ -623,9 +627,11 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
     }
     const bool presentChanged = m_options.presentMode != options.presentMode ||
                                 m_options.fifo != options.fifo ||
-                                m_options.unlockedFramerate != options.unlockedFramerate;
+                                m_options.unlockedFramerate != options.unlockedFramerate ||
+                                m_options.hdrOutput != options.hdrOutput;
     m_options.fifo = options.fifo;
     m_options.unlockedFramerate = options.unlockedFramerate;
+    m_options.hdrOutput = options.hdrOutput;
     if (presentChanged) {
         SetPresentMode(options.presentMode);
     }

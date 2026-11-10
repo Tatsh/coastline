@@ -41,10 +41,14 @@ int main() {
            10);
     assert(coastline::ApplyGraphicsPreset(volume, "br"));
     assert(coastline::SoundEffectsVolume(volume, volume.Get("Game", "SoundEffects") == "N64") == 4);
+    volume.Set("Video", "HdrOutput", "off");
+    assert(coastline::ApplyGraphicsPreset(volume, "custom"));
+    assert(volume.Get("Video", "HdrOutput") == "off");
     for (const auto level : {"0", "4", "7", "10"}) {
         volume.Set("Game", "SfxVolume", level);
         for (const auto preset : {"n64", "br", "ultra", "low-power", "worst"}) {
             assert(coastline::ApplyGraphicsPreset(volume, preset));
+            assert(volume.Get("Video", "HdrOutput") == "auto");
             assert(coastline::SoundEffectsVolume(volume, false) == std::stoi(level));
             assert(coastline::SoundEffectsVolume(volume, true) == std::stoi(level));
         }
@@ -400,6 +404,12 @@ int main() {
     assert(presetConfig.Get("Video", "ScreenShader") == "none");
     assert(presets.RequiresRestart(preset));
     assert(presets.RequiresRestart(Find(presets, "GPU preference:")));
+    const auto hdr = Find(presets, "HDR output:");
+    assert(!presets.RequiresRestart(hdr));
+    assert(presets.Step(hdr, 1));
+    assert(presetConfig.Get("Video", "HdrOutput") == "on");
+    assert(presets.Step(hdr, 1));
+    assert(presetConfig.Get("Video", "HdrOutput") == "off");
     assert(presets.Step(Find(presets, "Screen shader:"), 1));
     assert(presets.Label(preset) == "Preset: Custom");
     assert(presets.AdjustAndSave(preset, 1, directory) == GameSettings::Adjustment::SaveFailed);
