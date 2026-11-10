@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(coastline VERSION 0.0.1 LANGUAGES C)
+project(coastline VERSION 0.0.2 LANGUAGES C)
 
 if(POLICY CMP0174)
   cmake_policy(SET CMP0174 NEW)
