@@ -190,20 +190,12 @@ jobs:
             name: 'Windows aarch64 Clang'
             os: 'windows-11-arm'
             slug: 'windows-aarch64-clang'
-          # The Apple silicon runner also builds for Intel Macs, from 10.15, the oldest macOS
-          # whose C++ library has std::filesystem.
-          - architecture: 'arm64'
-            artifact_arch: 'aarch64'
-            name: 'macOS aarch64'
+          # The Apple silicon runner builds both slices, including Intel Macs from macOS 10.15.
+          - architecture: 'universal'
+            artifact_arch: 'universal'
+            name: 'macOS universal'
             os: 'macos-latest'
-            slug: 'macos-aarch64'
-            triplet: 'arm64-osx'
-          - architecture: 'x86_64'
-            artifact_arch: 'x86-64'
-            name: 'macOS x86-64'
-            os: 'macos-latest'
-            slug: 'macos-x86-64'
-            triplet: 'x64-osx'
+            slug: 'macos-universal'
     env:
       # Each package filename includes a version tag or the seven-character commit SHA.
       PACKAGE: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release'
@@ -256,15 +248,18 @@ jobs:
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
-          cmake --preset coastline -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
-            -DTGR_DEBUG_SYMBOLS=ON \
-            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
-            -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
-          cmake --build --preset coastline -- -k 0
+          for architecture in arm64 x86_64; do
+            triplet=arm64-osx
+            if [[ "$architecture" == x86_64 ]]; then triplet=x64-osx; fi
+            cmake --preset coastline -B "build/coastline-$architecture" \
+              -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
+              -DTGR_DEBUG_SYMBOLS=ON -DCOASTLINE_DISCORD=ON \
+              '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
+              -DCMAKE_OSX_ARCHITECTURES="$architecture" -DVCPKG_TARGET_TRIPLET="$triplet"
+            cmake --build "build/coastline-$architecture" -- -k 0
+          done
         env:
-          ARCHITECTURE: '${{ matrix.platform.architecture }}'
           NASMENV: '!--pragma!macho build_version macos,10,15'
-          TRIPLET: '${{ matrix.platform.triplet }}'
       # Ninja finds MSVC in the environment the developer command prompt sets up for the
       # architecture of the runner.
       - if: runner.os == 'Windows'
@@ -302,12 +297,31 @@ jobs:
       - if: runner.os == 'macOS'
         name: 'Save macOS symbols'
         run: |
-          dsymutil build/coastline/src/sdl/Coastline.app/Contents/MacOS/Coastline \
-            -o Coastline.app.dSYM
-          ditto -c -k --keepParent Coastline.app.dSYM "$PACKAGE-symbols.zip"
+          mkdir symbols
+          for architecture in arm64 x86_64; do
+            dsymutil "build/coastline-$architecture/src/sdl/Coastline.app/Contents/MacOS/Coastline" \
+              -o "symbols/Coastline-$architecture.app.dSYM"
+          done
+          ditto -c -k symbols "$PACKAGE-symbols.zip"
       - name: 'Install'
         run: |
-          if [[ "$RUNNER_OS" == Linux ]]; then
+          if [[ "$RUNNER_OS" == macOS ]]; then
+            for architecture in arm64 x86_64; do
+              cmake --install "build/coastline-$architecture" \
+                --prefix "staging-$architecture" --strip
+            done
+            ditto staging-arm64 staging
+            while IFS= read -r -d '' binary; do
+              file "$binary" | grep -q 'Mach-O' || continue
+              relative="${binary#staging/}"
+              test -f "staging-x86_64/$relative"
+              lipo -create "staging-arm64/$relative" "staging-x86_64/$relative" \
+                -output "$binary"
+              test "$(lipo -archs "$binary")" = 'x86_64 arm64' || \
+                test "$(lipo -archs "$binary")" = 'arm64 x86_64'
+            done < <(find staging -type f -print0)
+            codesign --force --deep --sign - staging/Coastline.app
+          elif [[ "$RUNNER_OS" == Linux ]]; then
             cmake --install build/coastline --prefix staging
           else
             cmake --install build/coastline --prefix staging --strip

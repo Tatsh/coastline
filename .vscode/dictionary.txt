@@ -22,7 +22,6 @@ alphablendenable
 alphadither
 alsa
 ambientsound
-analyzer
 andi
 anim
 apfn
@@ -35,6 +34,7 @@ appstreamcli
 apsz
 aptex
 arcadetimes
+archs
 argn
 argparse
 arrowdd
@@ -199,7 +199,6 @@ controllerread
 controllerscreen
 controllerscreenitems
 convertedvertex
-copytree
 cosf
 counselor
 counterclockwise
@@ -449,6 +448,7 @@ eepromwrite
 effectdata
 effecttextures
 elfobject
+elif
 emptycallback
 emulatedclock
 encryptionfailed
@@ -759,6 +759,7 @@ lightr
 lindex
 linecap
 linuxdeploy
+lipo
 litob
 llcvt
 lmask
@@ -991,7 +992,6 @@ particleinit
 particlesmokerender
 particlesnapshot
 particleupdate
-pathlib
 pcmstream
 pcmwaveformat
 pdbs
@@ -1026,7 +1026,6 @@ pigetcmdq
 pimgr
 pini
 pipebusy
-pipefail
 pipx
 pirawdma
 pirawread
@@ -1163,7 +1162,6 @@ ripgreprc
 rledecompress
 rmask
 rmonspin
-rmtree
 rodata
 rombuilder
 routeposition
@@ -1249,7 +1247,6 @@ shiftl
 shiftt
 shopt
 showmaximized
-shutil
 sideb
 sidegrip
 sidet
