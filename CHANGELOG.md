@@ -22,6 +22,7 @@
 
 ### Fixed
 
+- Apply CRT scanlines and masks in linear light and compensate for their average brightness loss.
 - Bound Boss Rally file-error messages, release EAR allocations consistently, and validate CD track
   counts on current Windows compilers.
 - Treat localised Boss Rally HUD and race messages as text on current Windows compilers.

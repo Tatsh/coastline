@@ -1319,6 +1319,7 @@ spritewh
 sptask
 sqrtf
 srcblt
+srgb
 ssttype
 standardvgamode
 startlights

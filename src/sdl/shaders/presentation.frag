@@ -12,6 +12,16 @@ float Luma(vec3 color) {
     return dot(color, vec3(0.299, 0.587, 0.114));
 }
 
+vec3 ToLinear(vec3 color) {
+    return mix(color / 12.92, pow((color + 0.055) / 1.055, vec3(2.4)),
+               step(vec3(0.04045), color));
+}
+
+vec3 ToSRGB(vec3 color) {
+    return mix(color * 12.92, 1.055 * pow(color, vec3(1.0 / 2.4)) - 0.055,
+               step(vec3(0.0031308), color));
+}
+
 vec3 Read(ivec2 at) {
     return texelFetch(frame, clamp(at, ivec2(0), ivec2(sizes.xy) - 1), 0).rgb;
 }
@@ -76,9 +86,11 @@ void main() {
         color = texture(frame, uv).rgb;
     }
     if (effects.y > 0.5) {
+        color = ToLinear(clamp(color, 0.0, 1.0));
         if (consumer) {
             vec2 spread = vec2(0.5 / sizes.x, 0.0);
-            vec3 soft = 0.5 * (texture(frame, uv - spread).rgb + texture(frame, uv + spread).rgb);
+            vec3 soft = 0.5 * (ToLinear(texture(frame, uv - spread).rgb) +
+                               ToLinear(texture(frame, uv + spread).rgb));
             color = mix(color, soft, 0.35);
         }
         // Fade scanlines near native resolution to avoid a moire pattern when shrinking.
@@ -95,7 +107,14 @@ void main() {
         }
         vec2 edge = min(uv, 1.0 - uv);
         float border = smoothstep(0.0, pc ? 0.004 : 0.012, min(edge.x, edge.y));
-        color *= scan * mask * (pvm ? 1.14 : pc ? 1.06 : 1.18) * border;
+        color *= scan * mask * border;
+        float maskAverage = (1.0 + 2.0 * (consumer ? 0.82 : pvm ? 0.94 : pc ? 0.94 : 0.76)) / 3.0;
+        if (consumer) {
+            maskAverage *= 0.96666667;
+        }
+        float gain = 1.0 / ((1.0 - scanStrength * 0.5) * maskAverage);
+        color = color * gain / (1.0 + color * (gain - 1.0));
+        color = ToSRGB(color);
     }
     outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }
