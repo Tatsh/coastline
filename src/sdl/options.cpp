@@ -1039,7 +1039,7 @@ void Menus::ProcessDataSaveLoadMenu(SceneRenderer &renderer,
 
     m_screen->UpdateFade(seconds);
     draw.BeginDraw(renderer);
-    draw.DrawSpriteTinted(*draw.m_background, 0x60, 0, 0x80);
+    draw.DrawWideBackground(0x60, 0, 0x80);
     draw.DrawTexturedSprite(*draw.m_logo, draw.m_logo->originX, draw.m_logo->originY + 8);
 
     int noteSize = static_cast<int>(OPTIONS_NOTE_SIZE);

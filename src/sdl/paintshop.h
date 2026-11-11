@@ -158,7 +158,7 @@ public:
      * @param renderer The renderer of the frame, between Begin() and End().
      * @param seconds The time of the frame.
      * @param input The input of the player.
-     * @return Whether the paint shop has closed for the main menu.
+     * @return Whether the paint shop has closed for car select.
      */
     bool Frame(SceneRenderer &renderer, float seconds, const PaintShopInput &input);
 
@@ -240,6 +240,7 @@ private:
     void DrawSpriteAtOrigin(PaintSprite &sprite);
     void DrawTexturedSprite(PaintSprite &sprite, s32 x, s32 y);
     void DrawSpriteTinted(PaintSprite &sprite, u8 red, u8 green, u8 blue);
+    void DrawWideBackground(u8 red, u8 green, u8 blue);
     void DrawSpriteRegion(
         PaintSprite &sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue);
     void DrawScaledTexturedRect(PaintSprite &sprite,

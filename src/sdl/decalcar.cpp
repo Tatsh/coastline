@@ -400,11 +400,19 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
             static_cast<std::size_t>((texture.width + 1) / 2 * texture.height));
         std::array<std::uint8_t, PALETTE_BYTES> palette{};
         if (m_imageDecals[index]) {
+            int rowWidth = texture.width;
+            for (int slot = 0; slot < DECAL_SLOTS; ++slot) {
+                const auto panel = Texture(slot);
+                if (panel.width > 0 && panel.texels == texture.texels) {
+                    rowWidth = panel.width;
+                    break;
+                }
+            }
             // The image of a decal is its texels in rows, without the swap of the odd rows.
             for (int y = 0; y < texture.height; ++y) {
                 for (int x = 0; x < texture.width; ++x) {
                     u8 pair = m_bytes[texture.texels +
-                                      static_cast<std::size_t>(TexelOffset(x, y, texture.width))];
+                                      static_cast<std::size_t>(TexelOffset(x, y, rowWidth))];
                     u8 texel = (x & 1) != 0 ? pair & 0xF : pair >> 4;
                     auto at = static_cast<std::size_t>(y * ((texture.width + 1) / 2) + x / 2);
                     texels[at] |= static_cast<std::uint8_t>((x & 1) != 0 ? texel : texel << 4);

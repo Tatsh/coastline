@@ -18,6 +18,9 @@
 #include "common/vehiclerender.h"
 #include "common/visgrid.h"
 #include "common/weather.h"
+#ifdef ENABLE_PATCHES
+#include "carselect.h"
+#endif
 #include "decaldraw.h"
 #include "options.h"
 #include "pakmenu.h"
@@ -894,7 +897,11 @@ void ProcessPaintShopScreen(void) {
         gControllerPakState = 0;
         g_bPaintShopPreviewActive = 0;
         g_wSerialInterfaceIdle = 1;
+#ifdef ENABLE_PATCHES
+        SetCurrentScreenCallback(ProcessCarSelectScreen);
+#else
         SetCurrentScreenCallback(MainMenuEntry);
+#endif
     }
 }
 

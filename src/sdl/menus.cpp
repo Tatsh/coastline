@@ -91,9 +91,8 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
         ProcessRaceResultsScreen(renderer, seconds, first);
         break;
     case Screen::PaintShopScreen:
-        // The paint shop returns to the main menu on the item of the paint shop.
         if (m_paintShop->Frame(renderer, seconds, pointer)) {
-            SetCurrentScreen(Screen::MainMenu);
+            SetCurrentScreen(Screen::CarSelect);
         }
         break;
     default:

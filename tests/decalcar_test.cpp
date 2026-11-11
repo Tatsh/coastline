@@ -44,6 +44,7 @@ int main() {
     texture(0, 16, 0x600, 0x700);
     texture(3, 32, 0x640, 0x700);
     texture(6, 16, 0x680, 0x720);
+    bytes[0x110 + 3] = 3;
     std::fill_n(bytes.begin() + 0x600, 32, 0x12);
     std::fill_n(bytes.begin() + 0x640, 64, 0x34);
     std::fill_n(bytes.begin() + 0x680, 32, 0x56);
@@ -51,8 +52,14 @@ int main() {
         half(0x700 + entry * 2, static_cast<std::uint16_t>(entry * 0x842 | 1));
     }
     std::copy_n(bytes.begin() + 0x700, 32, bytes.begin() + 0x720);
-    const auto model = coastline::CarModelToGltf(bytes, 0, "mesh.bin");
+    auto model = coastline::CarModelToGltf(bytes, 0, "mesh.bin");
     assert(model && model->images.size() == 2);
+    for (std::size_t index = 0; index < model->images.size(); ++index) {
+        if (model->images[index].address == 0x640) {
+            model->json["images"][index]["extras"]["coastlineImage"]["width"] = 35;
+            model->json["images"][index]["extras"]["coastlinePaint"]["material"] = 3;
+        }
+    }
     const auto root = std::filesystem::temp_directory_path() / "coastline-decalcar-test";
     std::filesystem::remove_all(root);
     std::filesystem::create_directories(root / "painted");
@@ -108,16 +115,25 @@ int main() {
     assert(milk->ValidNote(std::vector<u8>(milkBytes)));
     assert(!milk->ValidNote(std::vector<u8>(milkBytes - 1)));
     car->Texels(0)[0] = 0xab;
+    car->Texels(3)[coastline::TexelOffset(2, 1, 32)] = 0xa4;
     car->SetPaletteColor(2, 0, 0xf801);
     assert(car->WriteImages(root / "painted"));
     for (std::size_t index = 0; index < model->images.size(); ++index) {
         const auto &image = model->images[index];
         const auto output = root / "painted" / ("image-" + std::to_string(index) + ".png");
         if (image.address == 0x640) {
-            std::vector<std::uint8_t> texels(64);
+            std::vector<std::uint8_t> texels(72);
             std::array<std::uint8_t, 32> palette{};
             assert(coastline::LoadIndexed4Png(output, texels, palette));
-            assert(std::ranges::all_of(texels, [](auto texel) { return texel == 0x34; }));
+            for (int y = 0; y < 4; ++y) {
+                for (int x = 0; x < 35; ++x) {
+                    const auto source =
+                        car->Texels(3)[coastline::TexelOffset(x, y, car->Texture(3).width)];
+                    const auto actual = texels[static_cast<std::size_t>(y * 18 + x / 2)];
+                    assert(((x & 1) ? actual & 15 : actual >> 4) ==
+                           ((x & 1) ? source & 15 : source >> 4));
+                }
+            }
             assert(palette[0] == 0xf8 && palette[1] == 1);
         } else {
             assert(image.address == 0x680);
@@ -178,6 +194,7 @@ int main() {
     auto packed = coastline::DecalCar::Load(root);
     assert(packed);
     packed->Texels(0)[0] = 0xab;
+    packed->Texels(3)[coastline::TexelOffset(2, 1, 32)] = 0xa4;
     packed->SetPaletteColor(2, 0, 0xf801);
     std::filesystem::create_directories(root / "packed");
     assert(packed->WriteImages(root / "packed"));

@@ -816,6 +816,30 @@ void PaintShop::DrawSpriteTinted(PaintSprite &sprite, u8 red, u8 green, u8 blue)
                      blue);
 }
 
+void PaintShop::DrawWideBackground(u8 red, u8 green, u8 blue) {
+    GpuWindow &window = m_renderer->Window();
+    float aspect = static_cast<float>(window.FrameWidth()) /
+                   static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
+    if (!window.WideMenus() || aspect <= SCREEN_WIDTH / SCREEN_HEIGHT) {
+        DrawSpriteTinted(*m_background, red, green, blue);
+        return;
+    }
+    float width = SCREEN_HEIGHT * 2.0f * aspect;
+    float height = width * SCREEN_HEIGHT / SCREEN_WIDTH;
+    DrawSpriteQuad(*m_background,
+                   SCREEN_WIDTH - width / 2.0f,
+                   SCREEN_HEIGHT - height / 2.0f,
+                   width,
+                   height,
+                   0.5f,
+                   0.5f,
+                   static_cast<float>(m_background->width) - 0.5f,
+                   static_cast<float>(m_background->height) - 0.5f,
+                   red,
+                   green,
+                   blue);
+}
+
 void PaintShop::DrawSpriteRegion(
     PaintSprite &sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
     DrawSpriteStrips(sprite, x, y, width, height, red, green, blue);
@@ -1415,7 +1439,7 @@ void PaintShop::DrawBrushSizes(PaintSprite &sizes, const PaintRect &chosen) {
 }
 
 void PaintShop::DrawPaintShop() {
-    DrawSpriteTinted(*m_background, 0x71, 0x0B, 0x40);
+    DrawWideBackground(0x71, 0x0B, 0x40);
     DrawSpriteAtOrigin(*m_logo);
     m_text.size = TITLE_SIZE;
     m_text.align = TextStyle::Align::Center;
