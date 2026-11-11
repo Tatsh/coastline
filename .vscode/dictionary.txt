@@ -726,7 +726,6 @@ libavcodec
 libavformat
 libavutil
 libc
-libcaca
 libdecor
 libdragon
 libdragon's
@@ -738,8 +737,6 @@ libgamemode
 libgamemodeauto
 libgcc
 libglide
-libglu
-libglut
 libltdl
 libnvidia
 libopenh
@@ -1004,6 +1001,7 @@ particleinit
 particlesmokerender
 particlesnapshot
 particleupdate
+passthrough
 pcmstream
 pcmwaveformat
 pdbs
