@@ -87,13 +87,9 @@ modules:
       - '-DTGR_PLATFORM=sdl'
     name: 'coastline'
     sources:
-      - path: '.'
-        skip:
-          - '.claude'
-          - '.wiswa-ci'
-          - 'build'
-          - 'node_modules'
-        type: 'dir'
+      - tag: 'v0.0.3'
+        type: 'git'
+        url: 'https://github.com/Tatsh/coastline.git'
 runtime: 'org.freedesktop.Platform'
 runtime-version: '25.08'
 sdk: 'org.freedesktop.Sdk'

@@ -76,7 +76,8 @@ parts:
       craftctl default
       craftctl set version="$(git describe --always --tags)"
     plugin: 'cmake'
-    source: '.'
+    source: 'https://github.com/Tatsh/coastline.git'
+    source-tag: 'v0.0.3'
     stage-packages:
       - 'libasound2t64'
       - 'libavcodec60'
