@@ -1,4 +1,6 @@
 ---
+env:
+  VCPKG_OVERLAY_TRIPLETS: '${{ github.workspace }}/cmake/vcpkg-triplets'
 concurrency:
   cancel-in-progress: true
   group: build-${{ github.ref }}

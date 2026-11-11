@@ -4,6 +4,7 @@ concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
 env:
   CODEQL_EXTRACTOR_CPP_AUTOINSTALL_DEPENDENCIES: 'false'
+  VCPKG_OVERLAY_TRIPLETS: '${{ github.workspace }}/cmake/vcpkg-triplets'
 jobs:
   analyze:
     name: '${{ matrix.job_name }}'
