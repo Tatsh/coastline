@@ -292,15 +292,16 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
     }
     SDL_GPUPresentMode presentMode = SupportedPresentMode(m_device.get(), m_window.get(), wanted);
     const auto properties = SDL_GetWindowProperties(m_window.get());
+    const bool hdrSupported = SDL_WindowSupportsGPUSwapchainComposition(
+        m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR);
+    SDL_LogDebug(
+        SDL_LOG_CATEGORY_GPU, "HDR swapchain %s.", hdrSupported ? "supported" : "unsupported");
     const bool hdrRequested =
         m_options.hdrOutput == HdrOutput::On ||
         (m_options.hdrOutput == HdrOutput::Auto &&
          SDL_GetBooleanProperty(properties, SDL_PROP_WINDOW_HDR_ENABLED_BOOLEAN, false));
     const bool hdrAvailable =
-        hdrRequested &&
-        SDL_WindowSupportsGPUSwapchainComposition(
-            m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR) &&
-        (m_hdrPipeline != nullptr || CreateHdrPass());
+        hdrRequested && hdrSupported && (m_hdrPipeline != nullptr || CreateHdrPass());
     m_hdrActive = hdrAvailable &&
                   SDL_SetGPUSwapchainParameters(m_device.get(),
                                                 m_window.get(),

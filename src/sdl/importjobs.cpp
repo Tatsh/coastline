@@ -29,7 +29,7 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
             if (index >= jobs.size() || stopped.load()) {
                 return;
             }
-            std::string lastStep = "Converting assets";
+            std::string lastStep = "Converting assets...";
             const ImportProgress report = [&](const std::string &step, double fraction) {
                 std::lock_guard lock(progressMutex);
                 if (stopped.load()) {

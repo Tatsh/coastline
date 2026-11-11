@@ -127,7 +127,7 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
     std::optional<std::size_t> position;
     std::string line;
     while (std::getline(lines, line)) {
-        if (progress && !progress("Extracting the ROM image", 0.0)) {
+        if (progress && !progress("Extracting the ROM image...", 0.0)) {
             return "Import cancelled.";
         }
         std::istringstream fields(line);
@@ -2117,7 +2117,7 @@ std::optional<std::string> EncodeAudioTrack(const CueTrack &track,
     constexpr std::uint64_t CHUNK_SECTORS = 75;
     std::vector<std::uint8_t> raw(CHUNK_SECTORS * track.sectorSize);
     std::vector<FLAC__int32> samples(CHUNK_SECTORS * SAMPLES_PER_SECTOR * 2);
-    const auto step = "music/" + destination.filename().string();
+    const auto step = "music/" + destination.filename().string() + "...";
     for (std::uint64_t done = 0; done < track.sectorCount; done += CHUNK_SECTORS) {
         if (progress &&
             !progress(step, static_cast<double>(done) / static_cast<double>(track.sectorCount))) {
@@ -2375,7 +2375,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // Replaces the model.bin of each car with model.gltf, its buffer mesh.bin, and its images.
     std::error_code carsError;
     for (const auto &car : std::filesystem::directory_iterator(destination / "cars", carsError)) {
-        if (progress && !progress("Converting the ROM image's cars", 0.2)) {
+        if (progress && !progress("Converting the ROM image's cars...", 0.2)) {
             return std::unexpected("Import cancelled.");
         }
         auto model = car.path() / "model.bin";
@@ -2395,7 +2395,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // with track.gltf, its buffer track.bin, and its images.
     for (const auto &track :
          std::filesystem::directory_iterator(destination / "tracks", carsError)) {
-        if (progress && !progress("Converting the ROM image's tracks", 0.4)) {
+        if (progress && !progress("Converting the ROM image's tracks...", 0.4)) {
             return std::unexpected("Import cancelled.");
         }
         auto geometry = ReadWholeFile(track.path() / "geometry.bin");
@@ -2459,7 +2459,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         }
     }
     for (const auto &sound : sounds) {
-        if (progress && !progress("Converting the ROM image's sounds", 0.6)) {
+        if (progress && !progress("Converting the ROM image's sounds...", 0.6)) {
             return std::unexpected("Import cancelled.");
         }
         if (auto failure = ConvertConsoleSound(sound)) {
@@ -2476,7 +2476,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         return std::unexpected(*failure);
     }
     for (const auto &model : splashModels) {
-        if (progress && !progress("Converting the intro models", 0.7)) {
+        if (progress && !progress("Converting the intro models...", 0.7)) {
             return std::unexpected("Import cancelled.");
         }
         auto stem = model.stem().string();
@@ -2502,7 +2502,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         return std::unexpected(*failure);
     }
     WriteMenuItems(destination, segment, assets);
-    if (progress && !progress("Recording the attract demo", 0.8)) {
+    if (progress && !progress("Converting the attract demo...", 0.8)) {
         return std::unexpected("Import cancelled.");
     }
     // The game plays without the attract demo of a release. A failure to record it is logged and
@@ -2516,7 +2516,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // Replaces each model of the menu items and of the tracks on the track menu with a glTF file
     // of the same name.
     for (const ManifestAsset &asset : assets) {
-        if (progress && !progress("Converting the menu models", 0.9)) {
+        if (progress && !progress("Converting the menu models...", 0.9)) {
             return std::unexpected("Import cancelled.");
         }
         if (!asset.name.starts_with("menu-items/") && !asset.name.ends_with("/menu-model")) {
@@ -2771,7 +2771,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     };
     const auto cancelled = std::unexpected(std::string("Import cancelled."));
     for (const auto &entry : entries) {
-        if (!report(entry.path.generic_string())) {
+        if (!report(entry.path.generic_string() + "...")) {
             return cancelled;
         }
         ++done;
@@ -2822,11 +2822,11 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     }
     using Conversion = std::optional<std::string> (*)(const std::filesystem::path &);
     const std::array<std::pair<const char *, Conversion>, CONVERSIONS - 1> conversions{{
-        {"Converting the skies", ConvertSkyImages},
-        {"Converting BossRally.pod", ConvertPodArchive},
-        {"Converting the ghost recordings", ConvertGhostRecordings},
-        {"Converting the cars", ConvertCarModels},
-        {"Converting the tracks", ConvertTracks},
+        {"Converting the skies...", ConvertSkyImages},
+        {"Converting BossRally.pod...", ConvertPodArchive},
+        {"Converting the ghost recordings...", ConvertGhostRecordings},
+        {"Converting the cars...", ConvertCarModels},
+        {"Converting the tracks...", ConvertTracks},
     }};
     for (const auto &[step, convert] : conversions) {
         if (!report(step)) {

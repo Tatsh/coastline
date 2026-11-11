@@ -224,7 +224,7 @@ std::optional<std::string> DecodeChunk(ChunkInput input,
         }
         decodedCrc = crc32(decodedCrc, bytes.data(), static_cast<uInt>(bytes.size()));
         written += bytes.size();
-        if (progress && !progress("Decoding ISZ image",
+        if (progress && !progress("Decoding ISZ image...",
                                   static_cast<double>(written) / static_cast<double>(expected))) {
             return std::string(CANCELLED);
         }
@@ -335,7 +335,7 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
     if (!temporary) {
         return std::unexpected(temporary.error());
     }
-    if (progress && !progress("Reading ISZ metadata", 0.0)) {
+    if (progress && !progress("Reading ISZ metadata...", 0.0)) {
         return std::unexpected(std::string(CANCELLED));
     }
     std::uint64_t metadataEnd = header[4];
@@ -398,7 +398,7 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
         if (segmentSize != 0) {
             std::uint64_t stored = 0;
             for (std::uint64_t index = 0; index < count; ++index) {
-                if (index % 1024 == 0 && progress && !progress("Reading ISZ metadata", 0.0)) {
+                if (index % 1024 == 0 && progress && !progress("Reading ISZ metadata...", 0.0)) {
                     return std::unexpected(std::string(CANCELLED));
                 }
                 const auto expected = std::min(blockSize, total - index * blockSize);
@@ -448,7 +448,7 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
     uLong compressedCrc = crc32(0, nullptr, 0), decodedCrc = compressedCrc;
     std::uint64_t written = 0;
     std::size_t segment = 0;
-    if (progress && !progress("Decoding ISZ image", 0.0)) {
+    if (progress && !progress("Decoding ISZ image...", 0.0)) {
         return std::unexpected(std::string(CANCELLED));
     }
     for (std::uint64_t index = 0; index < count; ++index) {

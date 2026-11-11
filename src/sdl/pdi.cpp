@@ -124,7 +124,7 @@ std::expected<DecodedDisc, std::string> DecodePdi(const std::filesystem::path &i
     input.clear();
     input.seekg(HEADER);
     for (std::uint64_t first = 0; first < count;) {
-        if (progress && !progress("Decoding PDI image",
+        if (progress && !progress("Decoding PDI image...",
                                   static_cast<double>(first) / static_cast<double>(count))) {
             return std::unexpected(std::string("Import cancelled."));
         }
@@ -148,7 +148,7 @@ std::expected<DecodedDisc, std::string> DecodePdi(const std::filesystem::path &i
     if (!output) {
         return std::unexpected(std::string("Cannot finish decoded disc image."));
     }
-    if (progress && !progress("Decoding PDI image", 1.0)) {
+    if (progress && !progress("Decoding PDI image...", 1.0)) {
         return std::unexpected(std::string("Import cancelled."));
     }
     return decoded;

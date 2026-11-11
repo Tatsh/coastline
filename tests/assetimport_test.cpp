@@ -166,13 +166,13 @@ int main() {
     CheckNoStagingDirectory(data);
     converted.clear();
     failure = ImportAssetImages(data, "disc.iso", roms, [](const std::string &step, double) {
-        return step != "Installing the asset packs";
+        return step != "Installing the asset packs...";
     });
     assert(failure && Snapshot(data) == original);
     CheckNoStagingDirectory(data);
 
     failure = ImportAssetImages(data, "disc.iso", roms, [&](const std::string &step, double) {
-        if (step == "Installing the asset packs") {
+        if (step == "Installing the asset packs...") {
             for (const auto &entry : std::filesystem::directory_iterator(data)) {
                 if (entry.path().filename().string().starts_with(".coastline-import-")) {
                     std::error_code error;
@@ -232,7 +232,7 @@ int main() {
     const auto protectedFiles = Snapshot(data);
     const auto protectedMode = std::filesystem::status(DefaultAssets(data)).permissions();
     failure = ImportAssetImages(data, "disc.iso", roms, [&](const std::string &step, double) {
-        if (step == "Installing the asset packs") {
+        if (step == "Installing the asset packs...") {
             for (const auto &entry : std::filesystem::directory_iterator(data)) {
                 if (entry.path().filename().string().starts_with(".coastline-import-")) {
                     std::error_code error;

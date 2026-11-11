@@ -369,7 +369,7 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         if (!RecordImport(defaults, ImportSource::Disc)) {
             return "Cannot record the imported disc version.";
         }
-        if (!report("Preparing the asset packs", done / total)) {
+        if (!report("Preparing the asset packs...", done / total)) {
             return "Import cancelled.";
         }
         if (auto failure = WriteMetadata(defaults, inputs.front().release)) {
@@ -389,7 +389,7 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         if (!RecordImportFiles(defaults) || !DefaultPackUsable(defaults)) {
             return "Staged asset inventory is invalid.";
         }
-        if (!report("Installing the asset packs", 1.0)) {
+        if (!report("Installing the asset packs...", 1.0)) {
             return "Import cancelled.";
         }
         if (auto failure = (*stage)->Install(data)) {

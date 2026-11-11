@@ -114,7 +114,7 @@ bool Run(const std::vector<std::string> &arguments, const ImportProgress &progre
     const auto start = SDL_GetTicks();
     while (!SDL_WaitProcess(process.get(), false, &result)) {
         if (SDL_GetTicks() - start > 600000 ||
-            (progress && !progress("Converting the intro movie", 0.5))) {
+            (progress && !progress("Converting the intro movie...", 0.5))) {
             SDL_KillProcess(process.get(), true);
             SDL_WaitProcess(process.get(), true, &result);
             return false;
@@ -217,13 +217,13 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
 #else
     TemporaryTools tools;
     std::string executable = "ffmpeg";
-    if (progress && !progress("Converting the intro movie", 0)) {
+    if (progress && !progress("Converting the intro movie...", 0)) {
         return "Import cancelled.";
     }
     if (!Run({executable, "-version"}, {})) {
 #if defined(_WIN32) || defined(__APPLE__)
         const ImportProgress toolProgress = [&](const std::string &, double) {
-            return !progress || progress("Preparing temporary FFmpeg", 0.1);
+            return !progress || progress("Preparing temporary FFmpeg...", 0.1);
         };
         tools.path = directory / (".intro-tools-" + std::to_string(SDL_GetTicksNS()));
         if (!std::filesystem::create_directory(tools.path, error) || error) {
@@ -289,7 +289,7 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
         }
 #endif
     }
-    if (progress && !progress("Converting the intro movie", 0.25)) {
+    if (progress && !progress("Converting the intro movie...", 0.25)) {
         return "Import cancelled.";
     }
     if (!Run({executable,

@@ -311,7 +311,7 @@ std::optional<std::string> ConvertIntroMovieWithLibav(const std::filesystem::pat
         }
         if (progress && context.input->duration > 0 && context.packet->pts != AV_NOPTS_VALUE &&
             stream &&
-            !progress("Converting the intro movie",
+            !progress("Converting the intro movie...",
                       std::clamp(context.packet->pts * av_q2d(stream->input->time_base) *
                                      1000000.0 / context.input->duration,
                                  0.0,
