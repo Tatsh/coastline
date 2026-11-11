@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
       - name: 'Initialize CodeQL'
-        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           build-mode: '${{ matrix.build-mode }}'
           languages: '${{ matrix.language }}'
@@ -58,7 +58,7 @@ jobs:
           key: "vcpkg-${{ runner.os }}-linux-x86_64-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Analyze'
-        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           output: '${{ runner.temp }}/codeql-sarif'
           upload: false
@@ -67,7 +67,7 @@ jobs:
         name: Restrict native findings to project sources
         run: python3 .github/scripts/static-analysis.py --sarif "$RUNNER_TEMP/codeql-sarif"
       - name: Upload CodeQL results
-        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066
         with:
           category: /language:${{ matrix.language }}
           sarif_file: ${{ runner.temp }}/codeql-sarif
@@ -131,7 +131,7 @@ jobs:
         run: git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
         shell: bash
       - name: 'Initialize CodeQL'
-        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
@@ -173,7 +173,7 @@ jobs:
           key: "vcpkg-${{ runner.os }}-${{ matrix.platform.slug }}-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Analyze'
-        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/sdl-${{ matrix.platform.slug }}'
           output: '${{ runner.temp }}/codeql-sarif'
@@ -186,7 +186,7 @@ jobs:
         run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
         shell: pwsh
       - name: 'Upload CodeQL results'
-        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/sdl-${{ matrix.platform.slug }}'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
@@ -226,7 +226,7 @@ jobs:
         run: git clone https://github.com/microsoft/vcpkg .vcpkg
         shell: 'msys2 {0}'
       - name: 'Initialize CodeQL'
-        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
@@ -248,7 +248,7 @@ jobs:
           key: "vcpkg-${{ runner.os }}-windows-x64-ucrt-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Analyze'
-        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/sdl-windows-x86-64-mingw'
           output: '${{ runner.temp }}/codeql-sarif'
@@ -257,7 +257,7 @@ jobs:
         run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
         shell: pwsh
       - name: 'Upload CodeQL results'
-        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/sdl-windows-x86-64-mingw'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
@@ -314,7 +314,7 @@ jobs:
           key: 'codeql-n64-toolchain-fac8e6572493a664'
           path: '.wiswa-ci/gcc-toolchain-mips64-x86_64.deb'
       - name: 'Initialize CodeQL'
-        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
@@ -336,7 +336,7 @@ jobs:
           N64_INST: '/opt/libdragon'
           TGR_REGION: '${{ matrix.region }}'
       - name: 'Analyze'
-        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/n64-${{ matrix.region }}'
           output: '${{ runner.temp }}/codeql-sarif'
@@ -344,7 +344,7 @@ jobs:
       - name: Restrict native findings to project sources
         run: python3 .github/scripts/static-analysis.py --sarif "$RUNNER_TEMP/codeql-sarif"
       - name: 'Upload CodeQL results'
-        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/n64-${{ matrix.region }}'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
@@ -374,7 +374,7 @@ jobs:
             choco install nsis -y --no-progress
           }
       - name: 'Initialize CodeQL'
-        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
@@ -391,7 +391,7 @@ jobs:
           done
         shell: 'msys2 {0}'
       - name: 'Analyze'
-        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/win'
           output: '${{ runner.temp }}/codeql-sarif'
@@ -400,7 +400,7 @@ jobs:
         run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
         shell: pwsh
       - name: 'Upload CodeQL results'
-        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/win'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
@@ -435,7 +435,7 @@ jobs:
             choco install nsis -y --no-progress
           }
       - name: 'Initialize CodeQL'
-        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
@@ -451,7 +451,7 @@ jobs:
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
       - name: 'Analyze'
-        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/win-msvc'
           output: '${{ runner.temp }}/codeql-sarif'
@@ -460,7 +460,7 @@ jobs:
         run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
         shell: pwsh
       - name: 'Upload CodeQL results'
-        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        uses: 'github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066'
         with:
           category: '/language:c-cpp/win-msvc'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
