@@ -1,2 +1,2 @@
-include("$ENV{VCPKG_ROOT}/triplets/x64-linux.cmake")
+include("${SCRIPTS}/../triplets/x64-linux.cmake")
 set(VCPKG_BUILD_TYPE release)
