@@ -166,6 +166,7 @@ Normal builds retain the wizard and reset options.
 
 On Windows, `cpack --config build/coastline/CPackConfig.cmake` builds an NSIS installer that
 installs the game for the current user, with shortcuts and an option to add it to `PATH`.
+Its final page starts the game unless **Run Coastline** is cleared.
 MSVC builds require the
 [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist)
 for the architecture of the game. Packages omit the runtime DLLs, and the installer offers a

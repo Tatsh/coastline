@@ -2,6 +2,11 @@
 
 ## [unreleased]
 
+### Added
+
+- Added a **Run Coastline** checkbox, selected by default, to the final page of the Windows
+  installer.
+
 ### Changed
 
 - Removed the Microsoft Visual C++ runtime DLLs (`vcruntime140.dll`, `msvcp140.dll`, and related

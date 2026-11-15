@@ -507,6 +507,7 @@ fileversion
 filewrite
 finalrom
 finetune
+finishpage
 firstrun
 fistp
 fixedh
