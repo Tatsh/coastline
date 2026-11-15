@@ -6,6 +6,8 @@
 
 - Added a **Run Coastline** checkbox, selected by default, to the final page of the Windows
   installer.
+- Added Direct3D 12 rendering on Windows. Windows builds compile the shaders to signed DXIL with
+  DXC, and SDL selects Direct3D 12 before Vulkan. Set `GpuDriver = vulkan` to select Vulkan.
 
 ### Changed
 
@@ -16,9 +18,8 @@
 ### Fixed
 
 - Prevented the game from exiting at startup on Windows, and under Wine with vkd3d-proton, when
-  Direct3D 12 is available. The game requested DXIL shaders it does not ship, SDL selected
-  Direct3D 12, and shader creation failed with `GPU driver requires SPIR-V or MSL support`. Windows
-  now uses Vulkan.
+  Direct3D 12 is available. The game requested DXIL shaders it did not ship, SDL selected
+  Direct3D 12, and shader creation failed with `GPU driver requires SPIR-V or MSL support`.
 
 ## [0.0.3] - 2026-11-11
 

@@ -31,6 +31,11 @@
         "argparse",
         "boost-pfr",
         "bzip2",
+        {
+          "host": true,
+          "name": "directx-dxc",
+          "platform": "windows"
+        },
         "drlibs",
         "fmt",
         {

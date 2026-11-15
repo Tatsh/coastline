@@ -17,12 +17,16 @@
 #include <dxgi.h>
 #endif
 
+#include "shaders/fxaa_frag_dxil.h"
 #include "shaders/fxaa_frag_msl.h"
 #include "shaders/fxaa_frag_spirv.h"
+#include "shaders/hdr_frag_dxil.h"
 #include "shaders/hdr_frag_msl.h"
 #include "shaders/hdr_frag_spirv.h"
+#include "shaders/post_vert_dxil.h"
 #include "shaders/post_vert_msl.h"
 #include "shaders/post_vert_spirv.h"
+#include "shaders/presentation_frag_dxil.h"
 #include "shaders/presentation_frag_msl.h"
 #include "shaders/presentation_frag_spirv.h"
 
@@ -47,19 +51,25 @@ constexpr SDL_GPUTextureFormat FRAME_FORMAT = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNO
 constexpr unsigned TEXTURES_BEFORE_WAIT = 32;
 constexpr const char *GPU_WINDOW_PROPERTY = "coastline.gpu-window";
 
-// A shader of a pass after the scene, in SPIR-V or MSL as the driver takes.
+// A shader of a pass after the scene, in SPIR-V, DXIL, or MSL as the driver takes.
 SDL_GPUShader *CreatePostShader(SDL_GPUDevice *device,
                                 SDL_GPUShaderStage stage,
                                 Uint32 samplers,
                                 Uint32 uniformBuffers,
                                 std::span<const std::uint8_t> spirv,
-                                std::span<const std::uint8_t> msl) {
+                                std::span<const std::uint8_t> msl,
+                                std::span<const std::uint8_t> dxil) {
     SDL_GPUShaderCreateInfo info{};
     SDL_GPUShaderFormat formats = SDL_GetGPUShaderFormats(device);
     if (formats & SDL_GPU_SHADERFORMAT_SPIRV) {
         info.format = SDL_GPU_SHADERFORMAT_SPIRV;
         info.code = spirv.data();
         info.code_size = spirv.size();
+        info.entrypoint = "main";
+    } else if ((formats & SDL_GPU_SHADERFORMAT_DXIL) && !dxil.empty()) {
+        info.format = SDL_GPU_SHADERFORMAT_DXIL;
+        info.code = dxil.data();
+        info.code_size = dxil.size();
         info.entrypoint = "main";
     } else if (formats & SDL_GPU_SHADERFORMAT_MSL) {
         info.format = SDL_GPU_SHADERFORMAT_MSL;
@@ -68,7 +78,7 @@ SDL_GPUShader *CreatePostShader(SDL_GPUDevice *device,
         // SPIRV-Cross renames main, which Metal reserves.
         info.entrypoint = "main0";
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "GPU driver requires SPIR-V or MSL support.");
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "GPU driver requires SPIR-V, DXIL, or MSL support.");
         return nullptr;
     }
     info.stage = stage;
@@ -154,11 +164,14 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     if (options.minimized) {
         SDL_MinimizeWindow(result->m_window.get());
     }
-    // The shaders ship as SPIR-V for Vulkan and MSL for Metal. SDL tries Direct3D 12 before Vulkan
-    // on Windows, and a device accepting DXIL would select Direct3D 12 without shaders for it.
+    // The shaders ship as SPIR-V for Vulkan, MSL for Metal, and, on Windows alone, DXIL for
+    // Direct3D 12. SDL tries Direct3D 12 before Vulkan.
     const auto properties = SDL_CreateProperties();
     SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
     SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
+#ifdef _WIN32
+    SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXIL_BOOLEAN, true);
+#endif
     SDL_SetBooleanProperty(
         properties, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, options.gpuDebug);
     if (options.driver) {
@@ -413,10 +426,10 @@ void GpuWindow::UpdateFrameSize() {
 
 bool GpuWindow::CreatePostPasses() {
     SDL_GPUDevice *device = m_device.get();
-    SDL_GPUShader *vertex =
-        CreatePostShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL);
+    SDL_GPUShader *vertex = CreatePostShader(
+        device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL, POST_VERT_DXIL);
     SDL_GPUShader *fragment = CreatePostShader(
-        device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, FXAA_FRAG_SPIRV, FXAA_FRAG_MSL);
+        device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, FXAA_FRAG_SPIRV, FXAA_FRAG_MSL, FXAA_FRAG_DXIL);
     if (vertex != nullptr && fragment != nullptr) {
         SDL_GPUColorTargetDescription target{};
         target.format = FRAME_FORMAT;
@@ -473,10 +486,15 @@ SDL_GPUTexture *GpuWindow::AntialiasFrame(SDL_GPUCommandBuffer *commands) {
 
 bool GpuWindow::CreatePresentationPass() {
     auto *device = m_device.get();
-    auto *vertex =
-        CreatePostShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL);
-    auto *fragment = CreatePostShader(
-        device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, PRESENTATION_FRAG_SPIRV, PRESENTATION_FRAG_MSL);
+    auto *vertex = CreatePostShader(
+        device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL, POST_VERT_DXIL);
+    auto *fragment = CreatePostShader(device,
+                                      SDL_GPU_SHADERSTAGE_FRAGMENT,
+                                      1,
+                                      1,
+                                      PRESENTATION_FRAG_SPIRV,
+                                      PRESENTATION_FRAG_MSL,
+                                      PRESENTATION_FRAG_DXIL);
     SDL_GPUGraphicsPipeline *pipeline = nullptr;
     if (vertex != nullptr && fragment != nullptr) {
         SDL_GPUColorTargetDescription target{};
@@ -519,10 +537,10 @@ bool GpuWindow::CreatePresentationPass() {
 
 bool GpuWindow::CreateHdrPass() {
     auto *device = m_device.get();
-    auto *vertex =
-        CreatePostShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL);
-    auto *fragment =
-        CreatePostShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, HDR_FRAG_SPIRV, HDR_FRAG_MSL);
+    auto *vertex = CreatePostShader(
+        device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL, POST_VERT_DXIL);
+    auto *fragment = CreatePostShader(
+        device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, HDR_FRAG_SPIRV, HDR_FRAG_MSL, HDR_FRAG_DXIL);
     SDL_GPUGraphicsPipeline *pipeline = nullptr;
     if (vertex != nullptr && fragment != nullptr) {
         SDL_GPUColorTargetDescription target{};

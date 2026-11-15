@@ -13,8 +13,10 @@
 
 #include "gltfdocument.h"
 #include "gpu.h"
+#include "shaders/model_frag_dxil.h"
 #include "shaders/model_frag_msl.h"
 #include "shaders/model_frag_spirv.h"
+#include "shaders/model_vert_dxil.h"
 #include "shaders/model_vert_msl.h"
 #include "shaders/model_vert_spirv.h"
 
@@ -249,13 +251,19 @@ SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
                             std::uint32_t samplers,
                             std::uint32_t storageBuffers,
                             std::span<const unsigned char> spirv,
-                            std::span<const unsigned char> msl) {
+                            std::span<const unsigned char> msl,
+                            std::span<const unsigned char> dxil) {
     SDL_GPUShaderCreateInfo info{};
     SDL_GPUShaderFormat formats = SDL_GetGPUShaderFormats(device);
     if (formats & SDL_GPU_SHADERFORMAT_SPIRV) {
         info.format = SDL_GPU_SHADERFORMAT_SPIRV;
         info.code = spirv.data();
         info.code_size = spirv.size();
+        info.entrypoint = "main";
+    } else if ((formats & SDL_GPU_SHADERFORMAT_DXIL) && !dxil.empty()) {
+        info.format = SDL_GPU_SHADERFORMAT_DXIL;
+        info.code = dxil.data();
+        info.code_size = dxil.size();
         info.entrypoint = "main";
     } else if (formats & SDL_GPU_SHADERFORMAT_MSL) {
         info.format = SDL_GPU_SHADERFORMAT_MSL;
@@ -264,7 +272,7 @@ SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
         // SPIRV-Cross renames main, which Metal reserves.
         info.entrypoint = "main0";
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "GPU driver requires SPIR-V or MSL support.");
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "GPU driver requires SPIR-V, DXIL, or MSL support.");
         return nullptr;
     }
     info.stage = stage;
@@ -1888,10 +1896,20 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window, bool out
     state->window = &window;
     state->device = window.Device();
     SDL_GPUDevice *device = state->device;
-    state->vertexShader =
-        CreateShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 1, MODEL_VERT_SPIRV, MODEL_VERT_MSL);
-    state->fragmentShader =
-        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 3, 0, MODEL_FRAG_SPIRV, MODEL_FRAG_MSL);
+    state->vertexShader = CreateShader(device,
+                                       SDL_GPU_SHADERSTAGE_VERTEX,
+                                       0,
+                                       1,
+                                       MODEL_VERT_SPIRV,
+                                       MODEL_VERT_MSL,
+                                       MODEL_VERT_DXIL);
+    state->fragmentShader = CreateShader(device,
+                                         SDL_GPU_SHADERSTAGE_FRAGMENT,
+                                         3,
+                                         0,
+                                         MODEL_FRAG_SPIRV,
+                                         MODEL_FRAG_MSL,
+                                         MODEL_FRAG_DXIL);
     if (state->vertexShader == nullptr || state->fragmentShader == nullptr) {
         return nullptr;
     }

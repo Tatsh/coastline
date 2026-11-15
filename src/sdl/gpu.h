@@ -99,7 +99,8 @@ struct DisplayOptions {
     TextureFilter textureFilter = TextureFilter::Modern; /*!< How textures are filtered. */
     /** Whether the alpha of the texels a model cuts covers the samples of a multisampled pixel. */
     bool alphaToCoverage = true;
-    std::optional<std::string> driver; /*!< An SDL GPU driver, vulkan or metal. */
+    std::optional<std::string>
+        driver; /*!< An SDL GPU driver, such as vulkan, metal, or direct3d12. */
 };
 
 /**

@@ -137,8 +137,8 @@ target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
                                                      "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/common" "${CMAKE_BINARY_DIR}/src/common")
 
-# The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal by the host
-# tools, and embedded in the executable.
+# The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal and to DXIL
+# for Direct3D 12 by the host tools, and embedded in the executable.
 set(_host_tools "${VCPKG_INSTALLED_DIR}/${VCPKG_HOST_TRIPLET}/tools")
 coastline_tool(
   GLSLANG GLSLANG_VALIDATOR
@@ -157,6 +157,39 @@ coastline_tool(
   URL https://github.com/KhronosGroup/SPIRV-Cross/archive/refs/tags/vulkan-sdk-1.4.363.0.tar.gz
   HASH f708982e88b763ef5b0394ed468fc2c3628f68cdab89f2e7a946cd628c04e721
   OPTIONS SPIRV_CROSS_ENABLE_TESTS=OFF SPIRV_CROSS_SKIP_INSTALL=ON)
+# On Windows, SPIRV-Cross also translates the SPIR-V to HLSL, and DXC compiles the HLSL to DXIL for
+# Direct3D 12. The DXIL library beside DXC signs the shaders, as Direct3D 12 rejects unsigned DXIL.
+if(WIN32)
+  option(USE_SYSTEM_DXC "Take dxc from the system, without downloading it." OFF)
+  if(USE_SYSTEM_DXC OR VCPKG_TOOLCHAIN)
+    file(GLOB _dxc_hints LIST_DIRECTORIES true "${VCPKG_INSTALLED_DIR}/*/tools/directx-dxc")
+    find_program(DXC dxc HINTS ${_dxc_hints} REQUIRED)
+    message(STATUS "dxc is ${DXC}.")
+  else()
+    set(_dxc_release
+        https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2602.24)
+    if(CMAKE_HOST_WIN32)
+      set(_dxc_url "${_dxc_release}/dxc_2026_05_27.zip")
+      set(_dxc_hash cf658aacf070d3045e31b8f1f8a696c2945f37c1095019481ef7c513368db3b4)
+      if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "^(ARM64|arm64|aarch64)$")
+        set(_dxc_program bin/arm64/dxc.exe)
+      else()
+        set(_dxc_program bin/x64/dxc.exe)
+      endif()
+    elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL
+                                                         "x86_64")
+      set(_dxc_url "${_dxc_release}/linux_dxc_2026_05_26.x86_64.tar.gz")
+      set(_dxc_hash 928b3e9986d11dc4279050e02340950c29bcbd1e5efb9d3ded9669dade37639d)
+      set(_dxc_program bin/dxc)
+    else()
+      message(FATAL_ERROR "No DXC release runs on this host. Set USE_SYSTEM_DXC=ON.")
+    endif()
+    FetchContent_Declare(dxc URL "${_dxc_url}" URL_HASH "SHA256=${_dxc_hash}")
+    FetchContent_MakeAvailable(dxc)
+    set(DXC "${dxc_SOURCE_DIR}/${_dxc_program}")
+    message(STATUS "dxc is the pinned release ${_dxc_url}.")
+  endif()
+endif()
 set(_shader_headers)
 foreach(_shader fxaa.frag hdr.frag model.frag model.vert post.vert presentation.frag)
   string(REPLACE "." "_" _stem "${_shader}")
@@ -166,8 +199,31 @@ foreach(_shader fxaa.frag hdr.frag model.frag model.vert post.vert presentation.
   set(_msl "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}.metal")
   set(_spirv_header "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}_spirv.h")
   set(_msl_header "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}_msl.h")
+  set(_dxil_header "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}_dxil.h")
+  set(_dxil_outputs)
+  set(_dxil_commands)
+  if(WIN32)
+    set(_hlsl "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}.hlsl")
+    set(_dxil "${CMAKE_CURRENT_BINARY_DIR}/shaders/${_stem}.dxil")
+    if(_shader MATCHES "\\.vert$")
+      set(_profile vs_6_0)
+    else()
+      set(_profile ps_6_0)
+    endif()
+    set(_dxil_outputs "${_dxil_header}")
+    set(_dxil_commands
+        COMMAND "${SPIRV_CROSS}" --hlsl --shader-model 60 --output "${_hlsl}" "${_spirv}"
+        COMMAND "${DXC}" -T ${_profile} -E main -Fo "${_dxil}" "${_hlsl}"
+        COMMAND "${CMAKE_COMMAND}" -DINPUT=${_dxil} -DOUTPUT=${_dxil_header} -DNAME=${_name}_DXIL
+                -P "${CMAKE_SOURCE_DIR}/cmake/embed.cmake")
+  else()
+    # Direct3D 12 exists only on Windows, and other systems do not take DXIL.
+    string(CONCAT _empty_dxil "#pragma once\n\n#include <span>\n\n"
+                  "inline constexpr std::span<const unsigned char> ${_name}_DXIL{};\n")
+    file(CONFIGURE OUTPUT "${_dxil_header}" CONTENT "${_empty_dxil}")
+  endif()
   add_custom_command(
-    OUTPUT "${_spirv_header}" "${_msl_header}"
+    OUTPUT "${_spirv_header}" "${_msl_header}" ${_dxil_outputs}
     COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/shaders"
     COMMAND "${GLSLANG_VALIDATOR}" -V --quiet -o "${_spirv}" "${_source}"
     COMMAND "${SPIRV_CROSS}" --msl --msl-version 20000 --output "${_msl}" "${_spirv}"
@@ -175,10 +231,11 @@ foreach(_shader fxaa.frag hdr.frag model.frag model.vert post.vert presentation.
             -P "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
     COMMAND "${CMAKE_COMMAND}" -DINPUT=${_msl} -DOUTPUT=${_msl_header} -DNAME=${_name}_MSL -P
             "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+    ${_dxil_commands}
     DEPENDS "${_source}" "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
     COMMENT "Compiling the shader ${_shader}"
     VERBATIM)
-  list(APPEND _shader_headers "${_spirv_header}" "${_msl_header}")
+  list(APPEND _shader_headers "${_spirv_header}" "${_msl_header}" ${_dxil_outputs})
 endforeach()
 add_custom_target(coastline_shaders DEPENDS ${_shader_headers})
 

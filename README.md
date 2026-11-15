@@ -108,7 +108,7 @@ need argparse, nlohmann JSON, spdlog, and zlib, from vcpkg, the system, or a pin
 
 The `sdl` platform builds `coastline`, a stand-alone 64-bit game for every operating system SDL 3
 supports, from Windows 7 and macOS 10.15 on x86_64 and arm64. It draws through the GPU API of SDL
-(Vulkan or Metal). It builds with GCC, Clang, MSVC of Visual Studio 2022, and MinGW.
+(Vulkan, Metal, or Direct3D 12). It builds with GCC, Clang, MSVC of Visual Studio 2022, and MinGW.
 
 The `coastline` preset takes the libraries from vcpkg, found through `VCPKG_ROOT`.
 
@@ -201,9 +201,12 @@ Without vcpkg, each library and tool comes from a pinned release that is downloa
 the game. The `USE_SYSTEM_<NAME>` options take each from the system instead, with nothing
 downloaded: `USE_SYSTEM_SDL3`, `USE_SYSTEM_ARGPARSE`, `USE_SYSTEM_FMT`, `USE_SYSTEM_FLAC`,
 `USE_SYSTEM_MESHOPTIMIZER`, `USE_SYSTEM_NLOHMANN_JSON`, `USE_SYSTEM_ZLIB`, `USE_SYSTEM_GLSLANG`,
-and `USE_SYSTEM_SPIRV_CROSS`.
+`USE_SYSTEM_SPIRV_CROSS`, and `USE_SYSTEM_DXC`.
 A cross build takes glslang and SPIRV-Cross from the system or vcpkg, as it cannot run the tools it
 builds.
+Windows builds compile the Direct3D 12 shaders with DXC. The pinned DXC release is a prebuilt
+Windows (x64 and arm64) or Linux x86_64 program. Other hosts require `USE_SYSTEM_DXC=ON` with a
+DXC that includes the DXIL signing library.
 
 ```shell
 cmake -S . -B build/coastline -G Ninja -DTGR_PLATFORM=sdl -DUSE_SYSTEM_SDL3=ON -DUSE_SYSTEM_ZLIB=ON
@@ -573,7 +576,7 @@ changes recreate the GPU device and restart the game after Options closes.
 | `FullscreenMode`       | `borderless`, the default, covers the display at its desktop mode. `exclusive` switches the display to `Width` by `Height` at `RefreshRate`.                                                                                            |
 | `RefreshRate`          | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                                                                                                                    |
 | `VSync`                | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. V saves its choice here.                                                                  |
-| `GpuDriver`            | The GPU driver of SDL, `vulkan` or `metal`, or empty, the default, for the driver SDL chooses.                                                                                                                                          |
+| `GpuDriver`            | The GPU driver of SDL, `vulkan`, `metal`, or `direct3d12`, or empty, the default, for the driver SDL chooses.                                                                                                                           |
 | `GpuPreference`        | `auto` (default), `high-performance`, or `low-power`. `--gpu` overrides the setting for one run.                                                                                                                                        |
 | `UnlockedFramerate`    | `1` bypasses presentation pacing and `FrameRateLimit`; `0` restores configured pacing. Ctrl+U toggles and saves this choice.                                                                                                            |
 | `FrameRateLimit`       | The most frames drawn each second, or `0` for no limit.                                                                                                                                                                                 |
