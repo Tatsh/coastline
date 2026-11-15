@@ -570,6 +570,28 @@ if(WIN32)
            "VIAddVersionKey \\\"Comments\\\" \\\"https://github.com/Tatsh/coastline\\\"\n"
            "VIAddVersionKey \\\"LegalCopyright\\\" \\\"Copyright (c) 2026 coastline "
            "authors. MIT License.\\\"")
+  if(MSVC)
+    # Visual C++ runtime is not installed with the game. Microsoft's redistributable package
+    # installs the runtime and records the runtime version under the key read here. The runtime
+    # must be at least as new as the toolset, whose minor version the runtime shares.
+    string(TOLOWER "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}" _vc_arch)
+    math(EXPR _vc_minor "${MSVC_VERSION} % 100")
+    set(_vc_key "SOFTWARE\\\\Microsoft\\\\VisualStudio\\\\14.0\\\\VC\\\\Runtimes\\\\${_vc_arch}")
+    string(
+      CONCAT CPACK_NSIS_EXTRA_INSTALL_COMMANDS
+             "SetRegView 64\n"
+             "ReadRegDWORD $0 HKLM '${_vc_key}' 'Installed'\n"
+             "ReadRegDWORD $1 HKLM '${_vc_key}' 'Minor'\n"
+             "SetRegView lastused\n"
+             "IntCmp $0 1 0 vc_runtime_missing vc_runtime_missing\n"
+             "IntCmp $1 ${_vc_minor} vc_runtime_done vc_runtime_missing vc_runtime_done\n"
+             "vc_runtime_missing:\n"
+             "MessageBox MB_YESNO|MB_ICONEXCLAMATION 'Coastline requires the Microsoft Visual C++ "
+             "Redistributable (${_vc_arch}), version 14.${_vc_minor} or later. Download it "
+             "now?' IDNO vc_runtime_done\n"
+             "ExecShell 'open' 'https://aka.ms/vs/17/release/vc_redist.${_vc_arch}.exe'\n"
+             "vc_runtime_done:\n")
+  endif()
   set(CPACK_NSIS_DISPLAY_NAME "Coastline")
   set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
   set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")

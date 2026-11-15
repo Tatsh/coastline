@@ -26,13 +26,3 @@ install(
     ".*[/\\\\][Ss][Yy][Ss][Tt][Ee][Mm]32[/\\\\].*"
     ".*[/\\\\][Ss][Yy][Ss][Ww][Oo][Ww]64[/\\\\].*"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
-
-if(MSVC)
-  set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_BINDIR}")
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CMAKE_INSTALL_DEBUG_LIBRARIES ON)
-    set(CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY ON)
-    set(CMAKE_INSTALL_UCRT_LIBRARIES ON)
-  endif()
-  include(InstallRequiredSystemLibraries)
-endif()

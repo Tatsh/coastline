@@ -166,6 +166,11 @@ Normal builds retain the wizard and reset options.
 
 On Windows, `cpack --config build/coastline/CPackConfig.cmake` builds an NSIS installer that
 installs the game for the current user, with shortcuts and an option to add it to `PATH`.
+MSVC builds require the
+[Microsoft Visual C++ Redistributable](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist)
+for the architecture of the game. Packages omit the runtime DLLs, and the installer offers a
+download of the redistributable when the installed runtime is missing or older than the build
+toolset.
 
 A tag such as `v1.2.3` names the build: the game shows the tag in place of the commit, and the
 build workflow attaches every package to a draft release of the tag. The release workflow

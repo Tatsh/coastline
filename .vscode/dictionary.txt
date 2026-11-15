@@ -631,12 +631,14 @@ hudtime
 huft
 iconerasebkgnd
 iconerror
+iconexclamation
 iconfile
 iconhand
 iconset
 iconstop
 iconutil
 icsum
+idno
 idok
 idxgi
 ifdef
@@ -694,6 +696,7 @@ laptime
 laptimes
 lastexitcode
 lastlapsnapshot
+lastused
 launchable
 lbcmp
 lbcopy
@@ -899,6 +902,7 @@ mpmodem
 msacm
 mshft
 msvc
+msvcp
 msys
 msystem
 mthi
@@ -1492,6 +1496,7 @@ utgr
 uvec
 vars
 vblankquery
+vcruntime
 vecmath
 vehiclecamera
 vehiclechoice
