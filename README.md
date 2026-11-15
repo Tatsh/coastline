@@ -108,7 +108,7 @@ need argparse, nlohmann JSON, spdlog, and zlib, from vcpkg, the system, or a pin
 
 The `sdl` platform builds `coastline`, a stand-alone 64-bit game for every operating system SDL 3
 supports, from Windows 7 and macOS 10.15 on x86_64 and arm64. It draws through the GPU API of SDL
-(Vulkan, Metal, or Direct3D 12). It builds with GCC, Clang, MSVC of Visual Studio 2022, and MinGW.
+(Vulkan or Metal). It builds with GCC, Clang, MSVC of Visual Studio 2022, and MinGW.
 
 The `coastline` preset takes the libraries from vcpkg, found through `VCPKG_ROOT`.
 
@@ -572,7 +572,7 @@ changes recreate the GPU device and restart the game after Options closes.
 | `FullscreenMode`       | `borderless`, the default, covers the display at its desktop mode. `exclusive` switches the display to `Width` by `Height` at `RefreshRate`.                                                                                            |
 | `RefreshRate`          | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                                                                                                                    |
 | `VSync`                | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. V saves its choice here.                                                                  |
-| `GpuDriver`            | The GPU driver of SDL, `vulkan`, `metal`, or `direct3d12`, or empty, the default, for the driver SDL chooses.                                                                                                                           |
+| `GpuDriver`            | The GPU driver of SDL, `vulkan` or `metal`, or empty, the default, for the driver SDL chooses.                                                                                                                                          |
 | `GpuPreference`        | `auto` (default), `high-performance`, or `low-power`. `--gpu` overrides the setting for one run.                                                                                                                                        |
 | `UnlockedFramerate`    | `1` bypasses presentation pacing and `FrameRateLimit`; `0` restores configured pacing. Ctrl+U toggles and saves this choice.                                                                                                            |
 | `FrameRateLimit`       | The most frames drawn each second, or `0` for no limit.                                                                                                                                                                                 |

@@ -154,11 +154,11 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     if (options.minimized) {
         SDL_MinimizeWindow(result->m_window.get());
     }
-    // The shaders ship as SPIR-V for Vulkan, MSL for Metal, and DXIL for Direct3D 12.
+    // The shaders ship as SPIR-V for Vulkan and MSL for Metal. SDL tries Direct3D 12 before Vulkan
+    // on Windows, and a device accepting DXIL would select Direct3D 12 without shaders for it.
     const auto properties = SDL_CreateProperties();
     SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
     SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
-    SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXIL_BOOLEAN, true);
     SDL_SetBooleanProperty(
         properties, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, options.gpuDebug);
     if (options.driver) {
