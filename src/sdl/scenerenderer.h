@@ -238,6 +238,9 @@ public:
     /** Prevent assignment of uploaded document resources. */
     RenderDocument &operator=(const RenderDocument &) = delete;
 
+    /** @return The number of paints whose images the document has uploaded. */
+    std::size_t PaintCount() const;
+
 private:
     friend class RenderModel;
     struct State;

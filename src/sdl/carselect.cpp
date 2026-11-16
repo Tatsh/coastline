@@ -46,6 +46,9 @@ constexpr float STAGE_MODEL_SCALE = 0.001302083372f;
 // The cars the paint shop allows, and the first car whose decals have no custom choice.
 constexpr int PAINT_SHOP_CARS = 9;
 
+// The number of colours whose textures the document of a car retains before it is read again.
+constexpr std::size_t CAR_DOCUMENT_PAINTS = 16;
+
 // The distance the players' views spread the cars apart by when they slide.
 constexpr float SPREAD_ONE_VIEW = 8.0f;
 constexpr float SPREAD_TWO_VIEWS = 12.0f;
@@ -254,6 +257,7 @@ bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &
     for (auto &models : m_carHighlightModels) {
         models.resize(m_cars.size());
     }
+    m_carDocuments.resize(m_cars.size());
     for (int player = 0; player < 2; ++player) {
         ResetCarPaint(player);
     }
@@ -297,13 +301,19 @@ void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
     if (model && loaded == look) {
         return;
     }
-    const auto &file = m_cars[static_cast<std::size_t>(car)].preview;
+    // The document of a car is read once and paints its images in each colour the car is drawn in.
+    // The document retains the textures of each colour and is read again after
+    // CAR_DOCUMENT_PAINTS colours.
+    auto &document = m_carDocuments[static_cast<std::size_t>(car)];
+    if (!document || document->PaintCount() >= CAR_DOCUMENT_PAINTS) {
+        document = RenderDocument::Load(renderer, m_cars[static_cast<std::size_t>(car)].preview);
+    }
     ModelOptions options;
     options.paint = player.paint;
     bool otherLook = player.otherLook;
     options.parts = StagePartsOf(otherLook);
     m_retiredCarModels.push_back(std::move(model));
-    model = RenderModel::Load(renderer, file, options);
+    model = document ? RenderModel::Load(document, options) : nullptr;
     // The other look draws the highlighted parts with the sky reflected, as the painted body. They
     // are a node outside the scene, drawn without the turn of its root.
     auto &highlighted = m_carHighlightModels[vehicle][static_cast<std::size_t>(car)];
@@ -313,7 +323,7 @@ void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
         highlightOptions.node = "lod0-highlighted";
         highlightOptions.optional = true;
         highlightOptions.reflects = true;
-        highlighted = RenderModel::Load(renderer, file, highlightOptions);
+        highlighted = document ? RenderModel::Load(document, highlightOptions) : nullptr;
     }
     loaded = look;
 }

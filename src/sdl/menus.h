@@ -494,6 +494,8 @@ private:
     // The highlighted parts of each model of m_carModels in the other look, or none.
     std::array<std::vector<std::unique_ptr<RenderModel>>, 2> m_carHighlightModels;
     std::vector<std::unique_ptr<RenderModel>> m_retiredCarModels;
+    // The document of each car the models of both vehicles take, or none before the first load.
+    std::vector<std::shared_ptr<RenderDocument>> m_carDocuments;
     // The time towards the next frame of the console, whether this frame is one, the frames of
     // the console since the screen started, and the milliseconds of the last of them.
     float m_carSelectFrameTime = 0.0f;

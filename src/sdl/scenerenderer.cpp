@@ -876,6 +876,10 @@ RenderDocument::RenderDocument(std::unique_ptr<State> state) : m_state(std::move
 
 RenderDocument::~RenderDocument() = default;
 
+std::size_t RenderDocument::PaintCount() const {
+    return m_state->data.painted.size();
+}
+
 struct RenderModel::State {
     std::shared_ptr<RenderDocument> owner;
     DocumentData *document = nullptr;

@@ -55,6 +55,12 @@
   thread reports a failure. Leaving the results screen or opening the save menu waits for the
   automatic save, and a manual save is never overwritten by an older automatic one. Track records
   that fail to save remain in the settings and are saved again at exit.
+- Removed a stall on the car select screen when a player changes the paint colour or look of a
+  car, including every second step while Up or Down is pressed. The game read the glTF document
+  and buffers of the car again, parsed the JSON, decoded every PNG, and uploaded the vertices and
+  images to the GPU. The game now reads the document of each car once and paints and uploads only
+  the material images for a new colour. The document retains the textures of each colour and is
+  read again after 16 colours.
 
 ## [0.0.3] - 2026-11-11
 
