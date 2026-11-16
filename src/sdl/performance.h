@@ -203,7 +203,7 @@ private:
     std::uint64_t m_worstInterval = 0;
 };
 
-/** Frame timings and system statistics, with GPU sampling on a separate thread. */
+/** Frame timings and system statistics, with memory and GPU sampling on a separate thread. */
 class PerformanceStats {
 public:
     /**
@@ -213,7 +213,7 @@ public:
      * @param allowNvml Whether the renderer permits NVML for the active adapter.
      */
     PerformanceStats(std::string gpuName, bool allowNvml);
-    /** Stop GPU sampling and release provider resources before destruction completes. */
+    /** Stop sampling and release provider resources before destruction completes. */
     ~PerformanceStats();
     /** Prevent copying the collector's GPU sampling thread. */
     PerformanceStats(const PerformanceStats &) = delete;
@@ -235,14 +235,13 @@ public:
     std::vector<std::string> Lines(std::uint64_t gameGpuBytes) const;
 
 private:
-    class GpuSampler;
+    class Sampler;
 
-    std::unique_ptr<GpuSampler> m_gpu;
+    std::unique_ptr<Sampler> m_sampler;
     FrameTimings m_frameTimings;
     std::uint64_t m_secondStart = 0;
     std::optional<double> m_secondStartCpu; // The seconds of the processor at the second's start.
     std::optional<double> m_cpuPercent;     // Of one core, over the second before.
-    std::optional<std::uint64_t> m_memoryBytes; // The memory of the game's own, as OwnMemoryBytes.
 };
 
 } // namespace coastline

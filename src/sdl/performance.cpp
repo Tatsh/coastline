@@ -251,14 +251,16 @@ private:
 
 } // namespace
 
-// NVML on a thread of its own, away from the frames.
-class PerformanceStats::GpuSampler {
+// The memory of the game and NVML are sampled on a separate thread, away from the frames. On Linux
+// the memory is read from /proc/self/smaps. Reading smaps takes milliseconds with a GPU driver
+// mapped.
+class PerformanceStats::Sampler {
 public:
-    explicit GpuSampler(std::string gpuName)
+    explicit Sampler(std::string gpuName)
         : m_thread([this, name = std::move(gpuName)] { Run(name); }) {
     }
 
-    ~GpuSampler() {
+    ~Sampler() {
         {
             std::lock_guard lock(m_mutex);
             m_stop = true;
@@ -267,8 +269,13 @@ public:
         m_thread.join();
     }
 
-    GpuSampler(const GpuSampler &) = delete;
-    GpuSampler &operator=(const GpuSampler &) = delete;
+    Sampler(const Sampler &) = delete;
+    Sampler &operator=(const Sampler &) = delete;
+
+    std::optional<std::uint64_t> MemoryBytes() {
+        std::lock_guard lock(m_mutex);
+        return m_memoryBytes;
+    }
 
     std::optional<unsigned> Percent() {
         std::lock_guard lock(m_mutex);
@@ -276,32 +283,35 @@ public:
     }
 
 private:
+    // NVML is not loaded for an empty name.
     void Run(const std::string &gpuName) {
-        Nvml nvml(gpuName);
-        if (!nvml.Loaded()) {
-            return;
+        std::optional<Nvml> nvml;
+        if (!gpuName.empty()) {
+            nvml.emplace(gpuName);
         }
         unsigned long long lastSeen = 0;
         std::unique_lock lock(m_mutex);
-        while (!m_wake.wait_for(lock, std::chrono::seconds(1), [this] { return m_stop; })) {
+        do {
             lock.unlock();
-            std::optional<unsigned> percent = nvml.ProcessPercent(lastSeen);
+            std::optional<std::uint64_t> memory = OwnMemoryBytes();
+            std::optional<unsigned> percent =
+                nvml && nvml->Loaded() ? nvml->ProcessPercent(lastSeen) : std::nullopt;
             lock.lock();
+            m_memoryBytes = memory;
             m_percent = percent;
-        }
+        } while (!m_wake.wait_for(lock, std::chrono::seconds(1), [this] { return m_stop; }));
     }
 
     std::mutex m_mutex;
     std::condition_variable m_wake;
     bool m_stop = false;
+    std::optional<std::uint64_t> m_memoryBytes;
     std::optional<unsigned> m_percent;
     std::thread m_thread;
 };
 
-PerformanceStats::PerformanceStats(std::string gpuName, bool allowNvml) {
-    if (allowNvml && !gpuName.empty()) {
-        m_gpu = std::make_unique<GpuSampler>(std::move(gpuName));
-    }
+PerformanceStats::PerformanceStats(std::string gpuName, bool allowNvml)
+    : m_sampler(std::make_unique<Sampler>(allowNvml ? std::move(gpuName) : std::string())) {
 }
 
 PerformanceStats::~PerformanceStats() = default;
@@ -312,7 +322,6 @@ void PerformanceStats::Frame(std::uint64_t workNanoseconds) {
     if (m_secondStart == 0) {
         m_secondStart = now;
         m_secondStartCpu = ProcessCpuSeconds();
-        m_memoryBytes = OwnMemoryBytes();
     }
     if (sampled) {
         std::optional<double> cpu = ProcessCpuSeconds();
@@ -320,7 +329,6 @@ void PerformanceStats::Frame(std::uint64_t workNanoseconds) {
             m_cpuPercent = (*cpu - *m_secondStartCpu) /
                            (static_cast<double>(now - m_secondStart) / 1e9) * 100.0;
         }
-        m_memoryBytes = OwnMemoryBytes();
         m_secondStart = now;
         m_secondStartCpu = cpu;
     }
@@ -342,12 +350,12 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
         lines.push_back(
             fmt::format("CPU: {:.0f} PCT, {:.0f} PCT", *m_cpuPercent, *m_cpuPercent / cores));
     }
-    if (m_memoryBytes) {
-        lines.push_back(fmt::format("RAM: {}", MemorySize(*m_memoryBytes)));
+    if (const auto memory = m_sampler->MemoryBytes()) {
+        lines.push_back(fmt::format("RAM: {}", MemorySize(*memory)));
     }
     lines.push_back(fmt::format("VRAM: {}", MemorySize(gameGpuBytes)));
     // The share of the GPU comes and goes with the samples of NVML, so it is the last line.
-    std::optional<unsigned> gpu = m_gpu ? m_gpu->Percent() : std::nullopt;
+    std::optional<unsigned> gpu = m_sampler->Percent();
     if (gpu) {
         lines.push_back(fmt::format("GPU: {} PCT", *gpu));
     }

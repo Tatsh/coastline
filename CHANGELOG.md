@@ -33,6 +33,10 @@
 - Stopped races from stalling when a player changed the camera. The game saved `BossRally.ini`
   and flushed the file and its directory to disk on the frame of the change. It now saves the
   camera choice when the race ends.
+- Removed a periodic frame-time spike on Linux while the full statistics overlay is shown. The
+  game read `/proc/self/smaps` for `GAME RAM` once a second on the main thread, and each read took
+  several milliseconds. The NVML sampling thread now also samples game memory, and the thread runs
+  whenever the overlay is shown.
 
 ## [0.0.3] - 2026-11-11
 
