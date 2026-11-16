@@ -107,6 +107,11 @@ bool Run(const std::vector<std::string> &arguments, const ImportProgress &progre
         properties, SDL_PROP_PROCESS_CREATE_STDOUT_NUMBER, SDL_PROCESS_STDIO_NULL);
     SDL_SetNumberProperty(
         properties, SDL_PROP_PROCESS_CREATE_STDERR_NUMBER, SDL_PROCESS_STDIO_NULL);
+#ifdef _WIN32
+    // SDL creates a background process without a console window. The POSIX implementation
+    // detaches the process instead and loses the exit status.
+    SDL_SetBooleanProperty(properties, SDL_PROP_PROCESS_CREATE_BACKGROUND_BOOLEAN, true);
+#endif
     Process process(SDL_CreateProcessWithProperties(properties), SDL_DestroyProcess);
     SDL_DestroyProperties(properties);
     if (!process) {

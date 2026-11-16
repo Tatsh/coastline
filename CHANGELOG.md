@@ -28,6 +28,8 @@
 - Updated the checksum of the temporary FFmpeg download on Apple Silicon macOS. The publisher
   replaced the archive with a rebuild of FFmpeg 9.0.2, and the download failed checksum
   verification.
+- Stopped FFmpeg from opening a console window on Windows while it converts the intro movie
+  during import.
 
 ## [0.0.3] - 2026-11-11
 
