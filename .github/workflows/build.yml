@@ -516,6 +516,18 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # The manifest builds the release tag of its version, and the build of a commit builds the
+      # checkout instead.
+      - name: 'Build the checked-out source'
+        run: |
+          manifest=sh.tat.coastline.yml
+          url="url: 'https:\/\/github\.com\/Tatsh\/coastline\.git'"
+          skip="skip: ['.flatpak-builder', 'flatpak_app', 'repo']"
+          sed -i -E "s#^(\s+)- tag: 'v[0-9][^']*'\$#\1- path: '.'#" "$manifest"
+          range="/^\s+- path: '\.'\$/,/^\s+${url}\$/"
+          sed -i -E "${range}{s#^(\s+)type: 'git'#\1${skip}\n\1type: 'dir'#;/url: /d}" "$manifest"
+          grep -q "^\s*- path: '\.'\$" "$manifest"
+          ! grep -q 'github.com/Tatsh/coastline' "$manifest"
       - uses: 'flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3'
         with:
           arch: '${{ matrix.arch }}'
@@ -565,6 +577,15 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # The snap builds the release tag of its version, and the build of a commit builds the
+      # checkout instead.
+      - name: 'Build the checked-out source'
+        run: |
+          remote="source: 'https://github\.com/Tatsh/coastline\.git'"
+          sed -i -E -e "s#^(\s+)${remote}\$#\1source: '.'#" \
+            -e "/^\s+source-tag: 'v[0-9][^']*'\$/d" snapcraft.yaml
+          grep -q "^\s*source: '\.'\$" snapcraft.yaml
+          ! grep -q 'github.com/Tatsh/coastline' snapcraft.yaml
       - name: 'Build the snap'
         run: |
           if [[ ! -x /usr/bin/snap ]]; then
