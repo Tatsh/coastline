@@ -17,6 +17,18 @@ namespace coastline {
 
 using Microsoft::WRL::ComPtr;
 
+namespace {
+
+// The stream indices of the source reader are enumerators of a signed enumeration, and the reader
+// takes them as DWORD.
+constexpr DWORD INVALID_STREAM = static_cast<DWORD>(MF_SOURCE_READER_INVALID_STREAM_INDEX);
+constexpr DWORD FIRST_VIDEO_STREAM = static_cast<DWORD>(MF_SOURCE_READER_FIRST_VIDEO_STREAM);
+constexpr DWORD FIRST_AUDIO_STREAM = static_cast<DWORD>(MF_SOURCE_READER_FIRST_AUDIO_STREAM);
+constexpr DWORD ANY_STREAM = static_cast<DWORD>(MF_SOURCE_READER_ANY_STREAM);
+constexpr DWORD MEDIA_SOURCE = static_cast<DWORD>(MF_SOURCE_READER_MEDIASOURCE);
+
+} // namespace
+
 struct VideoPlayer::State {
     std::unique_ptr<RenderTexture> texture;
     ComPtr<IMFSourceReader> reader;
@@ -26,8 +38,8 @@ struct VideoPlayer::State {
     LONGLONG pendingTime = 0;
     double duration = 0;
     int stride = 0;
-    DWORD videoIndex = MF_SOURCE_READER_INVALID_STREAM_INDEX;
-    DWORD audioIndex = MF_SOURCE_READER_INVALID_STREAM_INDEX;
+    DWORD videoIndex = INVALID_STREAM;
+    DWORD audioIndex = INVALID_STREAM;
     bool paused = false;
     bool comInitialized = false;
     bool mediaInitialized = false;
@@ -139,25 +151,22 @@ std::unique_ptr<VideoPlayer> VideoPlayer::Open(SceneRenderer &renderer,
         }
         GUID major;
         if (SUCCEEDED(native->GetGUID(MF_MT_MAJOR_TYPE, &major))) {
-            if (major == MFMediaType_Video &&
-                state->videoIndex == MF_SOURCE_READER_INVALID_STREAM_INDEX) {
+            if (major == MFMediaType_Video && state->videoIndex == INVALID_STREAM) {
                 state->videoIndex = index;
-            } else if (major == MFMediaType_Audio &&
-                       state->audioIndex == MF_SOURCE_READER_INVALID_STREAM_INDEX) {
+            } else if (major == MFMediaType_Audio && state->audioIndex == INVALID_STREAM) {
                 state->audioIndex = index;
             }
         }
     }
-    if (state->videoIndex == MF_SOURCE_READER_INVALID_STREAM_INDEX) {
+    if (state->videoIndex == INVALID_STREAM) {
         return nullptr;
     }
     ComPtr<IMFMediaType> type;
     if (FAILED(MFCreateMediaType(&type)) ||
         FAILED(type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video)) ||
         FAILED(type->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32)) ||
-        FAILED(state->reader->SetCurrentMediaType(
-            MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, type.Get())) ||
-        FAILED(state->reader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_VIDEO_STREAM, &type))) {
+        FAILED(state->reader->SetCurrentMediaType(FIRST_VIDEO_STREAM, nullptr, type.Get())) ||
+        FAILED(state->reader->GetCurrentMediaType(FIRST_VIDEO_STREAM, &type))) {
         return nullptr;
     }
     UINT32 width = 0;
@@ -184,8 +193,8 @@ std::unique_ptr<VideoPlayer> VideoPlayer::Open(SceneRenderer &renderer,
     UINT64 duration = 0;
     PROPVARIANT property;
     PropVariantInit(&property);
-    if (SUCCEEDED(state->reader->GetPresentationAttribute(
-            MF_SOURCE_READER_MEDIASOURCE, MF_PD_DURATION, &property)) &&
+    if (SUCCEEDED(
+            state->reader->GetPresentationAttribute(MEDIA_SOURCE, MF_PD_DURATION, &property)) &&
         property.vt == VT_UI8) {
         duration = property.uhVal.QuadPart;
     }
@@ -201,8 +210,8 @@ std::unique_ptr<VideoPlayer> VideoPlayer::Open(SceneRenderer &renderer,
             SUCCEEDED(type->SetUINT32(MF_MT_AUDIO_BITS_PER_SAMPLE, 16)) &&
             SUCCEEDED(type->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, 4)) &&
             SUCCEEDED(type->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, 192000)) &&
-            SUCCEEDED(state->reader->SetCurrentMediaType(
-                MF_SOURCE_READER_FIRST_AUDIO_STREAM, nullptr, type.Get()))) {
+            SUCCEEDED(
+                state->reader->SetCurrentMediaType(FIRST_AUDIO_STREAM, nullptr, type.Get()))) {
             const SDL_AudioSpec spec{SDL_AUDIO_S16, 2, 48000};
             state->audio = SDL_OpenAudioDeviceStream(
                 SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, nullptr, nullptr);
@@ -240,8 +249,7 @@ bool VideoPlayer::Update(double seconds, float volume) {
         DWORD flags = 0;
         LONGLONG time = 0;
         ComPtr<IMFSample> sample;
-        if (FAILED(state.reader->ReadSample(
-                MF_SOURCE_READER_ANY_STREAM, 0, &stream, &flags, &time, &sample))) {
+        if (FAILED(state.reader->ReadSample(ANY_STREAM, 0, &stream, &flags, &time, &sample))) {
             return false;
         }
         if ((flags & MF_SOURCE_READERF_ENDOFSTREAM) && stream == state.videoIndex) {
