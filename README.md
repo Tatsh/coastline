@@ -282,8 +282,9 @@ open -n -W Coastline.app --args import --cd "$PWD/Boss Rally.cue" --rom "$PWD/us
 
 Ctrl+Z undoes the last paint-shop edit outside a dialog. In the main menu, press Up, Up, Down,
 Down, Left, Right, Left, Right, L, and R on the first controller to unlock GAMEWIN in track
-selection for the current game session. GAMEWIN is an unfinished cutscene course with incomplete
-collision.
+selection for the current game session. Directions are read from the directional pad, the stick,
+or the arrow keys. On the keyboard, A and S enter L and R. GAMEWIN is an unfinished cutscene
+course with incomplete collision.
 
 F8 toggles the free camera throughout the application, including setup, movies, menus, logos,
 and paused or running races. Flat screens become panels viewed in perspective while moving.

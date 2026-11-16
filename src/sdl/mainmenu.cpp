@@ -146,8 +146,16 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
                                                  BUTTON_D_RIGHT,
                                                  BUTTON_L,
                                                  BUTTON_R};
-    const auto pressed = static_cast<std::uint16_t>(first.heldButtons & ~m_gamewinCheatHeld);
+    // Directions come from the menu directions of the pad, the stick, or the arrow keys. Other
+    // buttons count only when pressed since the previous frame.
+    constexpr std::uint16_t DIRECTIONS =
+        BUTTON_D_UP | BUTTON_D_DOWN | BUTTON_D_LEFT | BUTTON_D_RIGHT;
+    auto pressed =
+        static_cast<std::uint16_t>(first.heldButtons & ~m_gamewinCheatHeld & ~DIRECTIONS);
     m_gamewinCheatHeld = first.heldButtons;
+    pressed = static_cast<std::uint16_t>(
+        pressed | (first.up ? BUTTON_D_UP : 0) | (first.down ? BUTTON_D_DOWN : 0) |
+        (first.left ? BUTTON_D_LEFT : 0) | (first.right ? BUTTON_D_RIGHT : 0));
     if (pressed != 0) {
         m_gamewinCheatProgress = pressed == code[m_gamewinCheatProgress] ?
                                      m_gamewinCheatProgress + 1 :
