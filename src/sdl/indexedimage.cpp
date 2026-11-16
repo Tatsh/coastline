@@ -4,7 +4,6 @@
 #include <array>
 #include <cstring>
 #include <memory>
-#include <vector>
 
 #include <SDL3/SDL.h>
 
@@ -62,39 +61,19 @@ bool ReadIndexed4Png(Surface surface,
     return true;
 }
 
-} // namespace
-
-bool LoadIndexed4Png(const std::filesystem::path &path,
-                     std::span<std::uint8_t> texels,
-                     std::span<std::uint8_t, 32> palette) {
-    return ReadIndexed4Png(Surface(SDL_LoadPNG(path.string().c_str())), texels, palette);
-}
-
-bool LoadIndexed4Png(std::span<const std::uint8_t> bytes,
-                     std::span<std::uint8_t> texels,
-                     std::span<std::uint8_t, 32> palette) {
-    if (bytes.empty()) {
-        return false;
-    }
-    return ReadIndexed4Png(
-        Surface(SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes.data(), bytes.size()), true)),
-        texels,
-        palette);
-}
-
-bool SaveIndexed4Png(const std::filesystem::path &path,
-                     std::span<const std::uint8_t> texels,
-                     std::span<const std::uint8_t, 32> palette,
-                     int width,
-                     int height) {
+// The 8-bit surface of a 4-bit image, as SDL writes the palette of an 8-bit surface and not of a
+// 4-bit one. The surface is null when the texels do not fill the size.
+Surface Indexed4Surface(std::span<const std::uint8_t> texels,
+                        std::span<const std::uint8_t, 32> palette,
+                        int width,
+                        int height) {
     auto rowBytes = (static_cast<std::size_t>(width) + 1) / 2;
     if (width <= 0 || height <= 0 || texels.size() != rowBytes * static_cast<std::size_t>(height)) {
-        return false;
+        return nullptr;
     }
-    // SDL writes the palette of an 8-bit surface, and not of a 4-bit one.
     Surface surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_INDEX8));
     if (!surface) {
-        return false;
+        return nullptr;
     }
     for (int y = 0; y < height; ++y) {
         auto *row = static_cast<std::uint8_t *>(surface->pixels) +
@@ -118,28 +97,30 @@ bool SaveIndexed4Png(const std::filesystem::path &path,
     if (!surfacePalette ||
         !SDL_SetPaletteColors(
             surfacePalette.get(), colors.data(), 0, static_cast<int>(colors.size())) ||
-        !SDL_SetSurfacePalette(surface.get(), surfacePalette.get()) ||
-        !SDL_SavePNG(surface.get(), path.string().c_str())) {
-        return false;
+        !SDL_SetSurfacePalette(surface.get(), surfacePalette.get())) {
+        return nullptr;
     }
-    // The image is kept only when it reads back as the same texels and palette.
+    return surface;
+}
+
+bool MatchesIndexed4(Surface read,
+                     std::span<const std::uint8_t> texels,
+                     std::span<const std::uint8_t, 32> palette) {
     std::vector<std::uint8_t> readTexels(texels.size());
     std::array<std::uint8_t, 32> readPalette{};
-    return LoadIndexed4Png(path, readTexels, readPalette) &&
+    return ReadIndexed4Png(std::move(read), readTexels, readPalette) &&
            std::ranges::equal(readTexels, texels) && std::ranges::equal(readPalette, palette);
 }
 
-bool SaveRgba8Png(const std::filesystem::path &path,
-                  std::span<const std::uint8_t> rgba,
-                  int width,
-                  int height) {
+// The surface is null when the texels do not fill the size.
+Surface Rgba8Surface(std::span<const std::uint8_t> rgba, int width, int height) {
     auto rowBytes = static_cast<std::size_t>(width) * 4;
     if (width <= 0 || height <= 0 || rgba.size() != rowBytes * static_cast<std::size_t>(height)) {
-        return false;
+        return nullptr;
     }
     Surface surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32));
     if (!surface) {
-        return false;
+        return nullptr;
     }
     for (int y = 0; y < height; ++y) {
         std::memcpy(static_cast<std::uint8_t *>(surface->pixels) +
@@ -147,10 +128,11 @@ bool SaveRgba8Png(const std::filesystem::path &path,
                     rgba.data() + static_cast<std::size_t>(y) * rowBytes,
                     rowBytes);
     }
-    if (!SDL_SavePNG(surface.get(), path.string().c_str())) {
-        return false;
-    }
-    Surface read(SDL_LoadPNG(path.string().c_str()));
+    return surface;
+}
+
+bool MatchesRgba8(Surface read, std::span<const std::uint8_t> rgba, int width, int height) {
+    auto rowBytes = static_cast<std::size_t>(width) * 4;
     Surface converted(read ? SDL_ConvertSurface(read.get(), SDL_PIXELFORMAT_RGBA32) : nullptr);
     if (!converted || converted->w != width || converted->h != height) {
         return false;
@@ -165,6 +147,89 @@ bool SaveRgba8Png(const std::filesystem::path &path,
         }
     }
     return true;
+}
+
+std::optional<std::vector<std::uint8_t>> EncodePng(SDL_Surface *surface) {
+    if (surface == nullptr) {
+        return std::nullopt;
+    }
+    SDL_IOStream *stream = SDL_IOFromDynamicMem();
+    if (stream == nullptr) {
+        return std::nullopt;
+    }
+    std::optional<std::vector<std::uint8_t>> bytes;
+    if (SDL_SavePNG_IO(surface, stream, false)) {
+        const auto *data = static_cast<const std::uint8_t *>(SDL_GetPointerProperty(
+            SDL_GetIOProperties(stream), SDL_PROP_IOSTREAM_DYNAMIC_MEMORY_POINTER, nullptr));
+        const Sint64 size = SDL_GetIOSize(stream);
+        if (data != nullptr && size >= 0) {
+            bytes.emplace(data, data + size);
+        }
+    }
+    SDL_CloseIO(stream);
+    return bytes;
+}
+
+Surface DecodePng(std::span<const std::uint8_t> bytes) {
+    return Surface(SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes.data(), bytes.size()), true));
+}
+
+} // namespace
+
+bool LoadIndexed4Png(const std::filesystem::path &path,
+                     std::span<std::uint8_t> texels,
+                     std::span<std::uint8_t, 32> palette) {
+    return ReadIndexed4Png(Surface(SDL_LoadPNG(path.string().c_str())), texels, palette);
+}
+
+bool LoadIndexed4Png(std::span<const std::uint8_t> bytes,
+                     std::span<std::uint8_t> texels,
+                     std::span<std::uint8_t, 32> palette) {
+    if (bytes.empty()) {
+        return false;
+    }
+    return ReadIndexed4Png(DecodePng(bytes), texels, palette);
+}
+
+bool SaveIndexed4Png(const std::filesystem::path &path,
+                     std::span<const std::uint8_t> texels,
+                     std::span<const std::uint8_t, 32> palette,
+                     int width,
+                     int height) {
+    Surface surface = Indexed4Surface(texels, palette, width, height);
+    // The image is retained only when it reads back as the same texels and palette.
+    return surface && SDL_SavePNG(surface.get(), path.string().c_str()) &&
+           MatchesIndexed4(Surface(SDL_LoadPNG(path.string().c_str())), texels, palette);
+}
+
+std::optional<std::vector<std::uint8_t>>
+EncodeIndexed4Png(std::span<const std::uint8_t> texels,
+                  std::span<const std::uint8_t, 32> palette,
+                  int width,
+                  int height) {
+    auto bytes = EncodePng(Indexed4Surface(texels, palette, width, height).get());
+    if (!bytes || !MatchesIndexed4(DecodePng(*bytes), texels, palette)) {
+        return std::nullopt;
+    }
+    return bytes;
+}
+
+bool SaveRgba8Png(const std::filesystem::path &path,
+                  std::span<const std::uint8_t> rgba,
+                  int width,
+                  int height) {
+    Surface surface = Rgba8Surface(rgba, width, height);
+    return surface && SDL_SavePNG(surface.get(), path.string().c_str()) &&
+           MatchesRgba8(Surface(SDL_LoadPNG(path.string().c_str())), rgba, width, height);
+}
+
+std::optional<std::vector<std::uint8_t>>
+EncodeRgba8Png(std::span<const std::uint8_t> rgba, int width, int height) {
+    auto bytes = EncodePng(Rgba8Surface(rgba, width, height).get());
+    if (!bytes || !MatchesRgba8(DecodePng(*bytes), rgba, width, height)) {
+        return std::nullopt;
+    }
+    return bytes;
 }
 
 } // namespace coastline

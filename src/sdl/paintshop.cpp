@@ -474,9 +474,8 @@ float Dot(const PaintVector &a, const PaintVector &b) {
 
 PaintShop::PaintShop(MenuScreen &screen,
                      std::optional<std::array<int, 6>> &textColors,
-                     ControllerPak pak,
-                     std::filesystem::path work)
-    : m_screen(screen), m_textColors(textColors), m_pak(std::move(pak)), m_work(std::move(work)) {
+                     ControllerPak pak)
+    : m_screen(screen), m_textColors(textColors), m_pak(std::move(pak)) {
 }
 
 PaintShop::~PaintShop() = default;
@@ -485,8 +484,7 @@ std::unique_ptr<PaintShop> PaintShop::Load(SceneRenderer &renderer,
                                            const std::filesystem::path &release,
                                            MenuScreen &screen,
                                            std::optional<std::array<int, 6>> &textColors,
-                                           ControllerPak pak,
-                                           std::filesystem::path work) {
+                                           ControllerPak pak) {
     auto name = CartridgeRegion(release);
     const auto at = std::ranges::find(RELEASE_ADDRESSES, name, &PaintShopAddresses::release);
     auto loaded = ConsoleSegment::Load(release);
@@ -497,8 +495,7 @@ std::unique_ptr<PaintShop> PaintShop::Load(SceneRenderer &renderer,
                      release.string().c_str());
         return nullptr;
     }
-    std::unique_ptr<PaintShop> shop(
-        new PaintShop(screen, textColors, std::move(pak), std::move(work)));
+    std::unique_ptr<PaintShop> shop(new PaintShop(screen, textColors, std::move(pak)));
     PaintShop &s = *shop;
     s.m_release = release;
     const ConsoleSegment &segment = *loaded;
@@ -1147,19 +1144,19 @@ void PaintShop::RenderDecalPreview3D() {
     m_frameUp = Cross(m_frameForward, m_frameSide);
     m_framePosition = {m_frameUp.x * -0.65f, m_frameUp.y * -0.65f, m_frameUp.z * -0.65f};
 
-    // The images of the painted car are written again for the preview a few frames apart.
+    // The images of the painted car are encoded again for the preview a few frames apart.
     if (m_previewWait > 0 && m_consoleFrame) {
         --m_previewWait;
     }
     if ((m_previewDirty && m_previewWait == 0) || !m_preview) {
         m_previewDirty = false;
         m_previewWait = PREVIEW_WRITE_FRAMES;
-        if (auto images = m_car->WriteImages(m_work)) {
+        if (const auto images = m_car->ImageDocument()) {
             ModelOptions options;
             options.parts = [](const std::string &part) {
                 return std::ranges::find(STAGE_CAR_PARTS, part) != STAGE_CAR_PARTS.end();
             };
-            options.images = *images;
+            options.imageDocument = &*images;
             if (auto model =
                     RenderModel::Load(*m_renderer, m_carDirectory / "model.gltf", options)) {
                 m_preview = std::move(model);

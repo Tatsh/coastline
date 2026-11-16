@@ -14,6 +14,11 @@
 - Removed the Microsoft Visual C++ runtime DLLs (`vcruntime140.dll`, `msvcp140.dll`, and related
   libraries) from MSVC Windows packages. Install the Microsoft Visual C++ Redistributable; the NSIS
   installer offers its download when the runtime is missing or older than the build toolset.
+- Removed file writes and reads from the 3D car preview of Paint Shop. About four times a second
+  while painting, the game encoded each car image as PNG, wrote the images and a `model.gltf` to
+  `paint-shop` in the cache directory, and read and decoded the files again. The game now builds
+  the glTF document in memory, with each PNG in a buffer view checked by decoding it. Paint Shop
+  no longer writes `paint-shop` in the cache directory.
 
 ### Fixed
 

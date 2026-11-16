@@ -128,15 +128,13 @@ public:
      * @param screen The menu screens, whose fades and fonts the paint shop shares.
      * @param textColors The custom colours of the text of the menus, set by the paint shop.
      * @param pak The Controller Pak the decals are saved on.
-     * @param work The directory the images of the painted car are written to for the preview.
      * @return The paint shop, or nothing with the reason logged.
      */
     static std::unique_ptr<PaintShop> Load(SceneRenderer &renderer,
                                            const std::filesystem::path &release,
                                            MenuScreen &screen,
                                            std::optional<std::array<int, 6>> &textColors,
-                                           ControllerPak pak,
-                                           std::filesystem::path work);
+                                           ControllerPak pak);
     /** Release paint previews and editing resources before the menu screen and GPU device. */
     ~PaintShop();
     /** Prevent copying active editing and preview resources. */
@@ -194,10 +192,7 @@ private:
     // paint shop, as the console shares them.
     friend class Menus;
 
-    PaintShop(MenuScreen &screen,
-              std::optional<std::array<int, 6>> &textColors,
-              ControllerPak pak,
-              std::filesystem::path work);
+    PaintShop(MenuScreen &screen, std::optional<std::array<int, 6>> &textColors, ControllerPak pak);
 
     // The drawing of the console on the 640 by 480 screen.
     void BeginDraw(SceneRenderer &renderer);
@@ -383,7 +378,6 @@ private:
     MenuScreen &m_screen;
     std::optional<std::array<int, 6>> &m_textColors;
     ControllerPak m_pak;
-    std::filesystem::path m_work;
     std::filesystem::path m_release;
     std::filesystem::path m_carDirectory;
 

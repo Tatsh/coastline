@@ -367,70 +367,76 @@ void DecalCar::SetPaletteColor(int material, int entry, u16 color) {
     m_bytes[at + 1] = static_cast<u8>(color);
 }
 
+std::optional<std::vector<std::uint8_t>> DecalCar::ImageBytes(std::size_t index) const {
+    if (m_imagePanels) {
+        const auto texture = Texture(static_cast<int>(index));
+        return EncodeRgba8Png(PanelPixels(static_cast<int>(index)), texture.width, texture.height);
+    }
+    int material = m_images[index]
+                       .value("extras", nlohmann::ordered_json::object())
+                       .value("coastlinePaint", nlohmann::ordered_json::object())
+                       .value("material", -1);
+    if (material < 0 || material >= CAR_MATERIALS) {
+        return m_imageBytes[index];
+    }
+    const DecalTexture &texture = m_imageTextures[index];
+    std::vector<std::uint8_t> texels(
+        static_cast<std::size_t>((texture.width + 1) / 2 * texture.height));
+    std::array<std::uint8_t, PALETTE_BYTES> palette{};
+    if (m_imageDecals[index]) {
+        int rowWidth = texture.width;
+        for (int slot = 0; slot < DECAL_SLOTS; ++slot) {
+            const auto panel = Texture(slot);
+            if (panel.width > 0 && panel.texels == texture.texels) {
+                rowWidth = panel.width;
+                break;
+            }
+        }
+        // The image of a decal is its texels in rows, without the swap of the odd rows.
+        for (int y = 0; y < texture.height; ++y) {
+            for (int x = 0; x < texture.width; ++x) {
+                u8 pair =
+                    m_bytes[texture.texels + static_cast<std::size_t>(TexelOffset(x, y, rowWidth))];
+                u8 texel = (x & 1) != 0 ? pair & 0xF : pair >> 4;
+                auto at = static_cast<std::size_t>(y * ((texture.width + 1) / 2) + x / 2);
+                texels[at] |= static_cast<std::uint8_t>((x & 1) != 0 ? texel : texel << 4);
+            }
+        }
+    } else if (!LoadIndexed4Png(m_imageBytes[index], texels, palette)) {
+        // The lights retain the texels of the import and take the colours of the model.
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Cannot read image %llu in %s.",
+                     static_cast<unsigned long long>(index),
+                     m_directory.string().c_str());
+        return std::nullopt;
+    }
+    std::copy_n(m_bytes.begin() + static_cast<std::ptrdiff_t>(texture.palette),
+                PALETTE_BYTES,
+                palette.begin());
+    auto bytes = EncodeIndexed4Png(texels, palette, texture.width, texture.height);
+    if (!bytes) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Cannot encode image %llu in %s.",
+                     static_cast<unsigned long long>(index),
+                     m_directory.string().c_str());
+    }
+    return bytes;
+}
+
 std::optional<std::filesystem::path>
 DecalCar::WriteImages(const std::filesystem::path &directory) const {
     std::error_code error;
     std::filesystem::create_directories(directory, error);
     for (std::size_t index = 0; index < m_images.size(); ++index) {
-        const auto &image = m_images[index];
-        auto uri = image.value("uri", std::string());
-        auto to = directory / uri;
-        if (m_imagePanels) {
-            const auto texture = Texture(static_cast<int>(index));
-            if (!SaveRgba8Png(
-                    to, PanelPixels(static_cast<int>(index)), texture.width, texture.height)) {
-                return std::nullopt;
-            }
-            continue;
-        }
-        int material = image.value("extras", nlohmann::ordered_json::object())
-                           .value("coastlinePaint", nlohmann::ordered_json::object())
-                           .value("material", -1);
-        if (material < 0 || material >= CAR_MATERIALS) {
-            std::ofstream output(to, std::ios::binary | std::ios::trunc);
-            const auto &bytes = m_imageBytes[index];
-            output.write(reinterpret_cast<const char *>(bytes.data()),
-                         static_cast<std::streamsize>(bytes.size()));
-            if (!output) {
-                return std::nullopt;
-            }
-            continue;
-        }
-        const DecalTexture &texture = m_imageTextures[index];
-        std::vector<std::uint8_t> texels(
-            static_cast<std::size_t>((texture.width + 1) / 2 * texture.height));
-        std::array<std::uint8_t, PALETTE_BYTES> palette{};
-        if (m_imageDecals[index]) {
-            int rowWidth = texture.width;
-            for (int slot = 0; slot < DECAL_SLOTS; ++slot) {
-                const auto panel = Texture(slot);
-                if (panel.width > 0 && panel.texels == texture.texels) {
-                    rowWidth = panel.width;
-                    break;
-                }
-            }
-            // The image of a decal is its texels in rows, without the swap of the odd rows.
-            for (int y = 0; y < texture.height; ++y) {
-                for (int x = 0; x < texture.width; ++x) {
-                    u8 pair = m_bytes[texture.texels +
-                                      static_cast<std::size_t>(TexelOffset(x, y, rowWidth))];
-                    u8 texel = (x & 1) != 0 ? pair & 0xF : pair >> 4;
-                    auto at = static_cast<std::size_t>(y * ((texture.width + 1) / 2) + x / 2);
-                    texels[at] |= static_cast<std::uint8_t>((x & 1) != 0 ? texel : texel << 4);
-                }
-            }
-        } else if (!LoadIndexed4Png(m_imageBytes[index], texels, palette)) {
-            // The lights retain the texels of the import and take the colours of the model.
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Cannot read image %llu in %s.",
-                         static_cast<unsigned long long>(index),
-                         m_directory.string().c_str());
+        const auto bytes = ImageBytes(index);
+        if (!bytes) {
             return std::nullopt;
         }
-        std::copy_n(m_bytes.begin() + static_cast<std::ptrdiff_t>(texture.palette),
-                    PALETTE_BYTES,
-                    palette.begin());
-        if (!SaveIndexed4Png(to, texels, palette, texture.width, texture.height)) {
+        const auto to = directory / m_images[index].value("uri", std::string());
+        std::ofstream output(to, std::ios::binary | std::ios::trunc);
+        output.write(reinterpret_cast<const char *>(bytes->data()),
+                     static_cast<std::streamsize>(bytes->size()));
+        if (!output) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot write %s.", to.string().c_str());
             return std::nullopt;
         }
@@ -439,6 +445,34 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
     auto path = directory / "model.gltf";
     std::ofstream(path, std::ios::trunc) << document.dump(1) << '\n';
     return path;
+}
+
+std::optional<GltfDocument> DecalCar::ImageDocument() const {
+    GltfDocument document;
+    document.path = m_directory / "model.gltf";
+    auto images = nlohmann::ordered_json::array();
+    auto views = nlohmann::ordered_json::array();
+    for (std::size_t index = 0; index < m_images.size(); ++index) {
+        const auto bytes = ImageBytes(index);
+        if (!bytes) {
+            return std::nullopt;
+        }
+        // Each buffer view starts on a 4-byte boundary, as in a document the reader decodes.
+        document.buffer.resize((document.buffer.size() + 3) & ~std::size_t{3});
+        views.push_back(
+            {{"buffer", 0}, {"byteOffset", document.buffer.size()}, {"byteLength", bytes->size()}});
+        document.buffer.insert(document.buffer.end(), bytes->begin(), bytes->end());
+        auto image = m_images[index];
+        image.erase("uri");
+        image["bufferView"] = index;
+        image["mimeType"] = "image/png";
+        images.push_back(std::move(image));
+    }
+    document.json = {{"asset", {{"version", "2.0"}}},
+                     {"buffers", {{{"byteLength", document.buffer.size()}}}},
+                     {"bufferViews", std::move(views)},
+                     {"images", std::move(images)}};
+    return document;
 }
 
 const std::filesystem::path &DecalCar::Directory() const {

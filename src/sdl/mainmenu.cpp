@@ -124,12 +124,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     }
     menus->LoadExtraTrackRecords();
     menus->LoadCarChoices();
-    menus->m_paintShop = PaintShop::Load(renderer,
-                                         release,
-                                         *menus->m_screen,
-                                         menus->m_textCustomColors,
-                                         menus->m_pak,
-                                         cache / "paint-shop");
+    menus->m_paintShop = PaintShop::Load(
+        renderer, release, *menus->m_screen, menus->m_textCustomColors, menus->m_pak);
     // The other screens show without the paint shop, which returns to the main menu.
     if (!menus->m_paintShop) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot load paint shop.");

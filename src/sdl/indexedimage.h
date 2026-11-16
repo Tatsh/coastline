@@ -2,7 +2,9 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <optional>
 #include <span>
+#include <vector>
 
 namespace coastline {
 
@@ -61,5 +63,32 @@ bool SaveRgba8Png(const std::filesystem::path &path,
                   std::span<const std::uint8_t> rgba,
                   int width,
                   int height);
+
+/**
+ * Encode a 4-bit colour-indexed image of the console as an indexed PNG image in memory.
+ *
+ * @param texels The texels, two to a byte with the first in the high four bits, row by row, each
+ * row starting on a byte.
+ * @param palette The 16 colours, each a big-endian RGBA5551 half.
+ * @param width The width in texels.
+ * @param height The height in texels.
+ * @return The PNG image, or no value unless it decodes to the same texels and palette.
+ */
+std::optional<std::vector<std::uint8_t>>
+EncodeIndexed4Png(std::span<const std::uint8_t> texels,
+                  std::span<const std::uint8_t, 32> palette,
+                  int width,
+                  int height);
+
+/**
+ * Encode 8-bit RGBA texels as a PNG image in memory.
+ *
+ * @param rgba The texels, red, green, blue, and alpha each, row by row from the top.
+ * @param width The width in texels.
+ * @param height The height in texels.
+ * @return The PNG image, or no value unless it decodes to the same texels.
+ */
+std::optional<std::vector<std::uint8_t>>
+EncodeRgba8Png(std::span<const std::uint8_t> rgba, int width, int height);
 
 } // namespace coastline

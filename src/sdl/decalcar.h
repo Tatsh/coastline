@@ -17,6 +17,7 @@
 #include <nlohmann/json.hpp>
 
 #include "common/types.h"
+#include "gltfdocument.h"
 
 namespace coastline {
 
@@ -152,12 +153,21 @@ public:
      */
     std::optional<std::filesystem::path> WriteImages(const std::filesystem::path &directory) const;
 
+    /**
+     * Build the image-override document of WriteImages() in memory, with each image in a buffer
+     * view.
+     *
+     * @return The document, or std::nullopt when encoding or decoding an image fails.
+     */
+    std::optional<GltfDocument> ImageDocument() const;
+
     /** @return The directory of the car in the import. */
     const std::filesystem::path &Directory() const;
 
 private:
     DecalCar() = default;
     bool LoadImagePanels();
+    std::optional<std::vector<std::uint8_t>> ImageBytes(std::size_t index) const;
     std::filesystem::path m_directory;
     nlohmann::ordered_json m_images;
     std::vector<std::vector<std::uint8_t>> m_imageBytes;

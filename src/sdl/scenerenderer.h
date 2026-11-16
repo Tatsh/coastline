@@ -20,6 +20,7 @@
 
 namespace coastline {
 
+struct GltfDocument;
 class GpuWindow;
 class SceneRenderer;
 
@@ -186,6 +187,9 @@ struct ModelOptions {
      * one, such as the textures of the cartridge on a car of the PC release, or none. A document
      * with another number of images is not taken. */
     std::optional<std::filesystem::path> images;
+    /** A document in memory taken in place of @ref images, or null. The caller retains the
+     * document until the load returns. */
+    const GltfDocument *imageDocument = nullptr;
     /** The number of palette variants of the images of materials, such as the lights of a car. A
      * model of a document draws the variants only where its own options have them. */
     int variants = 0;

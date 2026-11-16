@@ -1349,17 +1349,25 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
     nlohmann::json images = document.value("images", nlohmann::json::array());
     // The paint sets are those of this document, whichever document the images come from.
     const nlohmann::json ownImages = images;
-    std::optional<GltfDocument> replacement;
-    if (options.images) {
-        auto other = ReadGltfDocument(*options.images);
-        if (other &&
+    const GltfDocument *replacement = nullptr;
+    std::optional<GltfDocument> readReplacement;
+    if (options.imageDocument != nullptr || options.images) {
+        const GltfDocument *other = options.imageDocument;
+        if (other == nullptr) {
+            auto read = ReadGltfDocument(*options.images);
+            if (read) {
+                readReplacement = std::move(*read);
+                other = &*readReplacement;
+            }
+        }
+        if (other != nullptr &&
             other->json.value("images", nlohmann::ordered_json::array()).size() == images.size()) {
-            replacement = std::move(*other);
+            replacement = other;
             images = replacement->json["images"];
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                         "Image override %s does not match %s.",
-                        options.images->string().c_str(),
+                        options.images ? options.images->string().c_str() : "in memory",
                         path.string().c_str());
         }
     }
@@ -1379,7 +1387,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
     Uploader upload(device);
     for (std::size_t index = 0; index < images.size(); ++index) {
         const auto &image = images[index];
-        auto bytes = (replacement ? *replacement : *source).Image(index);
+        auto bytes = (replacement != nullptr ? *replacement : *source).Image(index);
         SDL_Surface *loaded =
             bytes && !bytes->empty() ?
                 SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes->data(), bytes->size()), true) :

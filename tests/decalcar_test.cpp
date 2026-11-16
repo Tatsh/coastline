@@ -7,8 +7,26 @@
 #include <vector>
 
 #include "decalcar.h"
+#include "gltfdocument.h"
 #include "indexedimage.h"
 #include "n64model.h"
+
+namespace {
+
+// The document in memory has the images WriteImages() wrote to the directory.
+void AssertImageDocument(const coastline::DecalCar &car, const std::filesystem::path &directory) {
+    const auto written = coastline::ReadGltfDocument(directory / "model.gltf");
+    const auto memory = car.ImageDocument();
+    assert(written && memory);
+    assert(written->json["images"].size() == memory->json["images"].size());
+    for (std::size_t index = 0; index < memory->json["images"].size(); ++index) {
+        const auto file = written->Image(index);
+        const auto bytes = memory->Image(index);
+        assert(file && bytes && *file == *bytes);
+    }
+}
+
+} // namespace
 
 int main() {
     constexpr std::uint32_t base = 0x803c8000;
@@ -118,6 +136,7 @@ int main() {
     car->Texels(3)[coastline::TexelOffset(2, 1, 32)] = 0xa4;
     car->SetPaletteColor(2, 0, 0xf801);
     assert(car->WriteImages(root / "painted"));
+    AssertImageDocument(*car, root / "painted");
     for (std::size_t index = 0; index < model->images.size(); ++index) {
         const auto &image = model->images[index];
         const auto output = root / "painted" / ("image-" + std::to_string(index) + ".png");
@@ -251,6 +270,7 @@ int main() {
     assert(layers->PanelPixels(1) == expected);
     assert(layers->PanelPixels(0) == source && layers->PanelPixels(2) == source);
     assert(layers->WriteImages(bonus / "painted"));
+    AssertImageDocument(*layers, bonus / "painted");
     auto packedJson = generic;
     auto packedBytes = model->buffer;
     while (packedBytes.size() % 4 != 0) {
