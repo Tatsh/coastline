@@ -318,6 +318,7 @@ add_library(
   intro.cpp
   introsequence.cpp
   videoconvert.cpp
+  ziproms.cpp
   language.cpp
   log.cpp
   mainmenu.cpp
@@ -424,7 +425,8 @@ if(NOT MSVC)
 endif()
 if(APPLE)
   enable_language(OBJCXX)
-  target_sources(coastline_sdl PRIVATE paths-apple.mm)
+  target_sources(coastline_sdl PRIVATE download-apple.mm paths-apple.mm)
+  set_source_files_properties(download-apple.mm PROPERTIES COMPILE_OPTIONS "-fobjc-arc")
   target_link_libraries(coastline_sdl PUBLIC "-framework Foundation")
 endif()
 target_include_directories(coastline_sdl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -432,7 +434,8 @@ target_compile_options(coastline_sdl PRIVATE ${COASTLINE_WARNINGS})
 target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3 coastline_ear)
 if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC dxgi psapi shell32)
-  target_link_libraries(coastline_sdl PRIVATE bcrypt)
+  target_sources(coastline_sdl PRIVATE download.cpp)
+  target_link_libraries(coastline_sdl PRIVATE bcrypt winhttp)
 endif()
 
 string(TIMESTAMP COASTLINE_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%SZ" UTC)

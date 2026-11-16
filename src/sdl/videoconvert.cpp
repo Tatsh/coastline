@@ -18,7 +18,9 @@
 #include <CommonCrypto/CommonDigest.h>
 #endif
 
+#include "download.h"
 #include "paths.h"
+#include "ziproms.h"
 
 namespace coastline {
 
@@ -229,64 +231,50 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
         if (!std::filesystem::create_directory(tools.path, error) || error) {
             return "Cannot create temporary FFmpeg directory.";
         }
-        const auto archive = Utf8FromPath(tools.path / "ffmpeg.zip");
 #ifdef _WIN32
         const char *url = "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/"
                           "ffmpeg-9.0.2-essentials_build.zip";
         const char *checksum = "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba";
+        const auto program = tools.path / "ffmpeg.exe";
 #elif defined(__aarch64__) || defined(__arm64__)
+        // The publisher replaces this archive in place with rebuilds of the same release.
         const char *url = "https://www.osxexperts.net/ffmpeg902arm.zip";
-        const char *checksum = "07e00300593799005b060c03a99fe648b1edda0f30c36b0c1adafe8e3247e586";
+        const char *checksum = "4597f0f3a397cc0027bfd03dc4dd9c3066be15943cc788370846b4305d178bcb";
+        const auto program = tools.path / "ffmpeg";
 #else
         const char *url = "https://evermeet.cx/ffmpeg/ffmpeg-9.0.2.zip";
         const char *checksum = "4acc0be580f9b2788029eb7bd4d645ff87968911b0a62aeeb3940d42d54558d5";
+        const auto program = tools.path / "ffmpeg";
 #endif
-        if (!Run({"curl",
-                  "--fail",
-                  "--location",
-                  "--proto",
-                  "=https",
-                  "--proto-redir",
-                  "=https",
-                  "--connect-timeout",
-                  "30",
-                  "--max-time",
-                  "300",
-                  "--output",
-                  archive,
-                  url},
-                 toolProgress)) {
-            return "Cannot download temporary FFmpeg. Install FFmpeg in PATH and retry.";
+        const auto archive = tools.path / "ffmpeg.zip";
+        if (auto failure = DownloadFile(url, archive, toolProgress)) {
+            return "Cannot download temporary FFmpeg. " + *failure +
+                   " Install FFmpeg in PATH and retry.";
         }
-        if (!VerifySha256(tools.path / "ffmpeg.zip", checksum)) {
+        if (!VerifySha256(archive, checksum)) {
             return "Temporary FFmpeg checksum does not match. Install FFmpeg in PATH and retry.";
         }
-#ifdef _WIN32
-        const std::vector<std::string> unpack{
-            "tar", "-xf", archive, "-C", Utf8FromPath(tools.path)};
-#else
-        const std::vector<std::string> unpack{
-            "/usr/bin/ditto", "-x", "-k", archive, Utf8FromPath(tools.path)};
-#endif
-        if (!Run(unpack, toolProgress)) {
-            return "Cannot unpack temporary FFmpeg.";
+        bool written = false;
+        const auto unpacked = VisitZipEntries(
+            archive,
+            [&](const std::string &name, std::uint32_t) {
+                return std::filesystem::path(name).filename() == program.filename();
+            },
+            [&](const std::string &, std::vector<std::uint8_t> &bytes) {
+                std::ofstream file(program, std::ios::binary);
+                file.write(reinterpret_cast<const char *>(bytes.data()),
+                           static_cast<std::streamsize>(bytes.size()));
+                file.close();
+                written = !file.fail();
+                return false;
+            },
+            toolProgress);
+        if (!written) {
+            return unpacked.value_or("Temporary FFmpeg executable is missing.");
         }
-        const std::filesystem::recursive_directory_iterator end;
-        for (std::filesystem::recursive_directory_iterator item(tools.path, error);
-             !error && item != end;
-             item.increment(error)) {
-            if (item->path().filename() == "ffmpeg" || item->path().filename() == "ffmpeg.exe") {
-                executable = Utf8FromPath(item->path());
-                std::filesystem::permissions(item->path(),
-                                             std::filesystem::perms::owner_exec,
-                                             std::filesystem::perm_options::add,
-                                             error);
-                break;
-            }
-        }
-        if (executable == "ffmpeg") {
-            return "Temporary FFmpeg executable is missing.";
-        }
+        std::filesystem::permissions(
+            program, std::filesystem::perms::owner_exec, std::filesystem::perm_options::add, error);
+        executable = Utf8FromPath(program);
 #endif
     }
     if (progress && !progress("Converting the intro movie...", 0.25)) {

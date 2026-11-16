@@ -29,10 +29,10 @@ bool Read(std::ifstream &file, std::uint64_t offset, std::span<std::uint8_t> byt
 } // namespace
 
 std::optional<std::string>
-VisitZipRoms(const std::filesystem::path &archive,
-             const std::function<bool(std::vector<std::uint8_t> &)> &visit,
-             const std::function<bool(const std::string &, double)> &progress) {
-    constexpr std::uint32_t MAX_ROM = 32 * 1024 * 1024;
+VisitZipEntries(const std::filesystem::path &archive,
+                const std::function<bool(const std::string &, std::uint32_t)> &accept,
+                const std::function<bool(const std::string &, std::vector<std::uint8_t> &)> &visit,
+                const std::function<bool(const std::string &, double)> &progress) {
     const std::string invalid = "The ZIP archive cannot be read.";
     const std::string cancelled = "The search was cancelled.";
     std::ifstream file(archive, std::ios::binary | std::ios::ate);
@@ -90,20 +90,14 @@ VisitZipRoms(const std::filesystem::path &archive,
             return cancelled;
         }
         at = next;
-        std::string extension = name.substr(
-            name.find_last_of('.') == std::string::npos ? name.size() : name.find_last_of('.'));
-        std::ranges::transform(extension, extension.begin(), [](unsigned char c) {
-            return static_cast<char>(std::tolower(c));
-        });
         const auto flags = Read16(header.data() + 8);
         const auto method = Read16(header.data() + 10);
         const auto compressed = Read32(header.data() + 20);
         const auto unpacked = Read32(header.data() + 24);
         const std::uint64_t local = Read32(header.data() + 42);
-        if ((extension != ".z64" && extension != ".n64" && extension != ".v64" &&
-             extension != ".bin") ||
-            (flags & 1) || (method != 0 && method != 8) || unpacked == 0 || unpacked > MAX_ROM ||
-            compressed > MAX_ROM * 2 || Read16(header.data() + 34) != 0) {
+        if ((flags & 1) || (method != 0 && method != 8) || unpacked == 0 ||
+            compressed / 2 > unpacked || Read16(header.data() + 34) != 0 ||
+            !accept(name, unpacked)) {
             continue;
         }
         std::array<std::uint8_t, 30> localHeader{};
@@ -161,11 +155,31 @@ VisitZipRoms(const std::filesystem::path &archive,
             Read32(header.data() + 16)) {
             continue;
         }
-        if (!visit(output)) {
+        if (!visit(name, output)) {
             return cancelled;
         }
     }
     return std::nullopt;
+}
+
+std::optional<std::string>
+VisitZipRoms(const std::filesystem::path &archive,
+             const std::function<bool(std::vector<std::uint8_t> &)> &visit,
+             const std::function<bool(const std::string &, double)> &progress) {
+    constexpr std::uint32_t MAX_ROM = 32 * 1024 * 1024;
+    return VisitZipEntries(
+        archive,
+        [](const std::string &name, std::uint32_t size) {
+            std::string extension = name.substr(
+                name.find_last_of('.') == std::string::npos ? name.size() : name.find_last_of('.'));
+            std::ranges::transform(extension, extension.begin(), [](unsigned char c) {
+                return static_cast<char>(std::tolower(c));
+            });
+            return size <= MAX_ROM && (extension == ".z64" || extension == ".n64" ||
+                                       extension == ".v64" || extension == ".bin");
+        },
+        [&](const std::string &, std::vector<std::uint8_t> &bytes) { return visit(bytes); },
+        progress);
 }
 
 } // namespace coastline

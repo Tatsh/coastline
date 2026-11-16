@@ -957,6 +957,7 @@ notesafety
 notlobbied
 notloggedin
 nsis
+nsurl
 ntdll
 ntrj
 ntrp
@@ -1148,6 +1149,7 @@ reartex
 rearwheel
 rect
 recvmesg
+referer
 reflectiondata
 reflow
 regen
@@ -1576,6 +1578,7 @@ winedbg
 wineprefix
 wineserver
 winget
+winhttp
 winmain
 winmm
 winver

@@ -20,6 +20,14 @@
 - Prevented the game from exiting at startup on Windows, and under Wine with vkd3d-proton, when
   Direct3D 12 is available. The game requested DXIL shaders it did not ship, SDL selected
   Direct3D 12, and shader creation failed with `GPU driver requires SPIR-V or MSL support`.
+- Fixed the intro movie import on Windows 7 and under Wine, where it failed with
+  `Cannot download temporary FFmpeg. Install FFmpeg in PATH and retry.` The download ran `curl.exe`
+  and the extraction ran `tar.exe`, and neither program is present on those systems. Windows now
+  downloads with WinHTTP and macOS with `NSURLSession`, and the game extracts the archive itself.
+  Download errors now report the system error or the HTTP status.
+- Updated the checksum of the temporary FFmpeg download on Apple Silicon macOS. The publisher
+  replaced the archive with a rebuild of FFmpeg 9.0.2, and the download failed checksum
+  verification.
 
 ## [0.0.3] - 2026-11-11
 

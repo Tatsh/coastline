@@ -13,10 +13,10 @@ add_custom_command(
 
 find_package(Threads REQUIRED)
 add_library(coastline_firstrun STATIC assetsearch.cpp filebrowser.cpp setupwizard.cpp textfont.cpp textgrid.cpp
-                                      wizardrun.cpp ziproms.cpp "${_font_header}")
+                                      wizardrun.cpp "${_font_header}")
 target_include_directories(coastline_firstrun PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 target_compile_options(coastline_firstrun PRIVATE ${COASTLINE_WARNINGS})
 target_compile_definitions(coastline_firstrun PRIVATE COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}"
                                                    COASTLINE_BUILD_TIMESTAMP="${COASTLINE_BUILD_TIMESTAMP}")
-target_link_libraries(coastline_firstrun PUBLIC coastline_sdl Threads::Threads PRIVATE ZLIB::ZLIB)
+target_link_libraries(coastline_firstrun PUBLIC coastline_sdl Threads::Threads)

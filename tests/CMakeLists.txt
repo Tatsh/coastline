@@ -507,9 +507,9 @@ target_link_options(seasonfiles_test PRIVATE -Wl,--gc-sections -fsanitize=addres
 target_link_libraries(seasonfiles_test PRIVATE ZLIB::ZLIB)
 add_test(NAME seasonfiles COMMAND seasonfiles_test)
 
-add_executable(ziproms_test ziproms_test.cpp "${_src}/sdl/firstrun/ziproms.cpp")
+add_executable(ziproms_test ziproms_test.cpp "${_src}/sdl/ziproms.cpp")
 set_target_properties(ziproms_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
-target_include_directories(ziproms_test PRIVATE "${_src}/sdl/firstrun")
+target_include_directories(ziproms_test PRIVATE "${_src}/sdl")
 target_compile_options(ziproms_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(ziproms_test PRIVATE -fsanitize=address,undefined)
 target_link_libraries(ziproms_test PRIVATE ZLIB::ZLIB)
