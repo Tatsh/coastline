@@ -4,8 +4,6 @@
 #include <cctype>
 #include <cmath>
 #include <cstring>
-#include <fstream>
-#include <iterator>
 #include <span>
 #include <sstream>
 #include <string_view>
@@ -19,6 +17,7 @@
 #include "gpu.h"
 #include "language.h"
 #include "menuscreen.h"
+#include "readfile.h"
 #include "stringresources.h"
 
 namespace coastline {
@@ -1039,9 +1038,9 @@ bool PaintShop::LoadTextureFromRom(PaintSprite &sprite) {
         static_cast<std::size_t>(sprite.width * sprite.height * sprite.bitsPerTexel) >> 3;
     sprite.texture.reset();
     auto path = m_release / fmt::format("{}.bin", sprite.asset);
-    std::ifstream file(path, std::ios::binary);
-    if (file) {
-        sprite.pixels.assign(std::istreambuf_iterator<char>(file), {});
+    auto bytes = ReadWholeFile(path);
+    if (bytes) {
+        sprite.pixels = std::move(*bytes);
     } else if (!sprite.asset.empty()) {
         // The import converts a picture it found a texture descriptor of to PNG, and the texels
         // are built again from the image.

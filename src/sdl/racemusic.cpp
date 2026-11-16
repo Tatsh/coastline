@@ -8,8 +8,6 @@
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
-#include <fstream>
-#include <iterator>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -24,6 +22,7 @@
 #include "flactrack.h"
 #include "importer.h"
 #include "music.h"
+#include "readfile.h"
 
 namespace coastline {
 
@@ -256,12 +255,12 @@ void RaceMusic::PlayModule(int track) {
     int module = m_moduleChoice.value_or(
         RaceModule(track, m_musicTrack < 0 ? static_cast<int>(g_dwSelectedTrackId) : m_musicTrack));
     const auto path = m_directory / fmt::format("{}.xm", USA_MUSIC_MODULES[module].name);
-    std::ifstream file(path, std::ios::binary);
-    if (!file) {
+    auto bytes = ReadWholeFile(path);
+    if (!bytes) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot read music module %s.", path.string().c_str());
         return;
     }
-    m_module.assign(std::istreambuf_iterator<char>(file), {});
+    m_module = std::move(*bytes);
     m_currentModule = module;
     SDL_Log("Playing the race music %s.", path.string().c_str());
     Modules()->Play(m_module);
@@ -440,12 +439,12 @@ bool FrontEndMusic::Play() {
     }
     if (state.module.empty()) {
         const auto path = state.directory / "menu.xm";
-        std::ifstream file(path, std::ios::binary);
-        if (!file) {
+        auto bytes = ReadWholeFile(path);
+        if (!bytes) {
             SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot read %s.", path.string().c_str());
             return false;
         }
-        state.module.assign(std::istreambuf_iterator<char>(file), {});
+        state.module = std::move(*bytes);
     }
     SDL_Log("Playing the menu music.");
     state.audio.Play(state.module);

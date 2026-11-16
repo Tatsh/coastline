@@ -1,11 +1,11 @@
 #include "gltfdocument.h"
 
-#include <fstream>
-#include <iterator>
 #include <span>
 #include <string_view>
 
 #include <fmt/format.h>
+
+#include "readfile.h"
 
 namespace coastline {
 
@@ -15,15 +15,11 @@ using Bytes = std::vector<std::uint8_t>;
 using Result = std::expected<Bytes, std::string>;
 
 Result ReadFile(const std::filesystem::path &path) {
-    std::ifstream file(path, std::ios::binary);
-    if (!file) {
+    auto bytes = ReadWholeFile(path);
+    if (!bytes) {
         return std::unexpected(fmt::format("{} cannot be read.", path.string()));
     }
-    Bytes bytes(std::istreambuf_iterator<char>(file), {});
-    if (file.bad()) {
-        return std::unexpected(fmt::format("Cannot finish reading {}.", path.string()));
-    }
-    return bytes;
+    return std::move(*bytes);
 }
 
 Result ReadUri(const std::filesystem::path &directory, std::string_view uri) {

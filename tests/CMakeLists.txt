@@ -431,7 +431,8 @@ target_link_libraries(trackpreview_test PRIVATE nlohmann_json::nlohmann_json mes
 add_test(NAME trackpreview COMMAND trackpreview_test)
 
 add_executable(decalcar_test decalcar_test.cpp "${_src}/sdl/decalcar.cpp"
-  "${_src}/sdl/gltfdocument.cpp" "${_src}/sdl/indexedimage.cpp" "${_src}/sdl/n64model.cpp")
+  "${_src}/sdl/gltfdocument.cpp" "${_src}/sdl/indexedimage.cpp" "${_src}/sdl/n64model.cpp"
+  "${_src}/sdl/readfile.cpp")
 set_target_properties(decalcar_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(decalcar_test PRIVATE "${_src}" "${_src}/sdl"
                                                 "${_src}/common/libultra/include")
@@ -448,7 +449,8 @@ target_compile_options(gamesettings_test PRIVATE -Wall -Wextra -fsanitize=addres
 target_link_options(gamesettings_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME gamesettings COMMAND gamesettings_test)
 
-add_executable(gltfdocument_test gltfdocument_test.cpp "${_src}/sdl/gltfdocument.cpp")
+add_executable(gltfdocument_test gltfdocument_test.cpp "${_src}/sdl/gltfdocument.cpp"
+  "${_src}/sdl/readfile.cpp")
 set_target_properties(gltfdocument_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(gltfdocument_test PRIVATE "${_src}/sdl")
 target_link_libraries(gltfdocument_test PRIVATE nlohmann_json::nlohmann_json fmt::fmt)

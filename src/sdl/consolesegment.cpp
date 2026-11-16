@@ -1,8 +1,6 @@
 #include "consolesegment.h"
 
 #include <cstring>
-#include <fstream>
-#include <iterator>
 #include <span>
 #include <sstream>
 
@@ -12,6 +10,7 @@
 #include "cartridge/jp.h"
 #include "cartridge/us.h"
 #include "language.h"
+#include "readfile.h"
 
 namespace coastline {
 
@@ -37,8 +36,7 @@ std::optional<ConsoleSegment> ConsoleSegment::Load(const std::filesystem::path &
         return std::nullopt;
     }
     ConsoleSegment segment;
-    std::ifstream file(release / "segment.bin", std::ios::binary);
-    segment.m_bytes.assign(std::istreambuf_iterator<char>(file), {});
+    segment.m_bytes = ReadWholeFile(release / "segment.bin").value_or(std::vector<u8>());
     if (segment.m_bytes.empty()) {
         SDL_LogError(
             SDL_LOG_CATEGORY_APPLICATION, "Missing main segment in %s.", release.string().c_str());

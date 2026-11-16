@@ -37,6 +37,7 @@
 #include "disclayout.h"
 #include "disctrackreader.h"
 #include "importjobs.h"
+#include "readfile.h"
 #include "sdl/consolestrings.h"
 #include "sdl/ghostfile.h"
 #include "sdl/gltfdocument.h"
@@ -171,14 +172,6 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
         return "the manifest ends before the end of the image";
     }
     return std::nullopt;
-}
-
-std::optional<std::vector<std::uint8_t>> ReadWholeFile(const std::filesystem::path &path) {
-    std::ifstream file(path, std::ios::binary);
-    if (!file) {
-        return std::nullopt;
-    }
-    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
 std::uint32_t Little32(const std::uint8_t *bytes) {
@@ -1722,9 +1715,7 @@ std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &d
         }
     }
     for (const auto &recording : recordings) {
-        std::ifstream in(recording, std::ios::binary);
-        std::vector<std::uint8_t> bytes(std::istreambuf_iterator<char>(in), {});
-        in.close();
+        const auto bytes = ReadWholeFile(recording).value_or(std::vector<std::uint8_t>());
         auto json = coastline::GhostToJson(bytes);
         auto rebuilt = json ? coastline::GhostFromJson(*json) : std::nullopt;
         if (!rebuilt || *rebuilt != bytes) {

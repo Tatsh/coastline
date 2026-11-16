@@ -344,6 +344,7 @@ add_library(
   racemenu.cpp
   raceinput.cpp
   racemusic.cpp
+  readfile.cpp
   soundeffects.cpp
   soundinput.cpp
   soundoutput.cpp

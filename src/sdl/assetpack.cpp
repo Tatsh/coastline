@@ -12,18 +12,11 @@
 
 #include "data/branded-textures.h"
 #include "paths.h"
+#include "readfile.h"
 
 namespace coastline {
 
 namespace {
-
-std::optional<std::vector<std::uint8_t>> ReadFile(const std::filesystem::path &path) {
-    std::ifstream in(path, std::ios::binary);
-    if (!in) {
-        return std::nullopt;
-    }
-    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(in), {});
-}
 
 // Write the bytes and read them back.
 std::optional<std::string> WriteChecked(const std::filesystem::path &path,
@@ -35,7 +28,7 @@ std::optional<std::string> WriteChecked(const std::filesystem::path &path,
         out.write(reinterpret_cast<const char *>(bytes.data()),
                   static_cast<std::streamsize>(bytes.size()));
     }
-    auto written = ReadFile(path);
+    auto written = ReadWholeFile(path);
     if (!written || !std::ranges::equal(*written, bytes)) {
         return fmt::format("{} does not read back as written.", path.string());
     }
@@ -78,7 +71,7 @@ std::optional<std::string> SampleInMeshes(const std::filesystem::path &defaults,
     if (pcImage < 0) {
         return fmt::format("{} does not have the image {}.", modelPath.string(), pc.string());
     }
-    auto original = ReadFile(modelPath);
+    auto original = ReadWholeFile(modelPath);
     if (!original) {
         return fmt::format("{} cannot be read.", modelPath.string());
     }
@@ -129,7 +122,7 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
     auto list = nlohmann::json::parse(std::begin(BRANDED_TEXTURES), std::end(BRANDED_TEXTURES));
     for (const auto &entry : list["textures"]) {
         auto pcPath = defaults / entry["pc"].get<std::string>();
-        auto pc = ReadFile(pcPath);
+        auto pc = ReadWholeFile(pcPath);
         auto cartridgePath = std::filesystem::path(entry["cartridge"].get<std::string>());
         if (cartridgePath.begin() != cartridgePath.end() &&
             cartridgePath.generic_string().starts_with("n64/usa/") &&
@@ -142,7 +135,7 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
                 }
             }
         }
-        auto cartridge = ReadFile(defaults / cartridgePath);
+        auto cartridge = ReadWholeFile(defaults / cartridgePath);
         if (!pc || !cartridge || *pc == *cartridge) {
             continue;
         }
