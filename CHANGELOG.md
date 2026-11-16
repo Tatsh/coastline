@@ -37,6 +37,12 @@
   game read `/proc/self/smaps` for `GAME RAM` once a second on the main thread, and each read took
   several milliseconds. The NVML sampling thread now also samples game memory, and the thread runs
   whenever the overlay is shown.
+- Removed a stall on every screen, races included, when F9, Print Screen, or a script saves a
+  frame. The game encoded and wrote PNG files on the main thread after waiting for the GPU,
+  taking tens to hundreds of milliseconds at high resolutions. The game now copies the frame into
+  memory, and a thread encodes and writes the file and logs `Saved frame`. Up to four saves are
+  pending at once, and a fifth waits for the oldest. Pending saves finish before the window is
+  destroyed, and a script that quits after a screenshot writes complete files.
 
 ## [0.0.3] - 2026-11-11
 

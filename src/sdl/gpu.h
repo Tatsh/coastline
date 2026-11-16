@@ -2,10 +2,12 @@
 
 #include <filesystem>
 #include <functional>
+#include <future>
 #include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include <SDL3/SDL.h>
 
@@ -259,8 +261,8 @@ public:
      * Clear the frame texture to @p color, present it, and save it when @p capture is given.
      *
      * @param color The clear colour.
-     * @param capture A PNG file to write the frame to.
-     * @return Whether the frame was submitted, and saved when requested.
+     * @param capture A PNG file a thread writes the frame to, logging the result.
+     * @return Whether the frame was submitted, and copied for saving when requested.
      */
     bool PresentClear(SDL_FColor color, const std::filesystem::path *capture = nullptr);
 
@@ -268,9 +270,9 @@ public:
      * Scale the frame texture to the window and submit @p commands, which drew the frame.
      *
      * @param commands The command buffer of the frame, submitted here.
-     * @param capture A PNG file to write the frame to.
+     * @param capture A PNG file a thread writes the frame to, logging the result.
      * @param overlay Optional draws over the full output after presentation filters.
-     * @return Whether the frame was submitted, and saved when requested.
+     * @return Whether the frame was submitted, and copied for saving when requested.
      */
     bool Present(SDL_GPUCommandBuffer *commands,
                  const std::filesystem::path *capture = nullptr,
@@ -398,6 +400,8 @@ private:
     int m_refreshRate = 0;
     bool m_pacedToRefresh = false;
     bool m_hdrActive = false;
+    // Pending PNG saves of captured frames, waited for before the window is destroyed.
+    std::vector<std::future<void>> m_frameSaves;
 };
 
 /**

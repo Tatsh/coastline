@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
@@ -49,6 +50,7 @@ constexpr SDL_GPUTextureFormat FRAME_FORMAT = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNO
 // of textures loaded in one frame grew the heap by tens of megabytes. A wait for the GPU after
 // every TEXTURES_BEFORE_WAIT textures between presents lets SDL recycle them.
 constexpr unsigned TEXTURES_BEFORE_WAIT = 32;
+constexpr std::size_t MAX_PENDING_FRAME_SAVES = 4;
 constexpr const char *GPU_WINDOW_PROPERTY = "coastline.gpu-window";
 
 // A shader of a pass after the scene, in SPIR-V, DXIL, or MSL as the driver takes.
@@ -957,13 +959,13 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     SDL_DownloadFromGPUTexture(copy, &source, &destination);
     SDL_EndGPUCopyPass(copy);
     SDL_GPUFence *fence = SDL_SubmitGPUCommandBufferAndAcquireFence(commands);
-    bool saved = false;
+    std::unique_ptr<SDL_Surface, SurfaceDeleter> surface;
     if (fence != nullptr && SDL_WaitForGPUFences(m_device.get(), true, &fence, 1)) {
         const void *pixels = SDL_MapGPUTransferBuffer(m_device.get(), buffer, false);
         if (pixels != nullptr) {
             // R8G8B8A8 bytes in memory order are XBGR8888 in the packed order of SDL. The display
             // does not show the alpha of the frame, and the image leaves it out too.
-            std::unique_ptr<SDL_Surface, SurfaceDeleter> surface(SDL_CreateSurface(
+            surface.reset(SDL_CreateSurface(
                 static_cast<int>(width), static_cast<int>(height), SDL_PIXELFORMAT_XBGR8888));
             if (surface) {
                 for (Uint32 row = 0; row < height; ++row) {
@@ -971,7 +973,6 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
                                 static_cast<const Uint8 *>(pixels) + row * width * 4,
                                 width * 4);
                 }
-                saved = SDL_SavePNG(surface.get(), path.string().c_str());
             }
             SDL_UnmapGPUTransferBuffer(m_device.get(), buffer);
         }
@@ -980,12 +981,27 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
         SDL_ReleaseGPUFence(m_device.get(), fence);
     }
     ReleaseGpuTransferBuffer(m_device.get(), buffer);
-    if (saved) {
-        SDL_Log("Saved frame %s.", path.string().c_str());
-    } else {
+    if (!surface) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot save frame: %s", SDL_GetError());
+        return false;
     }
-    return saved;
+    // The PNG encoding of a frame takes longer than a frame, and a thread writes the file. Each
+    // pending save has a copy of the frame, and a save past the limit waits for the oldest.
+    std::erase_if(m_frameSaves, [](const std::future<void> &save) {
+        return save.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+    });
+    if (m_frameSaves.size() >= MAX_PENDING_FRAME_SAVES) {
+        m_frameSaves.front().wait();
+        m_frameSaves.erase(m_frameSaves.begin());
+    }
+    m_frameSaves.push_back(std::async(std::launch::async, [surface = std::move(surface), path] {
+        if (SDL_SavePNG(surface.get(), path.string().c_str())) {
+            SDL_Log("Saved frame %s.", path.string().c_str());
+        } else {
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot save frame: %s", SDL_GetError());
+        }
+    }));
+    return true;
 }
 
 GpuWindow *GpuWindow::ForDevice(SDL_GPUDevice *device) {
