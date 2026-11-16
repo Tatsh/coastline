@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cctype>
+#include <chrono>
 #include <cmath>
 #include <mutex>
 #include <string_view>
@@ -599,6 +600,7 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
         field.time == time) {
         return;
     }
+    RetireCheck(id);
     field.checkedOnce = true;
     field.checked = field.text;
     field.size = size;
@@ -613,26 +615,62 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
         field.reason = CartridgeIndex(id) < 0 ? "File not found" : "Invalid ROM image.";
         return;
     }
-    int index = CartridgeIndex(id);
-    if (index < 0) {
-        if (!directory && !IsDiscImageExtension(LowercaseExtension(path))) {
-            field.reason = "Not a disc image or directory";
-            return;
-        }
-        if (auto failure = m_services.checkDisc(path)) {
-            field.reason = *failure;
-            return;
-        }
-        field.valid = true;
+    const bool disc = CartridgeIndex(id) < 0;
+    if (disc && !directory && !IsDiscImageExtension(LowercaseExtension(path))) {
+        field.reason = "Not a disc image or directory";
         return;
     }
-    auto release = m_services.identifyCartridge(path);
-    if (!release) {
-        field.reason = "Invalid ROM image.";
-    } else {
-        field.valid = true;
-        field.release = release;
+    field.reason = "Checking...";
+    m_checks[id] = std::async(std::launch::async,
+                              [disc,
+                               checkDisc = m_services.checkDisc,
+                               identifyCartridge = m_services.identifyCartridge,
+                               path] {
+                                  CheckResult result;
+                                  if (disc) {
+                                      const auto failure = checkDisc(path);
+                                      result.valid = !failure;
+                                      result.reason = failure.value_or("");
+                                  } else {
+                                      result.release = identifyCartridge(path);
+                                      result.valid = result.release.has_value();
+                                      if (!result.valid) {
+                                          result.reason = "Invalid ROM image.";
+                                      }
+                                  }
+                                  return result;
+                              });
+}
+
+void SetupWizard::RetireCheck(WizardControlId id) {
+    const auto found = m_checks.find(id);
+    if (found != m_checks.end()) {
+        m_retiredChecks.push_back(std::move(found->second));
+        m_checks.erase(found);
     }
+}
+
+void SetupWizard::ApplyChecks() {
+    const auto ready = [](const std::future<CheckResult> &check) {
+        return check.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+    };
+    std::erase_if(m_retiredChecks, ready);
+    for (auto check = m_checks.begin(); check != m_checks.end();) {
+        if (!ready(check->second)) {
+            ++check;
+            continue;
+        }
+        TextField &field = Field(check->first);
+        auto result = check->second.get();
+        field.valid = result.valid;
+        field.release = result.release;
+        field.reason = std::move(result.reason);
+        check = m_checks.erase(check);
+    }
+}
+
+bool SetupWizard::Checking() const {
+    return !m_checks.empty();
 }
 
 void SetupWizard::OpenBrowser(WizardControlId target) {
@@ -835,12 +873,18 @@ void SetupWizard::ApplySearchResult() {
         }
     }
     SetScreen(WizardScreen::Files);
-    m_screenFocus = !m_disc.valid              ? WizardControlId::DiscText :
-                    !BaseCartridge(Detected()) ? WizardControlId::Rom1Text :
-                                                 WizardControlId::Next;
+    // The search validated what it found, and the checks of the fields are still running.
+    std::array<bool, WIZARD_CARTRIDGES> found{};
+    for (std::size_t release = 0; release < found.size(); ++release) {
+        found[release] = !m_searchResult.roms[release].empty();
+    }
+    m_screenFocus = m_searchResult.disc.empty() ? WizardControlId::DiscText :
+                    !BaseCartridge(found)       ? WizardControlId::Rom1Text :
+                                                  WizardControlId::Next;
 }
 
 void SetupWizard::Update() {
+    ApplyChecks();
     if (!m_import) {
         return;
     }

@@ -70,6 +70,14 @@
   `Settings could not be saved.` when the last write failed. A failed write no longer restores the
   previous setting in memory; the setting remains and is written again at the next save or at exit.
   A manual save of records from the save menu still waits for the write and reports the result.
+- Removed a freeze of the setup window when a disc or ROM path is typed, pasted, or browsed, and
+  when the Files screen opens. The wizard checked each path on the main thread. A ROM check read
+  the whole image (8 to 64 MB), and a disc check of an ISZ or PDI image decoded the whole disc
+  (about 650 MB) to a temporary file, taking seconds to tens of seconds. A thread now checks each
+  path, and the field shows `Checking...` with **Next** disabled until the check finishes. A newer
+  path replaces a pending check. After a directory search, the focus moves to the disc field when
+  the search found no disc, to the first ROM field when it found no base ROM, and otherwise to
+  **Next**.
 
 ## [0.0.3] - 2026-11-11
 

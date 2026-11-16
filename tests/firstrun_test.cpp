@@ -18,11 +18,23 @@ void Check(bool condition, const char *description) {
     }
 }
 
+// The checks of the paths run on threads, and the frames of the game apply them. Each input waits
+// for the checks.
+void Settle(SetupWizard &wizard) {
+    auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    while (wizard.Checking()) {
+        Check(std::chrono::steady_clock::now() < deadline, "The checks of the paths must finish.");
+        wizard.Update();
+        std::this_thread::yield();
+    }
+}
+
 void Key(SetupWizard &wizard, WizardKey key, bool shift = false) {
     WizardEvent event;
     event.key = key;
     event.shift = shift;
     wizard.Handle(event);
+    Settle(wizard);
 }
 
 void Type(SetupWizard &wizard, const std::string &text) {
@@ -30,6 +42,7 @@ void Type(SetupWizard &wizard, const std::string &text) {
     event.type = WizardEvent::Type::Text;
     event.text = text;
     wizard.Handle(event);
+    Settle(wizard);
 }
 
 void Click(SetupWizard &wizard, WizardControlId id) {
@@ -43,6 +56,7 @@ void Click(SetupWizard &wizard, WizardControlId id) {
     wizard.Handle(event);
     event.type = WizardEvent::Type::MouseUp;
     wizard.Handle(event);
+    Settle(wizard);
 }
 
 bool Enabled(const SetupWizard &wizard, WizardControlId id) {

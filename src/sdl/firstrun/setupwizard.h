@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <filesystem>
 #include <functional>
+#include <future>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -285,6 +287,10 @@ public:
     /** @return The screen that shows. */
     WizardScreen Screen() const;
 
+    /** @return Whether a check of a disc or ROM path runs on a thread, with Update() applying it.
+     */
+    bool Checking() const;
+
     /** @return How the wizard ended, or WizardEnd::Running. */
     WizardEnd End() const;
 
@@ -368,6 +374,12 @@ private:
         bool question = false;          /*!< Whether the alert requests a choice. */
     };
     struct ImportState;
+    /** The result of a check of a disc or ROM path. */
+    struct CheckResult {
+        bool valid = false;                     /*!< Whether the path passed the check. */
+        std::optional<WizardCartridge> release; /*!< The detected ROM release. */
+        std::string reason;                     /*!< The failure text. */
+    };
 
     std::vector<WizardControl> ScreenControls() const;
     std::vector<WizardControl> BrowserControls() const;
@@ -391,6 +403,8 @@ private:
     void SetText(WizardControlId id, const std::filesystem::path &path);
     void ClearText(WizardControlId id);
     void Validate(WizardControlId id, bool force);
+    void RetireCheck(WizardControlId id);
+    void ApplyChecks();
     void EditText(TextField &field, const WizardEvent &event, WizardControlId id);
     void HandleListKey(WizardKey key);
     void HandleListText(const std::string &text, std::uint64_t milliseconds);
@@ -417,6 +431,11 @@ private:
     std::filesystem::path m_lastDirectory;
     std::shared_ptr<ImportState> m_import;
     std::thread m_thread;
+    // A check reads a whole image, and a disc check decodes an ISZ or PDI image. The checks run
+    // on threads. A check replaced by a newer path waits in m_retiredChecks until it finishes,
+    // as the destruction of its future waits for it.
+    std::map<WizardControlId, std::future<CheckResult>> m_checks;
+    std::vector<std::future<CheckResult>> m_retiredChecks;
     std::string m_importStep;
     double m_importFraction = 0.0;
     std::optional<std::string> m_importFailure;
