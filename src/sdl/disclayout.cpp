@@ -801,7 +801,7 @@ BlindWriteTracks(const std::filesystem::path &descriptor) {
         const auto offset = Little(entry, 24, 4);
         const auto fileSize = std::filesystem::file_size(*path, error);
         if (error) {
-            return std::unexpected("Missing BlindWrite data file " + path->string() + ".");
+            return std::unexpected(fmt::format("Missing BlindWrite data file {}.", path->string()));
         }
         if (offset > fileSize || length > fileSize - offset) {
             return invalid;
@@ -1000,7 +1000,8 @@ MdsTracks(const std::filesystem::path &descriptor) {
                 seen.push_back(*filename);
                 const auto fileSize = std::filesystem::file_size(*filename, error);
                 if (error) {
-                    return std::unexpected("Missing MDS data file " + filename->string() + ".");
+                    return std::unexpected(
+                        fmt::format("Missing MDS data file {}.", filename->string()));
                 }
                 if (offset >= fileSize) {
                     offset -= fileSize;
@@ -1036,7 +1037,7 @@ std::expected<std::vector<CueTrack>, std::string>
 CloneCdTracks(const std::filesystem::path &metadata) {
     std::ifstream input(metadata);
     if (!input) {
-        return std::unexpected("Cannot read CloneCD metadata " + metadata.string() + ".");
+        return std::unexpected(fmt::format("Cannot read CloneCD metadata {}.", metadata.string()));
     }
     auto image = metadata;
     image.replace_extension(".img");
@@ -1486,7 +1487,7 @@ ReadDiscLayout(const std::filesystem::path &disc,
     std::ifstream image(disc, std::ios::binary);
     const auto digest = Tools::Common::sha1Hex(image);
     if (!digest) {
-        return std::unexpected("Cannot read BIN image " + disc.string() + ".");
+        return std::unexpected(fmt::format("Cannot read BIN image {}.", disc.string()));
     }
     if (auto tracks = KnownDump(disc, *digest)) {
         return *tracks;

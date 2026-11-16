@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <limits>
 
+#include <fmt/format.h>
+
 namespace coastline {
 
 namespace {
@@ -171,7 +173,7 @@ std::uint32_t MipsCpu::Argument(int index) {
 
 void MipsCpu::SetFault(const std::string &fault) {
     if (m_fault.empty()) {
-        m_fault = fault + " (instruction at " + Hex32(m_current) + ")";
+        m_fault = fmt::format("{} (instruction at {})", fault, Hex32(m_current));
     }
 }
 
@@ -188,7 +190,7 @@ std::uint8_t *MipsCpu::RamAt(std::uint32_t address, int size) {
 
 std::uint64_t MipsCpu::ReadDevice(std::uint32_t address, int size) {
     if (address < KSEG0 || address >= KSEG2) {
-        SetFault("A read of the mapped address " + Hex32(address));
+        SetFault(fmt::format("A read of the mapped address {}", Hex32(address)));
         return 0;
     }
     std::uint32_t physical = address & PHYSICAL_MASK;
@@ -206,7 +208,7 @@ std::uint64_t MipsCpu::ReadDevice(std::uint32_t address, int size) {
 
 void MipsCpu::WriteDevice(std::uint32_t address, int size, std::uint64_t value) {
     if (address < KSEG0 || address >= KSEG2) {
-        SetFault("A write to the mapped address " + Hex32(address));
+        SetFault(fmt::format("A write to the mapped address {}", Hex32(address)));
         return;
     }
     if (m_deviceWrite) {
@@ -223,7 +225,7 @@ std::uint8_t MipsCpu::Read8(std::uint32_t address) {
 
 std::uint16_t MipsCpu::Read16(std::uint32_t address) {
     if ((address & 1) != 0) {
-        SetFault("An unaligned read of " + Hex32(address));
+        SetFault(fmt::format("An unaligned read of {}", Hex32(address)));
         return 0;
     }
     if (std::uint8_t *p = RamAt(address, 2)) {
@@ -234,7 +236,7 @@ std::uint16_t MipsCpu::Read16(std::uint32_t address) {
 
 std::uint32_t MipsCpu::Read32(std::uint32_t address) {
     if ((address & 3) != 0) {
-        SetFault("An unaligned read of " + Hex32(address));
+        SetFault(fmt::format("An unaligned read of {}", Hex32(address)));
         return 0;
     }
     if (std::uint8_t *p = RamAt(address, 4)) {
@@ -246,7 +248,7 @@ std::uint32_t MipsCpu::Read32(std::uint32_t address) {
 
 std::uint64_t MipsCpu::Read64(std::uint32_t address) {
     if ((address & 7) != 0) {
-        SetFault("An unaligned read of " + Hex32(address));
+        SetFault(fmt::format("An unaligned read of {}", Hex32(address)));
         return 0;
     }
     return static_cast<std::uint64_t>(Read32(address)) << 32 | Read32(address + 4);
@@ -262,7 +264,7 @@ void MipsCpu::Write8(std::uint32_t address, std::uint8_t value) {
 
 void MipsCpu::Write16(std::uint32_t address, std::uint16_t value) {
     if ((address & 1) != 0) {
-        SetFault("An unaligned write to " + Hex32(address));
+        SetFault(fmt::format("An unaligned write to {}", Hex32(address)));
         return;
     }
     if (std::uint8_t *p = RamAt(address, 2)) {
@@ -275,7 +277,7 @@ void MipsCpu::Write16(std::uint32_t address, std::uint16_t value) {
 
 void MipsCpu::Write32(std::uint32_t address, std::uint32_t value) {
     if ((address & 3) != 0) {
-        SetFault("An unaligned write to " + Hex32(address));
+        SetFault(fmt::format("An unaligned write to {}", Hex32(address)));
         return;
     }
     if (std::uint8_t *p = RamAt(address, 4)) {
@@ -290,7 +292,7 @@ void MipsCpu::Write32(std::uint32_t address, std::uint32_t value) {
 
 void MipsCpu::Write64(std::uint32_t address, std::uint64_t value) {
     if ((address & 7) != 0) {
-        SetFault("An unaligned write to " + Hex32(address));
+        SetFault(fmt::format("An unaligned write to {}", Hex32(address)));
         return;
     }
     Write32(address, static_cast<std::uint32_t>(value >> 32));
@@ -588,7 +590,7 @@ void MipsCpu::Execute(std::uint32_t instruction, std::uint32_t address) {
         Write64(effective, gpr[rt]);
         break;
     default:
-        SetFault("An unknown instruction " + Hex32(instruction));
+        SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
         break;
     }
 }
@@ -633,7 +635,7 @@ void MipsCpu::Special(std::uint32_t instruction) {
         SetFault("A system call");
         break;
     case 13:
-        SetFault("A break of code " + std::to_string((instruction >> 6) & 0xFFFFF));
+        SetFault(fmt::format("A break of code {}", (instruction >> 6) & 0xFFFFF));
         break;
     case 15:
         break;
@@ -771,7 +773,7 @@ void MipsCpu::Special(std::uint32_t instruction) {
     case 52:
         // The compiler places TEQ after a division to catch a divisor of zero.
         if (gpr[rs] == gpr[rt]) {
-            SetFault("A trap of code " + std::to_string((instruction >> 6) & 0x3FF));
+            SetFault(fmt::format("A trap of code {}", (instruction >> 6) & 0x3FF));
         }
         break;
     case 56:
@@ -793,7 +795,7 @@ void MipsCpu::Special(std::uint32_t instruction) {
         gpr[rd] = static_cast<std::uint64_t>(static_cast<std::int64_t>(gpr[rt]) >> (sa + 32));
         break;
     default:
-        SetFault("An unknown instruction " + Hex32(instruction));
+        SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
         break;
     }
 }
@@ -822,7 +824,7 @@ void MipsCpu::RegImm(std::uint32_t instruction, std::uint32_t address) {
         Branch(taken, target, true);
         break;
     default:
-        SetFault("An unknown instruction " + Hex32(instruction));
+        SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
         break;
     }
 }
@@ -846,7 +848,7 @@ void MipsCpu::Cop0(std::uint32_t instruction) {
         }
         break;
     default:
-        SetFault("An unknown instruction " + Hex32(instruction));
+        SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
         break;
     }
 }
@@ -890,7 +892,7 @@ void MipsCpu::Cop1(std::uint32_t instruction, std::uint32_t address) {
         FloatOperation(instruction);
         break;
     default:
-        SetFault("An unknown instruction " + Hex32(instruction));
+        SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
         break;
     }
 }
@@ -991,7 +993,7 @@ void MipsCpu::FloatOperation(std::uint32_t instruction) {
             result = -a;
             break;
         default:
-            SetFault("An unknown instruction " + Hex32(instruction));
+            SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
             return;
         }
         SetSingle(fd, Flush(result, fcr31));
@@ -1027,13 +1029,13 @@ void MipsCpu::FloatOperation(std::uint32_t instruction) {
             result = -a;
             break;
         default:
-            SetFault("An unknown instruction " + Hex32(instruction));
+            SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
             return;
         }
         SetDouble(fd, Flush(result, fcr31));
         return;
     }
-    SetFault("An unknown instruction " + Hex32(instruction));
+    SetFault(fmt::format("An unknown instruction {}", Hex32(instruction)));
 }
 
 } // namespace coastline

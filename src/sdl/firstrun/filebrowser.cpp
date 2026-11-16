@@ -6,6 +6,8 @@
 #include <system_error>
 #include <tuple>
 
+#include <fmt/format.h>
+
 namespace coastline {
 
 namespace {
@@ -58,7 +60,7 @@ ListBrowserDirectory(const std::filesystem::path &directory,
         std::error_code statusError;
         if (entry.is_directory(statusError)) {
             directories.push_back(
-                {BrowserEntry::Kind::Directory, entry.path(), name, "[" + name + "]"});
+                {BrowserEntry::Kind::Directory, entry.path(), name, fmt::format("[{}]", name)});
         } else if (!directoriesOnly && !statusError && entry.is_regular_file(statusError) &&
                    (extensions.empty() ||
                     std::ranges::contains(extensions, LowercaseExtension(entry.path())))) {
@@ -79,7 +81,7 @@ ListBrowserDirectory(const std::filesystem::path &directory,
 #ifdef _WIN32
     if (!normal.has_relative_path()) {
         for (char letter = 'A'; letter <= 'Z'; ++letter) {
-            std::string root = std::string(1, letter) + ":\\";
+            std::string root = fmt::format("{}:\\", letter);
             std::error_code driveError;
             if (std::filesystem::exists(root, driveError)) {
                 entries.push_back({BrowserEntry::Kind::Drive, root, root, root});

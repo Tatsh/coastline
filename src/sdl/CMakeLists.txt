@@ -465,9 +465,9 @@ target_compile_definitions(coastline_sdl PRIVATE
 target_compile_options(${CMAKE_PROJECT_NAME}
                        PRIVATE "$<$<COMPILE_LANGUAGE:C,CXX>:${COASTLINE_WARNINGS}>")
 if(APPLE AND NOT COASTLINE_INSTALL_ASSETS)
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse fmt::fmt)
 else()
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse fmt::fmt)
 endif()
 if(NOT COASTLINE_INSTALL_ASSETS)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_firstrun)

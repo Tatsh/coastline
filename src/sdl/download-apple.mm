@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#include <fmt/format.h>
 
 #include "download.h"
 
@@ -30,16 +31,16 @@ std::optional<std::string> DownloadFile(const std::string &url,
                     [response isKindOfClass:[NSHTTPURLResponse class]] ? [http statusCode] : 0;
                 NSError *moveError = nil;
                 if (error) {
-                    result = std::string("Cannot download (") +
-                             error.localizedDescription.UTF8String + ").";
+                    result =
+                        fmt::format("Cannot download ({}).", error.localizedDescription.UTF8String);
                 } else if (status != 200) {
-                    result = "Cannot download (HTTP " + std::to_string(status) + ").";
+                    result = fmt::format("Cannot download (HTTP {}).", status);
                 } else {
                     [[NSFileManager defaultManager] removeItemAtURL:destination error:nil];
                     if (![[NSFileManager defaultManager] moveItemAtURL:location
                                                                  toURL:destination
                                                                  error:&moveError]) {
-                        result = "Cannot write " + output.string() + ".";
+                        result = fmt::format("Cannot write {}.", output.string());
                     }
                 }
                 dispatch_semaphore_signal(done);

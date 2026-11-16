@@ -8,6 +8,7 @@
 
 #include <SDL3/SDL.h>
 #undef SDL_strcasecmp
+#include <fmt/format.h>
 
 #include "config.h"
 #include "controls.h"
@@ -203,7 +204,7 @@ bool Menus::LoadControllerScreen(SceneRenderer &renderer, const std::filesystem:
     }
     for (std::size_t i = 0; i < m_controllerLayoutPictures.size(); ++i) {
         m_controllerLayoutPictures[i] = LoadLayoutPicture(
-            renderer, release / "data" / ("g_texControllerLayout" + std::to_string(i) + ".png"));
+            renderer, release / "data" / fmt::format("g_texControllerLayout{}.png", i));
         if (!m_controllerLayoutPictures[i]) {
             return false;
         }

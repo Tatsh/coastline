@@ -7,6 +7,8 @@
 #include <tuple>
 #include <utility>
 
+#include <fmt/format.h>
+
 #include "language.h"
 
 namespace coastline {
@@ -189,7 +191,7 @@ GameSettings::GameSettings(GameConfig &config,
     });
     for (const auto &size : sorted) {
         const auto width = std::to_string(size[0]);
-        resolution.choices.push_back({width, width + "x" + std::to_string(size[1]), size[1]});
+        resolution.choices.push_back({width, fmt::format("{}x{}", width, size[1]), size[1]});
     }
     m_options.push_back(std::move(resolution));
     m_options.push_back(
@@ -321,21 +323,22 @@ std::string GameSettings::Label(std::size_t index) const {
         const auto width = config.GetInteger("Video", "InternalWidth", 0);
         const auto height = config.GetInteger("Video", "InternalHeight", 0);
         if (width > 0 && height > 0) {
-            return option.label + ": " + std::to_string(width) + "x" + std::to_string(height);
+            return fmt::format("{}: {}x{}", option.label, width, height);
         }
     }
     if (option.numeric) {
         const float number =
             config.GetFloat(option.section, option.key, std::numeric_limits<float>::quiet_NaN());
         if (std::isfinite(number) && std::abs(number - std::stof(choice.value)) >= 0.00001f) {
-            return option.label + ": Custom (" + *config.Get(option.section, option.key) + ")";
+            return fmt::format(
+                "{}: Custom ({})", option.label, *config.Get(option.section, option.key));
         }
     }
     if (const auto overridden = m_overrides.Get(option.section, option.key);
         overridden && *overridden != choice.value && !option.numeric && !option.boolean) {
-        return option.label + ": " + *overridden;
+        return fmt::format("{}: {}", option.label, *overridden);
     }
-    return option.label + ": " + choice.label;
+    return fmt::format("{}: {}", option.label, choice.label);
 }
 
 void GameSettings::SetOverrides(GameConfig overrides) {

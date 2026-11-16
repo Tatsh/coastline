@@ -5,6 +5,8 @@
 #include <span>
 #include <string_view>
 
+#include <fmt/format.h>
+
 namespace coastline {
 
 namespace {
@@ -15,11 +17,11 @@ using Result = std::expected<Bytes, std::string>;
 Result ReadFile(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        return std::unexpected(path.string() + " cannot be read.");
+        return std::unexpected(fmt::format("{} cannot be read.", path.string()));
     }
     Bytes bytes(std::istreambuf_iterator<char>(file), {});
     if (file.bad()) {
-        return std::unexpected("Cannot finish reading " + path.string() + ".");
+        return std::unexpected(fmt::format("Cannot finish reading {}.", path.string()));
     }
     return bytes;
 }
@@ -93,7 +95,8 @@ std::expected<GltfDocument, std::string> ReadGltfDocument(const std::filesystem:
     if (glb) {
         if (file->size() < 20 || Little32(*file, 0) != 0x46546C67 || Little32(*file, 4) != 2 ||
             Little32(*file, 8) != file->size()) {
-            return std::unexpected(result.path.string() + " has an invalid GLB header.");
+            return std::unexpected(
+                fmt::format("{} has an invalid GLB header.", result.path.string()));
         }
         bool foundJson = false;
         bool foundBinary = false;
@@ -170,7 +173,8 @@ std::expected<GltfDocument, std::string> ReadGltfDocument(const std::filesystem:
                 nlohmann::ordered_json::array({{{"byteLength", result.buffer.size()}}});
         }
     } catch (const nlohmann::json::exception &error) {
-        return std::unexpected(result.path.string() + " is not a glTF document. " + error.what());
+        return std::unexpected(
+            fmt::format("{} is not a glTF document. {}", result.path.string(), error.what()));
     }
     return result;
 }
@@ -189,7 +193,7 @@ std::expected<std::vector<std::uint8_t>, std::string> GltfDocument::Image(std::s
         }
         return Bytes(buffer.begin() + offset, buffer.begin() + offset + length);
     } catch (const nlohmann::json::exception &error) {
-        return std::unexpected(std::string("The glTF image is invalid. ") + error.what());
+        return std::unexpected(fmt::format("The glTF image is invalid. {}", error.what()));
     }
 }
 

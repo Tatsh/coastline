@@ -4,6 +4,7 @@
 #include <fstream>
 #include <memory>
 
+#include <fmt/format.h>
 #include <windows.h>
 #include <winhttp.h>
 
@@ -13,8 +14,7 @@ std::optional<std::string> DownloadFile(const std::string &url,
                                         const std::filesystem::path &output,
                                         const ImportProgress &progress) {
     const auto failure = [](const char *step) {
-        return std::string("Cannot download (") + step + ", error " +
-               std::to_string(GetLastError()) + ").";
+        return fmt::format("Cannot download ({}, error {}).", step, GetLastError());
     };
     const std::wstring wideUrl(url.begin(), url.end());
     std::wstring host(256, L'\0');
@@ -72,7 +72,7 @@ std::optional<std::string> DownloadFile(const std::string &url,
                              &statusSize,
                              WINHTTP_NO_HEADER_INDEX) ||
         status != 200) {
-        return "Cannot download (HTTP " + std::to_string(status) + ").";
+        return fmt::format("Cannot download (HTTP {}).", status);
     }
     std::ofstream file(output, std::ios::binary);
     std::array<char, 65536> buffer{};
@@ -86,7 +86,7 @@ std::optional<std::string> DownloadFile(const std::string &url,
             break;
         }
         if (!file.write(buffer.data(), read)) {
-            return "Cannot write " + output.string() + ".";
+            return fmt::format("Cannot write {}.", output.string());
         }
         if (progress && !progress("Downloading...", 0)) {
             return "Import cancelled.";
@@ -94,7 +94,7 @@ std::optional<std::string> DownloadFile(const std::string &url,
     }
     file.close();
     if (!file) {
-        return "Cannot write " + output.string() + ".";
+        return fmt::format("Cannot write {}.", output.string());
     }
     return std::nullopt;
 }

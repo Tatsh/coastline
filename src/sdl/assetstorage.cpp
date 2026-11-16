@@ -12,6 +12,8 @@
 #include <string_view>
 #include <system_error>
 
+#include <fmt/format.h>
+
 namespace coastline {
 
 namespace {
@@ -42,11 +44,11 @@ bool RelativeFile(const std::filesystem::path &path) {
 std::expected<std::string, std::string> ReadFile(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        return std::unexpected("Cannot read " + Utf8(path) + ".");
+        return std::unexpected(fmt::format("Cannot read {}.", Utf8(path)));
     }
     std::string bytes(std::istreambuf_iterator<char>(file), {});
     if (file.bad()) {
-        return std::unexpected("Cannot finish reading " + Utf8(path) + ".");
+        return std::unexpected(fmt::format("Cannot finish reading {}.", Utf8(path)));
     }
     return bytes;
 }
@@ -139,7 +141,7 @@ std::optional<std::string> FinalizeGeneratedAssetPacks(const std::filesystem::pa
             }
         }
     } catch (const std::filesystem::filesystem_error &error) {
-        return "Cannot finalize generated assets. " + std::string(error.what());
+        return fmt::format("Cannot finalize generated assets. {}", error.what());
     }
     return std::nullopt;
 }
@@ -153,7 +155,7 @@ ReadAssetFileAliases(const std::filesystem::path &pack, const std::filesystem::p
     }
     std::ifstream file(table, std::ios::binary);
     auto invalid = [&]() {
-        return std::unexpected("Invalid asset aliases in " + Utf8(table) + ".");
+        return std::unexpected(fmt::format("Invalid asset aliases in {}.", Utf8(table)));
     };
     std::string word;
     int version = 0;
@@ -229,7 +231,8 @@ DeduplicateAssetFiles(const std::filesystem::path &defaults) {
             }
         }
         if (error) {
-            return std::unexpected("Cannot list generated assets. " + error.message());
+            return std::unexpected(
+                fmt::format("Cannot list generated assets. {}", error.message()));
         }
         std::ranges::sort(files[pack]);
     }
@@ -266,18 +269,19 @@ DeduplicateAssetFiles(const std::filesystem::path &defaults) {
                 auto shared = defaults / "shared";
                 std::filesystem::create_directories(shared, error);
                 if (error) {
-                    return std::unexpected("Cannot create shared asset storage. " +
-                                           error.message());
+                    return std::unexpected(
+                        fmt::format("Cannot create shared asset storage. {}", error.message()));
                 }
                 do {
                     shared = defaults / "shared" /
-                             (std::to_string(sharedIndex++) + same->path.extension().string());
+                             fmt::format("{}{}", sharedIndex++, same->path.extension().string());
                 } while (std::filesystem::exists(shared, error) && !error);
                 auto originalPack = same->pack;
                 auto originalPath = same->path.lexically_relative(originalPack);
                 std::filesystem::rename(same->path, shared, error);
                 if (error) {
-                    return std::unexpected("Cannot share an asset file. " + error.message());
+                    return std::unexpected(
+                        fmt::format("Cannot share an asset file. {}", error.message()));
                 }
                 same->path = shared;
                 same->pack = defaults;
@@ -285,7 +289,8 @@ DeduplicateAssetFiles(const std::filesystem::path &defaults) {
             }
             aliases[pack].push_back({path.lexically_relative(pack), same});
             if (!std::filesystem::remove(path, error) || error) {
-                return std::unexpected("Cannot remove a duplicate asset. " + error.message());
+                return std::unexpected(
+                    fmt::format("Cannot remove a duplicate asset. {}", error.message()));
             }
             ++savings.files;
             savings.bytes += bytes->size();

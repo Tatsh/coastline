@@ -3,6 +3,7 @@
 #include <format>
 #include <string>
 
+#include <spdlog/fmt/fmt.h>
 #include <spdlog/spdlog.h>
 
 #include "assetchain.h"
@@ -87,17 +88,20 @@ extract(const Rom &rom, const std::vector<Asset> &assets, const std::filesystem:
         const std::span<const std::uint8_t> blob(rom.getBytes().data() + asset.offset, asset.size);
         const std::string stem = std::format("{:06X}", asset.offset);
         if (asset.compressed) {
-            if (auto written = Common::writeFile(directory / (stem + ".z"), blob); !written) {
+            if (auto written = Common::writeFile(directory / fmt::format("{}.z", stem), blob);
+                !written) {
                 return written;
             }
             const auto data = decompress(blob);
             if (!data) {
                 return std::unexpected(data.error());
             }
-            if (auto written = Common::writeFile(directory / (stem + ".bin"), *data); !written) {
+            if (auto written = Common::writeFile(directory / fmt::format("{}.bin", stem), *data);
+                !written) {
                 return written;
             }
-        } else if (auto written = Common::writeFile(directory / (stem + ".bin"), blob); !written) {
+        } else if (auto written = Common::writeFile(directory / fmt::format("{}.bin", stem), blob);
+                   !written) {
             return written;
         }
         manifest += std::format("{:06X} {} {} {} {}\n",

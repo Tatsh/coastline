@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "frontend.h"
@@ -283,7 +284,7 @@ std::optional<std::vector<MenuItem>> MenuScreen::LoadItems(SceneRenderer &render
             MenuItem item;
             item.name = records.at(stem).at("name").get<std::string>();
             item.flags = records.at(stem).at("flags").get<u32>();
-            item.model = LoadModel(renderer, directory / (std::string(stem) + ".gltf"));
+            item.model = LoadModel(renderer, directory / fmt::format("{}.gltf", stem));
             if (!item.model) {
                 return std::nullopt;
             }
@@ -745,7 +746,7 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
     TextStyle style;
     style.size = 30;
     style.align = TextStyle::Align::Center;
-    s.text->Draw(renderer, "%ry" + std::string(setup.title), 160, 240 / 6 - 2, style, flat);
+    s.text->Draw(renderer, fmt::format("%ry{}", setup.title), 160, 240 / 6 - 2, style, flat);
 
     if (preDraw) {
         preDraw(renderer);
@@ -810,7 +811,7 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
                 renderer.SetMirrored(false);
             } else if (!item.emptyStage) {
                 s.text->Draw(renderer,
-                             "%ww" + item.name,
+                             fmt::format("%ww{}", item.name),
                              160 - static_cast<int>(offset * SCREEN_WIDTH / 6.0f),
                              240 * 9 / 16,
                              style,
@@ -836,7 +837,8 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
         }
         if (showName) {
             style.size = 20;
-            s.text->Draw(renderer, "%ry" + current.name, 160, 240 * 20 / 64, style, flat);
+            s.text->Draw(
+                renderer, fmt::format("%ry{}", current.name), 160, 240 * 20 / 64, style, flat);
             if (postDraw) {
                 postDraw(renderer, s.cursor);
             }

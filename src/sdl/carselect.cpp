@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "common/vehicle.h"
@@ -808,8 +809,9 @@ void Menus::DrawCarStats(SceneRenderer &renderer, int player, int y, int barY) {
               style,
               flat);
     text.Draw(renderer,
-              "%ww" + std::to_string(car.gearCount) + "-Speed " +
-                  m_driveTypes[static_cast<std::size_t>(car.driveType)],
+              fmt::format("%ww{}-Speed {}",
+                          car.gearCount,
+                          m_driveTypes[static_cast<std::size_t>(car.driveType)]),
               WIDTH * 3 / 4,
               y - 6,
               style,
@@ -835,13 +837,15 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
     auto choiceText = [&](int player, const char *ready) {
         const CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
         if (choice.state == CAR_SELECT_CAR) {
-            return "%ry%i" + m_cars[static_cast<std::size_t>(choice.selectedCar)].name;
+            return fmt::format("%ry%i{}",
+                               m_cars[static_cast<std::size_t>(choice.selectedCar)].name);
         }
         if (choice.state == CAR_SELECT_READY) {
             return std::string(ready);
         }
-        return "%ry" + choice.category + ": %i" +
-               (*choice.options)[static_cast<std::size_t>(choice.cursor)].name;
+        return fmt::format("%ry{}: %i{}",
+                           choice.category,
+                           (*choice.options)[static_cast<std::size_t>(choice.cursor)].name);
     };
     auto decalsNote = [&](int player) {
         const CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
@@ -884,7 +888,8 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
     style.size = 20;
     if (m_paintMode) {
         text.Draw(renderer,
-                  "%ry%i" + m_cars[static_cast<std::size_t>(m_carSelect[0].selectedCar)].name,
+                  fmt::format("%ry%i{}",
+                              m_cars[static_cast<std::size_t>(m_carSelect[0].selectedCar)].name),
                   WIDTH / 2,
                   HEIGHT * 22 / 64,
                   style,
@@ -922,8 +927,9 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
               style,
               flat);
     text.Draw(renderer,
-              "%ww" + std::to_string(car.gearCount) + "-Speed " +
-                  m_driveTypes[static_cast<std::size_t>(car.driveType)],
+              fmt::format("%ww{}-Speed {}",
+                          car.gearCount,
+                          m_driveTypes[static_cast<std::size_t>(car.driveType)]),
               WIDTH * 11 / 16,
               HEIGHT * 3 / 8 + 2,
               style,
@@ -973,7 +979,7 @@ void Menus::UseCustomDecals(SceneRenderer &renderer, int player) {
     auto index = static_cast<std::size_t>(player);
     const DecalCar &car = *m_customDecals[index];
     m_customDecalImages[index] =
-        car.WriteImages(m_cache / "decals" / ("player" + std::to_string(player + 1)));
+        car.WriteImages(m_cache / "decals" / fmt::format("player{}", player + 1));
     TakeDecalPaint(player);
     LoadCustomModel(renderer, player);
     RepaintCars(renderer, player);
@@ -1008,7 +1014,7 @@ bool Menus::RestoreCustomDecals(SceneRenderer &renderer, int player) {
 void Menus::LoadCarChoices() {
     for (std::size_t player = 0; player < m_carSelect.size(); ++player) {
         CarSelectPlayer &choice = m_carSelect[player];
-        std::string section = "Player" + std::to_string(player + 1);
+        std::string section = fmt::format("Player{}", player + 1);
         choice.carModel = m_config->GetIndex(section, "Car", m_cars.size(), choice.carModel);
         choice.selectedCar = choice.carModel;
         choice.customDecals = m_config->GetBoolean(section, "CustomDecals", false);
@@ -1025,7 +1031,7 @@ void Menus::LoadCarChoices() {
 
 void Menus::SaveCarChoice(int player) {
     const CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
-    std::string section = "Player" + std::to_string(player + 1);
+    std::string section = fmt::format("Player{}", player + 1);
     m_config->Set(section, "Car", std::to_string(choice.carModel));
     m_config->Set(section, "CustomDecals", choice.customDecals ? "1" : "0");
     if (player == 0) {

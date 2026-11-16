@@ -19,6 +19,7 @@
 #endif
 
 #if COASTLINE_DISCORD
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #ifdef _WIN32
@@ -101,7 +102,7 @@ public:
                 }
             }
             for (const auto *suffix : {"", "/app/com.discordapp.Discord"}) {
-                const auto path = root + suffix + "/discord-ipc-" + std::to_string(index);
+                const auto path = fmt::format("{}{}/discord-ipc-{}", root, suffix, index);
                 sockaddr_un address{};
                 if (path.size() >= sizeof(address.sun_path)) {
                     return false;

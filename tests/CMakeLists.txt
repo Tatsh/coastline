@@ -314,7 +314,7 @@ set_target_properties(soundeffects_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_
 target_include_directories(soundeffects_test PRIVATE "${_src}/sdl")
 target_compile_options(soundeffects_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(soundeffects_test PRIVATE -fsanitize=address,undefined)
-target_link_libraries(soundeffects_test PRIVATE SDL3::SDL3)
+target_link_libraries(soundeffects_test PRIVATE SDL3::SDL3 fmt::fmt)
 add_test(NAME soundeffects COMMAND soundeffects_test)
 set_tests_properties(soundeffects PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
 
@@ -451,7 +451,7 @@ add_test(NAME gamesettings COMMAND gamesettings_test)
 add_executable(gltfdocument_test gltfdocument_test.cpp "${_src}/sdl/gltfdocument.cpp")
 set_target_properties(gltfdocument_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(gltfdocument_test PRIVATE "${_src}/sdl")
-target_link_libraries(gltfdocument_test PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(gltfdocument_test PRIVATE nlohmann_json::nlohmann_json fmt::fmt)
 target_compile_options(gltfdocument_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(gltfdocument_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME gltfdocument COMMAND gltfdocument_test)
@@ -491,7 +491,7 @@ set_target_properties(firstrun_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQU
 target_include_directories(firstrun_test PRIVATE "${_src}/sdl/firstrun")
 target_compile_options(firstrun_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(firstrun_test PRIVATE -fsanitize=address,undefined)
-target_link_libraries(firstrun_test PRIVATE Threads::Threads)
+target_link_libraries(firstrun_test PRIVATE Threads::Threads fmt::fmt)
 add_test(NAME firstrun COMMAND firstrun_test)
 
 find_package(ZLIB REQUIRED)
@@ -535,6 +535,7 @@ target_include_directories(mipscpu_test PRIVATE "${_src}/sdl")
 target_compile_options(mipscpu_test PRIVATE -Wall -Wextra -ffp-contract=off
                                             -fsanitize=address,undefined)
 target_link_options(mipscpu_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(mipscpu_test PRIVATE fmt::fmt)
 add_test(NAME mipscpu COMMAND mipscpu_test)
 
 add_library(savefile_test_support STATIC "${_src}/sdl/savefile.cpp"
@@ -544,6 +545,7 @@ target_include_directories(savefile_test_support PUBLIC "${_src}/sdl"
                             "${CMAKE_SOURCE_DIR}/tools/common")
 target_compile_options(savefile_test_support PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(savefile_test_support INTERFACE -fsanitize=address,undefined)
+target_link_libraries(savefile_test_support PUBLIC fmt::fmt)
 foreach(_target IN ITEMS sdl_test sdl_paths_fixed_test gamesettings_test assetimport_test
                           assetstorage_test ghostnote_test)
   target_link_libraries(${_target} PRIVATE savefile_test_support)
@@ -589,7 +591,8 @@ foreach(_enabled IN ITEMS 0 1)
   target_compile_options(discordpresence_${_enabled}_test PRIVATE -Wall -Wextra
                             -fsanitize=address,undefined)
   target_link_options(discordpresence_${_enabled}_test PRIVATE -fsanitize=address,undefined)
-  target_link_libraries(discordpresence_${_enabled}_test PRIVATE nlohmann_json::nlohmann_json)
+  target_link_libraries(discordpresence_${_enabled}_test PRIVATE nlohmann_json::nlohmann_json
+                                                                 fmt::fmt)
   add_test(NAME discordpresence_${_enabled} COMMAND discordpresence_${_enabled}_test)
 endforeach()
 set_tests_properties(discordpresence_0 discordpresence_1 PROPERTIES RUN_SERIAL TRUE TIMEOUT 60)

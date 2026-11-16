@@ -11,6 +11,8 @@
 #include <system_error>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include "assetimport.h"
 #include "filebrowser.h"
 #include "freecamera.h"
@@ -163,10 +165,10 @@ SetupRun RunSetupWizard(GpuWindow &window,
                     }
                     const auto output =
                         cache /
-                        (std::string(*release == RomRelease::Asia ?
-                                         "Asia" :
-                                         CARTRIDGE_NAMES[static_cast<std::size_t>(*detected)]) +
-                         ".z64");
+                        fmt::format("{}.z64",
+                                    *release == RomRelease::Asia ?
+                                        "Asia" :
+                                        CARTRIDGE_NAMES[static_cast<std::size_t>(*detected)]);
                     std::ofstream file(output, std::ios::binary | std::ios::trunc);
                     file.write(reinterpret_cast<const char *>(bytes.data()),
                                static_cast<std::streamsize>(bytes.size()));
@@ -201,7 +203,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
     services.lastDirectory = restorePath("LastDirectory");
     services.disc = restorePath("DiscImage");
     for (std::size_t i = 0; i < services.roms.size(); ++i) {
-        services.roms[i] = restorePath("RomImage" + std::to_string(i + 1));
+        services.roms[i] = restorePath(fmt::format("RomImage{}", i + 1));
     }
     services.searchDirectory = restorePath("SearchDirectory");
     SetupWizard wizard(std::move(services));
@@ -547,7 +549,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
     constexpr std::array romFields{
         WizardControlId::Rom1Text, WizardControlId::Rom2Text, WizardControlId::Rom3Text};
     for (std::size_t i = 0; i < romFields.size(); ++i) {
-        savePath("RomImage" + std::to_string(i + 1), wizard.Text(romFields[i]));
+        savePath(fmt::format("RomImage{}", i + 1), wizard.Text(romFields[i]));
     }
     savePath("SearchDirectory", wizard.Text(WizardControlId::SearchText));
     if (run.finished && wizard.Portable()) {

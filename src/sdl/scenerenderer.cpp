@@ -9,6 +9,7 @@
 #include <string>
 #include <variant>
 
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "gltfdocument.h"
@@ -1521,7 +1522,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
             drawn.mostVertices = std::max(drawn.mostVertices, static_cast<int>(vertexCount));
             if (drawn.targets == nullptr && primitive.contains("targets")) {
                 auto [targets, newTargets] = sharedTargets.try_emplace(
-                    std::to_string(vertexKey[0]) + primitive["targets"].dump(), nullptr);
+                    fmt::format("{}{}", vertexKey[0], primitive["targets"].dump()), nullptr);
                 if (newTargets) {
                     // For each target, the position and then the normal of each vertex, as vec4.
                     std::vector<float> displacements;

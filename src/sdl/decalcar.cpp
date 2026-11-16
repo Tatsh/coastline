@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #include "gltfdocument.h"
 #include "indexedimage.h"
@@ -65,7 +66,7 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
         car.m_imageBytes.push_back(std::move(*image));
         car.m_images[index].erase("bufferView");
         car.m_images[index].erase("mimeType");
-        car.m_images[index]["uri"] = "image-" + std::to_string(index) + ".png";
+        car.m_images[index]["uri"] = fmt::format("image-{}.png", index);
     }
     const auto name = directory.filename();
     if (name == "cupra" || name == "helmet" || name == "beach-ball") {

@@ -4,6 +4,8 @@
 #include <charconv>
 #include <cstddef>
 
+#include <fmt/format.h>
+
 namespace coastline {
 
 namespace {
@@ -48,8 +50,7 @@ std::optional<IconSize> ParseIconName(std::string_view name) {
 }
 
 std::string IconName(const IconSize &size) {
-    return std::to_string(size.width) + 'x' + std::to_string(size.height) + 'x' +
-           std::to_string(size.bitCount) + ".png";
+    return fmt::format("{}x{}x{}.png", size.width, size.height, size.bitCount);
 }
 
 std::vector<IconEntry> ListIconImages(std::span<const std::uint8_t> icon) {

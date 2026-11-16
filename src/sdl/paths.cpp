@@ -11,6 +11,8 @@
 #include <system_error>
 #include <utility>
 
+#include <fmt/format.h>
+
 #include "assetstorage.h"
 #include "config.h"
 #include "controllerpak.h"
@@ -184,10 +186,11 @@ std::optional<std::string> LayerStamp(const std::filesystem::path &base,
             if (error) {
                 return std::nullopt;
             }
-            lines.insert(entry->path().string() + '\t' +
-                         std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                            time.time_since_epoch())
-                                            .count()));
+            lines.insert(fmt::format(
+                "{}\t{}",
+                entry->path().string(),
+                std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch())
+                    .count()));
         }
         if (error) {
             return std::nullopt;
@@ -195,7 +198,7 @@ std::optional<std::string> LayerStamp(const std::filesystem::path &base,
     }
     std::string listing = "asset-aliases-1\n";
     for (const auto &line : lines) {
-        listing += line + '\n';
+        fmt::format_to(std::back_inserter(listing), "{}\n", line);
     }
     return std::to_string(std::hash<std::string>{}(listing));
 }
@@ -456,22 +459,21 @@ ResolvePortablePaths(const GamePaths &fallback,
             (paths.portableConfig && directory == paths.config &&
              !writable(directory / "BossRally.ini")) ||
             (paths.portableData && directory == paths.data && !writable(directory / "assets"))) {
-            return std::unexpected("Portable files cannot be written in " + directory.string() +
-                                   ".");
+            return std::unexpected(
+                fmt::format("Portable files cannot be written in {}.", directory.string()));
         }
         const auto probe =
-            directory /
-            (".coastline-write-check-" +
-             std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+            directory / fmt::format(".coastline-write-check-{}",
+                                    std::chrono::steady_clock::now().time_since_epoch().count());
         if (!std::filesystem::create_directory(probe, error)) {
-            return std::unexpected("Cannot write portable directory " + directory.string() + ". " +
-                                   error.message());
+            return std::unexpected(fmt::format(
+                "Cannot write portable directory {}. {}", directory.string(), error.message()));
         }
         std::filesystem::remove(probe, error);
     }
     if (paths.portableConfig && !std::ofstream(paths.config / "BossRally.ini", std::ios::app)) {
-        return std::unexpected("Portable configuration cannot be written in " +
-                               paths.config.string() + ".");
+        return std::unexpected(
+            fmt::format("Portable configuration cannot be written in {}.", paths.config.string()));
     }
 #else
     (void)executable;
@@ -573,7 +575,7 @@ TransferGamePaths(const GamePaths &source,
             }
         }
         if (error) {
-            return "Cannot inspect Controller Pak data. " + error.message();
+            return fmt::format("Cannot inspect Controller Pak data. {}", error.message());
         }
     }
     auto nested = [](const std::filesystem::path &child, const std::filesystem::path &parent) {
@@ -626,21 +628,21 @@ TransferGamePaths(const GamePaths &source,
             continue;
         }
         if (error) {
-            return "Cannot inspect portable data. " + error.message();
+            return fmt::format("Cannot inspect portable data. {}", error.message());
         }
         if (status.type() == std::filesystem::file_type::not_found) {
             continue;
         }
         if (!destinations.insert(to).second) {
-            return "Multiple source files have the same destination. " + to.string();
+            return fmt::format("Multiple source files have the same destination. {}", to.string());
         }
         const auto target = std::filesystem::symlink_status(to, error);
         if (error && error != std::errc::no_such_file_or_directory) {
-            return "Cannot inspect migration destination. " + error.message();
+            return fmt::format("Cannot inspect migration destination. {}", error.message());
         }
         error.clear();
         if (target.type() != std::filesystem::file_type::not_found) {
-            return "Migration destination " + to.string() + " already exists.";
+            return fmt::format("Migration destination {} already exists.", to.string());
         }
         existing.emplace_back(from, to);
     }
@@ -658,7 +660,7 @@ TransferGamePaths(const GamePaths &source,
             CopyPortableEntry(from, to, error);
         }
         if (error) {
-            const auto message = "Cannot copy portable data. " + error.message();
+            const auto message = fmt::format("Cannot copy portable data. {}", error.message());
             rollback();
             return message;
         }
@@ -699,19 +701,21 @@ TransferGamePaths(const GamePaths &source,
         (void)to;
         RemoveAssetTree(from, error);
         if (error) {
-            return "Data copied, but cannot remove portable source. " + error.message();
+            return fmt::format("Data copied, but cannot remove portable source. {}",
+                               error.message());
         }
     }
     for (const auto &directory : pakDirectories) {
         RemoveAssetTree(directory, error);
         if (error) {
-            return "Data copied, but cannot remove Controller Pak source. " + error.message();
+            return fmt::format("Data copied, but cannot remove Controller Pak source. {}",
+                               error.message());
         }
     }
     RemoveAssetTree(source.cache, error);
-    return error ?
-               std::optional("Data copied, but cannot remove portable cache. " + error.message()) :
-               std::nullopt;
+    return error ? std::optional(fmt::format("Data copied, but cannot remove portable cache. {}",
+                                             error.message())) :
+                   std::nullopt;
 }
 
 } // namespace
@@ -788,7 +792,7 @@ std::optional<std::string> MakePortableDistribution(const GamePaths &source,
                 programs.push_back(root / entry);
             }
             if (error) {
-                return "Cannot inspect installed program files. " + error.message();
+                return fmt::format("Cannot inspect installed program files. {}", error.message());
             }
         }
     }
@@ -808,14 +812,14 @@ std::optional<std::string> MakePortableDistribution(const GamePaths &source,
     error.clear();
     std::filesystem::create_directories(directory.parent_path(), error);
     if (error) {
-        return "Cannot create portable distribution parent. " + error.message();
+        return fmt::format("Cannot create portable distribution parent. {}", error.message());
     }
-    const auto staging =
-        directory.parent_path() /
-        (".coastline-portable-" +
-         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const auto staging = directory.parent_path() /
+                         fmt::format(".coastline-portable-{}",
+                                     std::chrono::steady_clock::now().time_since_epoch().count());
     if (!std::filesystem::create_directory(staging, error)) {
-        return "Cannot create portable distribution staging directory. " + error.message();
+        return fmt::format("Cannot create portable distribution staging directory. {}",
+                           error.message());
     }
     auto cleanup = [&] {
         std::error_code failure;
@@ -824,7 +828,8 @@ std::optional<std::string> MakePortableDistribution(const GamePaths &source,
     for (const auto &program : programs) {
         CopyPortableEntry(program, staging / program.filename(), error);
         if (error) {
-            const auto failure = "Cannot copy installed program files. " + error.message();
+            const auto failure =
+                fmt::format("Cannot copy installed program files. {}", error.message());
             cleanup();
             return failure;
         }
@@ -840,9 +845,9 @@ std::optional<std::string> MakePortableDistribution(const GamePaths &source,
                 return "Portable distribution destination already exists.";
             }
             std::filesystem::rename(staging, directory, error);
-            return error ?
-                       std::optional("Cannot publish portable distribution. " + error.message()) :
-                       std::nullopt;
+            return error ? std::optional(fmt::format("Cannot publish portable distribution. {}",
+                                                     error.message())) :
+                           std::nullopt;
         });
     cleanup();
     return failure;
@@ -918,7 +923,7 @@ std::optional<std::string> ResetGamePaths(const GamePaths &paths, bool factoryRe
         std::error_code error;
         RemoveAssetTree(directory, error);
         if (error) {
-            return "Cannot delete " + directory.string() + ". " + error.message();
+            return fmt::format("Cannot delete {}. {}", directory.string(), error.message());
         }
     }
     return std::nullopt;

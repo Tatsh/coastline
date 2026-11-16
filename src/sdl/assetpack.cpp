@@ -58,7 +58,7 @@ std::optional<std::string> SampleInMeshes(const std::filesystem::path &defaults,
                                           std::span<const std::uint8_t> cartridge) {
     auto modelPath = defaults / entry["model"].get<std::string>();
     auto pc = std::filesystem::path(entry["pc"].get<std::string>()).filename();
-    auto uri = pc.stem().string() + "-n64.png";
+    auto uri = fmt::format("{}-n64.png", pc.stem().string());
     std::ifstream text(modelPath);
     auto model = nlohmann::ordered_json::parse(text, nullptr, false);
     text.close();

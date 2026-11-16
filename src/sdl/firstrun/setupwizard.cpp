@@ -9,6 +9,8 @@
 #include <system_error>
 #include <tuple>
 
+#include <fmt/format.h>
+
 #include "../discformats.h"
 
 namespace coastline {
@@ -665,7 +667,7 @@ void SetupWizard::ChangeDirectory(const std::filesystem::path &directory) {
     auto entries = ListBrowserDirectory(
         directory, extensions, m_browser->target == WizardControlId::SearchText);
     if (!entries) {
-        ShowMessage({Utf8FromPath(directory) + " cannot be read."}, false);
+        ShowMessage({fmt::format("{} cannot be read.", Utf8FromPath(directory))}, false);
         return;
     }
     std::filesystem::path normal = directory.lexically_normal();
@@ -1420,7 +1422,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
 
     auto dialog = [&](const std::string &title) {
         grid.Box(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT, LightGray, Blue, false);
-        std::string text = " " + title + " ";
+        std::string text = fmt::format(" {} ", title);
         grid.WriteUtf8(
             DIALOG_COLUMN + (DIALOG_WIDTH - LabelWidth(text)) / 2, DIALOG_ROW, text, White, Blue);
         grid.Fill(DIALOG_COLUMN + 1, SEPARATOR_ROW, DIALOG_WIDTH - 2, 1, 0xC4, LightGray, Blue);
@@ -1500,13 +1502,12 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                 grid.WriteUtf8(
                     control.column, control.row + 1, field.reason, LightRed, Blue, TEXT_WIDTH + 14);
             } else if (field.valid && field.release) {
-                grid.WriteUtf8(
-                    control.column,
-                    control.row + 1,
-                    std::string(RELEASE_NAMES[static_cast<std::size_t>(*field.release)]) +
-                        " ROM image detected.",
-                    LightGray,
-                    Blue);
+                grid.WriteUtf8(control.column,
+                               control.row + 1,
+                               fmt::format("{} ROM image detected.",
+                                           RELEASE_NAMES[static_cast<std::size_t>(*field.release)]),
+                               LightGray,
+                               Blue);
             } else if (control.id == WizardControlId::DiscText && field.valid &&
                        (LowercaseExtension(
                             ResolveUserPath(EncodeUtf8(field.text), m_services.home)) == ".iso" ||
@@ -1598,7 +1599,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         const int filled = static_cast<int>(fraction * width);
         grid.Fill(CONTENT_COLUMN, row, width, 1, 0xB0, LightGray, Blue);
         grid.Fill(CONTENT_COLUMN, row, filled, 1, ' ', Black, LightGray);
-        const auto percent = std::to_string(static_cast<int>(fraction * 100.0)) + "%";
+        const auto percent = fmt::format("{}%", static_cast<int>(fraction * 100.0));
         const int start = (width - LabelWidth(percent)) / 2;
         for (int index = 0; index < static_cast<int>(percent.size()); ++index) {
             const int column = start + index;
@@ -1662,7 +1663,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         for (std::size_t i = 0; i < found.size(); ++i) {
             grid.WriteUtf8(CONTENT_COLUMN + 2,
                            DIALOG_ROW + 5 + static_cast<int>(i) * 2,
-                           std::string(found[i] ? "[X] " : "[ ] ") + labels[i],
+                           fmt::format("{}{}", found[i] ? "[X] " : "[ ] ", labels[i]),
                            found[i] ? White : LightGray,
                            Blue);
         }
@@ -1742,9 +1743,11 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     for (int column = repositoryColumn; column < repositoryColumn + repositoryWidth; ++column) {
         grid.At(column, GRID_ROWS - 3).underline = m_repositoryHovered;
     }
-    const std::string build =
-        (m_services.buildRevision.empty() ? "Development build" : m_services.buildRevision) +
-        (m_services.buildDate.empty() ? "" : " | Built " + m_services.buildDate);
+    const std::string build = fmt::format(
+        "{}{}{}",
+        m_services.buildRevision.empty() ? "Development build" : m_services.buildRevision,
+        m_services.buildDate.empty() ? "" : " | Built ",
+        m_services.buildDate);
     grid.WriteUtf8(std::max(0, (GRID_COLUMNS - LabelWidth(build)) / 2),
                    GRID_ROWS - 2,
                    build,

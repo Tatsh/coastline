@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include <fmt/format.h>
+
 #include "assetpack.h"
 #include "assetstorage.h"
 #include "config.h"
@@ -51,19 +53,19 @@ public:
         std::error_code error;
         std::filesystem::create_directories(data, error);
         if (error) {
-            return std::unexpected("Cannot create the import directory. " + error.message());
+            return std::unexpected(
+                fmt::format("Cannot create the import directory. {}", error.message()));
         }
         auto stage = std::make_unique<ImportStage>();
         auto tick = std::chrono::steady_clock::now().time_since_epoch().count();
         for (int attempt = 0; attempt < 100; ++attempt) {
-            auto candidate = data / (".coastline-import-" + std::to_string(tick) + "-" +
-                                     std::to_string(attempt));
+            auto candidate = data / fmt::format(".coastline-import-{}-{}", tick, attempt);
             if (std::filesystem::create_directory(candidate, error)) {
                 stage->path = std::move(candidate);
                 return stage;
             }
             if (error) {
-                return std::unexpected("Cannot stage the import. " + error.message());
+                return std::unexpected(fmt::format("Cannot stage the import. {}", error.message()));
             }
         }
         return std::unexpected("Cannot allocate a staging directory for the import.");
@@ -75,11 +77,11 @@ public:
         std::error_code error;
         std::filesystem::create_directories(destination, error);
         if (error) {
-            return "Cannot create the assets directory. " + error.message();
+            return fmt::format("Cannot create the assets directory. {}", error.message());
         }
         std::filesystem::create_directory(previous, error);
         if (error) {
-            return "Cannot back up generated packs. " + error.message();
+            return fmt::format("Cannot back up generated packs. {}", error.message());
         }
         std::vector<std::pair<std::string_view, std::filesystem::perms>> moved;
         std::vector<std::string_view> installed;
@@ -98,7 +100,8 @@ public:
             }
             if (!restored) {
                 preserve = true;
-                return failure + " Restore previous packs from " + previous.string() + ".";
+                return fmt::format(
+                    "{} Restore previous packs from {}.", failure, previous.string());
             }
             return failure;
         };
@@ -108,7 +111,7 @@ public:
                 continue;
             }
             if (error) {
-                return restore("Cannot inspect generated packs. " + error.message());
+                return restore(fmt::format("Cannot inspect generated packs. {}", error.message()));
             }
             const auto permissions = std::filesystem::is_directory(status) ?
                                          status.permissions() :
@@ -120,12 +123,14 @@ public:
                                              std::filesystem::perm_options::add,
                                              error);
                 if (error) {
-                    return restore("Cannot prepare generated packs. " + error.message());
+                    return restore(
+                        fmt::format("Cannot prepare generated packs. {}", error.message()));
                 }
             }
             std::filesystem::rename(destination / pack, previous / pack, error);
             if (error) {
-                const auto failure = "Cannot replace generated packs. " + error.message();
+                const auto failure =
+                    fmt::format("Cannot replace generated packs. {}", error.message());
                 if (permissions != std::filesystem::perms::unknown) {
                     std::filesystem::permissions(destination / pack, permissions, error);
                 }
@@ -140,7 +145,7 @@ public:
             // Default is installed last, after every file its inventory records is in place.
             std::filesystem::rename(path / "assets" / pack, destination / pack, error);
             if (error) {
-                return restore("Cannot install generated packs. " + error.message());
+                return restore(fmt::format("Cannot install generated packs. {}", error.message()));
             }
             installed.push_back(pack);
         }
@@ -181,7 +186,7 @@ std::optional<std::string> WriteMetadata(const std::filesystem::path &defaults, 
     std::error_code error;
     std::filesystem::create_directories(boss, error);
     if (error) {
-        return "Cannot create the Boss Rally pack. " + error.message();
+        return fmt::format("Cannot create the Boss Rally pack. {}", error.message());
     }
     std::ifstream bossInput(boss / "pack.json");
     auto bossMetadata = nlohmann::ordered_json::parse(bossInput, nullptr, false);
@@ -401,7 +406,7 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         }
         return std::nullopt;
     } catch (const std::filesystem::filesystem_error &error) {
-        return "Cannot prepare regional asset packs. " + std::string(error.what());
+        return fmt::format("Cannot prepare regional asset packs. {}", error.what());
     }
 }
 

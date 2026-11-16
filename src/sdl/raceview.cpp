@@ -16,6 +16,7 @@
 #endif
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #include "common/assetnames.h"
 #include "common/camera.h"
@@ -1562,8 +1563,8 @@ CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const Car
     if (!document) {
         return parts;
     }
-    std::string root = "lod" + std::to_string(lod);
-    std::string level = root + "-";
+    std::string root = fmt::format("lod{}", lod);
+    std::string level = fmt::format("{}-", root);
     ModelOptions options;
     options.paint = CarPaint(key);
     options.optional = true;
@@ -1583,7 +1584,7 @@ CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const Car
     // The highlighted parts are a node outside the scene, drawn without the turn of its root. In
     // the other look they reflect the sky in the pass of the painted body.
     options.parts = nullptr;
-    options.node = level + "highlighted";
+    options.node = fmt::format("{}highlighted", level);
     options.reflects = otherLook;
     parts.highlighted = RenderModel::Load(document, options);
     return parts;
@@ -1605,7 +1606,8 @@ std::shared_ptr<RenderDocument> CarDocument(SceneRenderer &renderer,
     ModelOptions options = CarOptions(key, images, damage);
     options.variants = CAR_LIGHT_VARIANTS;
     options.paletteVariant = CarLightPalette;
-    auto document = RenderDocument::Load(renderer, defaults / "cars" / (prefix + ".gltf"), options);
+    auto document =
+        RenderDocument::Load(renderer, defaults / "cars" / fmt::format("{}.gltf", prefix), options);
     documents.emplace(car, document);
     return document;
 }
@@ -1643,7 +1645,7 @@ CarDamageMasks LoadDamageMasks(const std::filesystem::path &defaults, int car) {
     constexpr int MASK_SIDE = 64;
     CarDamageMasks damage;
     for (int level = 0; level < CAR_DAMAGE_LEVELS; ++level) {
-        auto path = defaults / "Paint" / ("damage" + std::to_string(level + 1) + ".png");
+        auto path = defaults / "Paint" / fmt::format("damage{}.png", level + 1);
         SDL_Surface *loaded = SDL_LoadPNG(path.string().c_str());
         SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
         SDL_DestroySurface(loaded);

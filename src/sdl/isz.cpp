@@ -364,8 +364,8 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
             if (index != 0) {
                 parts.emplace_back();
                 if (!parts.back().Open(PartPath(image, index))) {
-                    return std::unexpected("Missing or invalid ISZ segment " +
-                                           std::to_string(index) + ".");
+                    return std::unexpected(
+                        fmt::format("Missing or invalid ISZ segment {}.", index));
                 }
             }
             auto &part = parts[index];
@@ -426,8 +426,8 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
                 stored -= part.size - part.offset;
                 parts.emplace_back();
                 if (!parts.back().Open(PartPath(image, index + 1))) {
-                    return std::unexpected("Missing or invalid ISZ segment " +
-                                           std::to_string(index + 1) + ".");
+                    return std::unexpected(
+                        fmt::format("Missing or invalid ISZ segment {}.", index + 1));
                 }
                 parts.back().offset = header[4];
             }

@@ -5,6 +5,8 @@
 #include <charconv>
 #include <utility>
 
+#include <fmt/format.h>
+
 #include "controller.h"
 
 namespace coastline {
@@ -74,7 +76,7 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
     std::size_t arguments = words.size() - 1;
     auto number = [&](std::size_t index) { return ParseNumber(words[index].text); };
     auto badNumber = [&](std::size_t index) {
-        return std::string(words[index].text) + " is not a number of frames above 0.";
+        return fmt::format("{} is not a number of frames above 0.", words[index].text);
     };
     auto count = [&](std::size_t index, int fallback) -> std::optional<int> {
         if (index >= words.size()) {
@@ -86,12 +88,10 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
         }
         return value;
     };
-    auto usage = [&](std::string_view form) {
-        return std::string(command) + " takes " + std::string(form) + ".";
-    };
+    auto usage = [&](std::string_view form) { return fmt::format("{} takes {}.", command, form); };
     if (command == "autopilot" || command == "screenshot-every") {
         if (frame) {
-            return std::string(command) + " applies from the start and takes no frame.";
+            return fmt::format("{} applies from the start and takes no frame.", command);
         }
         if (command == "autopilot") {
             if (arguments != 0) {
@@ -112,10 +112,10 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
     }
     if (command != "press" && command != "key" && command != "type" && command != "mouse" &&
         command != "screenshot" && command != "quit") {
-        return std::string(command) + " is not a command.";
+        return fmt::format("{} is not a command.", command);
     }
     if (!frame) {
-        return std::string(command) + " needs a frame at the start of the line.";
+        return fmt::format("{} needs a frame at the start of the line.", command);
     }
     if (command == "press") {
         if (arguments < 1 || arguments > 3) {
@@ -123,8 +123,9 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
         }
         auto button = ParseButton(words[1].text);
         if (!button) {
-            return std::string(words[1].text) +
-                   " is not one of a, b, z, start, l, r, up, down, left, right, cu, cd, cl, or cr.";
+            return fmt::format(
+                "{} is not one of a, b, z, start, l, r, up, down, left, right, cu, cd, cl, or cr.",
+                words[1].text);
         }
         auto frames = count(2, SCRIPT_PRESS_FRAMES);
         if (!frames) {
@@ -132,7 +133,7 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
         }
         auto port = count(3, 1);
         if (!port || *port > static_cast<int>(CONTROLLER_PORTS)) {
-            return std::string(words[3].text) + " is not a controller from 1 to 4.";
+            return fmt::format("{} is not a controller from 1 to 4.", words[3].text);
         }
         script.presses.push_back({*frame, *button, *frames, static_cast<std::size_t>(*port - 1)});
     } else if (command == "key") {
@@ -156,7 +157,7 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
         auto x = number(1);
         auto y = number(2);
         if (!x || !y) {
-            return std::string(words[!x ? 1 : 2].text) + " is not a place of the screen.";
+            return fmt::format("{} is not a place of the screen.", words[!x ? 1 : 2].text);
         }
         ScriptMouseButton button = ScriptMouseButton::None;
         if (arguments >= 3) {
@@ -166,7 +167,7 @@ ParseCommand(const std::vector<Word> &words, std::optional<int> frame, int line,
             } else if (name == "right") {
                 button = ScriptMouseButton::Right;
             } else if (name != "none") {
-                return std::string(name) + " is not one of left, right, or none.";
+                return fmt::format("{} is not one of left, right, or none.", name);
             }
         }
         auto frames = count(4, 1);
@@ -209,7 +210,7 @@ std::expected<Script, ScriptError> ParseScript(std::string_view text) {
             frame = ParseNumber(words[0].text);
             if (!frame || *frame <= 0) {
                 return std::unexpected(ScriptError{
-                    line, std::string(words[0].text) + " is not a frame number from 1."});
+                    line, fmt::format("{} is not a frame number from 1.", words[0].text)});
             }
             words.erase(words.begin());
             if (words.empty()) {

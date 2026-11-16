@@ -13,6 +13,7 @@
 
 #include <argparse/argparse.hpp>
 #include <nlohmann/json.hpp>
+#include <spdlog/fmt/fmt.h>
 
 #include "elfobject.h"
 #include "fileio.h"
@@ -91,12 +92,12 @@ std::vector<CodeRange> codeRanges(const Tools::Common::ElfObject &object) {
     }
     std::vector<CodeRange> gaps;
     if (result.front().offset) {
-        gaps.push_back({"^.." + result.front().name, 0, result.front().offset});
+        gaps.push_back({fmt::format("^..{}", result.front().name), 0, result.front().offset});
     }
     for (std::size_t index = 1; index < result.size(); ++index) {
         const auto end = result[index - 1].offset + result[index - 1].length;
         if (result[index].offset > end) {
-            gaps.push_back({result[index - 1].name + ".." + result[index].name,
+            gaps.push_back({fmt::format("{}..{}", result[index - 1].name, result[index].name),
                             end,
                             result[index].offset - end});
         }
@@ -108,7 +109,7 @@ std::vector<CodeRange> codeRanges(const Tools::Common::ElfObject &object) {
             tail -= 4;
         }
         if (tail > end) {
-            gaps.push_back({result.back().name + "..$", end, tail - end});
+            gaps.push_back({fmt::format("{}..$", result.back().name), end, tail - end});
         }
     }
     result.insert(result.end(), gaps.begin(), gaps.end());
@@ -146,7 +147,7 @@ void generate(const Path &sourceRoot,
     const auto functions =
         inventory(sourceRoot / "tools/splat" / std::format("symbol_addrs.{}.txt", region));
     std::map<std::string, std::vector<std::pair<std::uint32_t, std::string>>> expected;
-    const auto records = readJson(matching / (region + ".json")).at("functions");
+    const auto records = readJson(matching / fmt::format("{}.json", region)).at("functions");
     for (auto item = records.begin(); item != records.end(); ++item) {
         const auto address = static_cast<std::uint32_t>(std::stoul(item.key(), nullptr, 16));
         for (auto source = item.value().at("sources").begin();
@@ -186,7 +187,8 @@ void generate(const Path &sourceRoot,
         for (const auto &range : codeRanges(object)) {
             const auto hash = digest(object, range);
             for (const auto &[address, source] : expected[hash]) {
-                if (entry.path().filename() != Path(source).filename().string() + ".obj") {
+                if (entry.path().filename() !=
+                    fmt::format("{}.obj", Path(source).filename().string())) {
                     continue;
                 }
                 const auto base = static_cast<std::int64_t>(address) - range.offset;
@@ -285,7 +287,8 @@ void generate(const Path &sourceRoot,
             entries.push_back(*item);
         }
         const nlohmann::json manifest{{"functions", std::move(entries)}, {"region", region}};
-        if (const auto written = Tools::Common::writeFile(path, manifest.dump(2) + '\n');
+        if (const auto written =
+                Tools::Common::writeFile(path, fmt::format("{}\n", manifest.dump(2)));
             !written) {
             throw std::runtime_error(
                 std::format("Cannot write {}: {}", path.string(), written.error().message));

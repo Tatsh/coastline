@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <fmt/format.h>
+
 namespace coastline {
 
 struct SoundEffects::State {
@@ -179,7 +181,7 @@ bool SoundEffects::LoadRaceWave(
         }
         return wave && State::Copy(*wave, spec, data, bytes);
     }
-    const auto key = std::string(path) + '#' + std::to_string(sample);
+    const auto key = fmt::format("{}#{}", path, sample);
     if (const auto found = state->cache.find(key); found != state->cache.end()) {
         return State::Copy(found->second, spec, data, bytes);
     }
@@ -189,7 +191,7 @@ bool SoundEffects::LoadRaceWave(
     }
     auto wave = *reference;
     if (const char *name = State::RACE_SOUNDS[sample]) {
-        const auto file = state->assets / "n64/base/sounds" / (std::string(name) + ".wav");
+        const auto file = state->assets / "n64/base/sounds" / fmt::format("{}.wav", name);
         auto console = State::Read(file);
         const SDL_AudioSpec target{SDL_AUDIO_S16LE, reference->spec.channels, reference->spec.freq};
         if (console && State::Match(*console, *reference, target)) {

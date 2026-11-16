@@ -255,7 +255,7 @@ bool RaceMusic::Play(int track) {
 void RaceMusic::PlayModule(int track) {
     int module = m_moduleChoice.value_or(
         RaceModule(track, m_musicTrack < 0 ? static_cast<int>(g_dwSelectedTrackId) : m_musicTrack));
-    const auto path = m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm");
+    const auto path = m_directory / fmt::format("{}.xm", USA_MUSIC_MODULES[module].name);
     std::ifstream file(path, std::ios::binary);
     if (!file) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot read music module %s.", path.string().c_str());

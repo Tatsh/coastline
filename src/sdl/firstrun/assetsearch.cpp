@@ -3,6 +3,8 @@
 #include <cctype>
 #include <system_error>
 
+#include <fmt/format.h>
+
 #include "../discformats.h"
 #include "setupwizard.h"
 
@@ -32,7 +34,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
         return result;
     }
     while (entry != end) {
-        if (!report("Looking in " + Utf8FromPath(entry->path().parent_path()), 0.0)) {
+        if (!report(fmt::format("Looking in {}", Utf8FromPath(entry->path().parent_path())), 0.0)) {
             return result;
         }
         if (entry->is_regular_file(error)) {
@@ -68,7 +70,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
     for (const auto &path : candidates) {
         const double fraction = static_cast<double>(result.examined) /
                                 static_cast<double>(std::max<std::size_t>(result.candidates, 1));
-        if (!report("Checking " + Utf8FromPath(path), fraction)) {
+        if (!report(fmt::format("Checking {}", Utf8FromPath(path)), fraction)) {
             return result;
         }
         const auto extension = LowercaseExtension(path);
@@ -78,11 +80,12 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                     path,
                     [&](WizardCartridge release, const std::filesystem::path &cached) {
                         selectCartridge(release, cached);
-                        return report("Found ROM image in " + Utf8FromPath(path), fraction);
+                        return report(fmt::format("Found ROM image in {}", Utf8FromPath(path)),
+                                      fraction);
                     },
                     [&](const std::string &member, double part) {
                         return report(
-                            "Checking " + Utf8FromPath(path) + ": " + member,
+                            fmt::format("Checking {}: {}", Utf8FromPath(path), member),
                             (static_cast<double>(result.examined) + part) /
                                 static_cast<double>(std::max<std::size_t>(result.candidates, 1)));
                     });
@@ -106,7 +109,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
             }
         }
         ++result.examined;
-        if (!report("Checked " + Utf8FromPath(path),
+        if (!report(fmt::format("Checked {}", Utf8FromPath(path)),
                     static_cast<double>(result.examined) /
                         static_cast<double>(std::max<std::size_t>(result.candidates, 1)))) {
             return result;

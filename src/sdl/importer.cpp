@@ -161,7 +161,7 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
             inflated = std::move(*data);
             bytes = inflated;
         }
-        auto path = directory / (name + ".bin");
+        auto path = directory / fmt::format("{}.bin", name);
         std::filesystem::create_directories(path.parent_path(), error);
         if (!WriteBytes(path, bytes)) {
             return fmt::format("{} cannot be written", path.string());
@@ -803,7 +803,7 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
                              static_cast<std::uint8_t>((texel & 0xf) * 17)});
             }
         }
-        auto path = fontsDirectory / (std::string(name) + ".png");
+        auto path = fontsDirectory / fmt::format("{}.png", name);
         if (!SaveRgba8Png(path, rgba, width, height)) {
             return fmt::format("{} does not read back as its texels.", path.string());
         }
@@ -977,7 +977,7 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
             return failure;
         }
     }
-    return WriteStringsFile(dataDirectory / "strings" / (std::string(release.language) + ".json"),
+    return WriteStringsFile(dataDirectory / "strings" / fmt::format("{}.json", release.language),
                             strings);
 }
 
@@ -1063,7 +1063,7 @@ std::optional<std::string> ConvertConsoleEffects(const std::filesystem::path &de
                 bits == 8 ? packed : ((packed >> (index % 2 == 0 ? 4 : 0)) & 15) * 17);
             rgba.insert(rgba.end(), {intensity, intensity, intensity, intensity});
         }
-        const auto path = directory / (std::string(name) + ".png");
+        const auto path = directory / fmt::format("{}.png", name);
         if (!SaveRgba8Png(path, rgba, width, height)) {
             return fmt::format("{} does not read back as its pixels.", path.string());
         }
@@ -1163,7 +1163,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         if (!asset.name.starts_with("data/")) {
             continue;
         }
-        auto path = destination / (asset.name + ".bin");
+        auto path = destination / fmt::format("{}.bin", asset.name);
         auto records = FindAssetRecords(segment, asset, 0, DESCRIPTOR);
         auto descriptor = std::ranges::find_if(records, [&](std::size_t at) {
             return Big32(&segment[at + 8]) == 0 && (segment[at + 12] | segment[at + 13]) != 0 &&
@@ -1220,7 +1220,8 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
                 std::filesystem::remove(palettePath, error);
             }
             if (error) {
-                return "Cannot remove the converted Japanese title data. " + error.message();
+                return fmt::format("Cannot remove the converted Japanese title data. {}",
+                                   error.message());
             }
             continue;
         }
@@ -1575,7 +1576,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         tracks.push_back({{"name", *name},
                           {"flags", word(entry + 0x04)},
                           {"exists", word(entry + 0x18) != 0},
-                          {"model", asset->name + ".gltf"}});
+                          {"model", fmt::format("{}.gltf", asset->name)}});
     }
     nlohmann::ordered_json weathers = nlohmann::ordered_json::array();
     for (std::uint32_t i = 0; i < WEATHERS; ++i) {
@@ -1611,7 +1612,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         }
         std::uint32_t entry = at.carModels + i * CAR_MODEL;
         cars.push_back({{"name", *name},
-                        {"directory", "cars/" + directory},
+                        {"directory", fmt::format("cars/{}", directory)},
                         {"exists", word(entry + 0x18) != 0},
                         {"driveType", static_cast<std::int32_t>(word(entry + 0x3C))},
                         {"engineLayout", static_cast<std::int32_t>(word(entry + 0x40))},
@@ -1653,7 +1654,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
                 if (asset == assets.end()) {
                     return std::nullopt;
                 }
-                model = asset->name + ".gltf";
+                model = fmt::format("{}.gltf", asset->name);
             }
             list.push_back({{"name", *name}, {"flags", word(item + 0x04)}, {"model", model}});
         }
@@ -1856,20 +1857,21 @@ std::optional<std::string> ConvertTracks(const std::filesystem::path &dataDirect
             if (!source) {
                 return fmt::format("Cannot read {} for its menu preview.", track.string());
             }
-            auto full = TrackToGltf(*source, track.stem().string() + ".bin");
+            auto full = TrackToGltf(*source, fmt::format("{}.bin", track.stem().string()));
             if (!full) {
                 return full.error();
             }
-            const auto stem = track.stem().string() + "-menu";
-            auto preview = TrackPreviewToGltf(*full, stem + ".bin");
+            const auto stem = fmt::format("{}-menu", track.stem().string());
+            auto preview = TrackPreviewToGltf(*full, fmt::format("{}.bin", stem));
             if (!preview) {
                 return fmt::format(
                     "Cannot generate {} preview: {}", track.stem().string(), preview.error());
             }
-            std::ofstream json(track.parent_path() / (stem + ".gltf"), std::ios::trunc);
+            std::ofstream json(track.parent_path() / fmt::format("{}.gltf", stem), std::ios::trunc);
             json << preview->json.dump(1) << '\n';
             json.close();
-            if (!json || !WriteBytes(track.parent_path() / (stem + ".bin"), preview->buffer)) {
+            if (!json ||
+                !WriteBytes(track.parent_path() / fmt::format("{}.bin", stem), preview->buffer)) {
                 return fmt::format("Cannot write {} preview.", track.stem().string());
             }
         }
@@ -1968,7 +1970,7 @@ std::optional<std::string> ConvertPodArchive(const std::filesystem::path &dataDi
         if (file.extension() == ".gltf") {
             auto stem = file.stem().string();
             auto failure = ConvertModel(
-                raw, FrontEndModelToGltf, output / file, output / (stem + "-mesh.bin"));
+                raw, FrontEndModelToGltf, output / file, output / fmt::format("{}-mesh.bin", stem));
             if (failure) {
                 return failure;
             }
@@ -2117,7 +2119,7 @@ std::optional<std::string> EncodeAudioTrack(const CueTrack &track,
     constexpr std::uint64_t CHUNK_SECTORS = 75;
     std::vector<std::uint8_t> raw(CHUNK_SECTORS * track.sectorSize);
     std::vector<FLAC__int32> samples(CHUNK_SECTORS * SAMPLES_PER_SECTOR * 2);
-    const auto step = "music/" + destination.filename().string() + "...";
+    const auto step = fmt::format("music/{}...", destination.filename().string());
     for (std::uint64_t done = 0; done < track.sectorCount; done += CHUNK_SECTORS) {
         if (progress &&
             !progress(step, static_cast<double>(done) / static_cast<double>(track.sectorCount))) {
@@ -2432,7 +2434,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
                                   "splash_title_c",
                                   "splash_title_d"}) {
         // The Japanese release has no producer logo, and draws its title from a texture.
-        if (auto model = destination / "constants" / (std::string(name) + ".bin");
+        if (auto model = destination / "constants" / fmt::format("{}.bin", name);
             std::filesystem::exists(model)) {
             splashModels.push_back(model);
         }
@@ -2446,7 +2448,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
                                   "constants/splash_sound_b",
                                   "segments/scrollSound",
                                   "segments/selectSound"}) {
-        if (auto sound = destination / (std::string(name) + ".bin");
+        if (auto sound = destination / fmt::format("{}.bin", name);
             std::filesystem::exists(sound)) {
             sounds.push_back(sound);
         }
@@ -2483,7 +2485,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         if (auto failure = ConvertModel(model,
                                         FrontEndModelToGltf,
                                         std::filesystem::path(model).replace_extension(".gltf"),
-                                        model.parent_path() / (stem + "-mesh.bin"))) {
+                                        model.parent_path() / fmt::format("{}-mesh.bin", stem))) {
             return std::unexpected(*failure);
         }
     }
@@ -2522,12 +2524,12 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         if (!asset.name.starts_with("menu-items/") && !asset.name.ends_with("/menu-model")) {
             continue;
         }
-        auto model = destination / (asset.name + ".bin");
+        auto model = destination / fmt::format("{}.bin", asset.name);
         auto stem = model.stem().string();
         if (auto failure = ConvertModel(model,
                                         FrontEndModelToGltf,
                                         std::filesystem::path(model).replace_extension(".gltf"),
-                                        model.parent_path() / (stem + "-mesh.bin"))) {
+                                        model.parent_path() / fmt::format("{}-mesh.bin", stem))) {
             return std::unexpected(*failure);
         }
     }
@@ -2537,7 +2539,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         for (std::size_t i = 0; i < std::size(USA_MUSIC_MODULES); ++i) {
             const UsaMusicModule &entry = USA_MUSIC_MODULES[i];
             const std::string name =
-                i == 0 ? "segments/menuMusic" : "music/track-" + std::to_string(i - 1);
+                i == 0 ? "segments/menuMusic" : fmt::format("music/track-{}", i - 1);
             const auto asset = std::ranges::find(assets, name, &ManifestAsset::name);
             if (asset == assets.end()) {
                 return std::unexpected(fmt::format("{} is missing from the ROM manifest.", name));
@@ -2547,7 +2549,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             if (!module) {
                 return std::unexpected(module.error().message);
             }
-            auto path = dataDirectory / "music" / (std::string(entry.name) + ".xm");
+            auto path = dataDirectory / "music" / fmt::format("{}.xm", entry.name);
             std::filesystem::create_directories(path.parent_path(), error);
             std::ofstream xm(path, std::ios::binary | std::ios::trunc);
             xm.write(reinterpret_cast<const char *>(module->data()),
@@ -2601,14 +2603,14 @@ std::optional<std::string> MissingDiscFiles(const DiscContents &contents) {
                             "rs",
                             "sp",
                             "tr"}) {
-        const auto path = std::filesystem::path("cars") / (std::string(car) + ".rca");
+        const auto path = std::filesystem::path("cars") / fmt::format("{}.rca", car);
         if (!present(path)) {
             return fmt::format("Incomplete Boss Rally disc source. Missing {}.", path.string());
         }
     }
     for (const auto *track :
          {"amazon", "bonus", "coast", "desert", "gamewin", "mine", "mountain", "race"}) {
-        const auto path = std::filesystem::path("tracks") / (std::string(track) + ".trk");
+        const auto path = std::filesystem::path("tracks") / fmt::format("{}.trk", track);
         if (!present(path)) {
             return fmt::format("Incomplete Boss Rally disc source. Missing {}.", path.string());
         }
@@ -2771,7 +2773,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     };
     const auto cancelled = std::unexpected(std::string("Import cancelled."));
     for (const auto &entry : entries) {
-        if (!report(entry.path.generic_string() + "...")) {
+        if (!report(fmt::format("{}...", entry.path.generic_string()))) {
             return cancelled;
         }
         ++done;

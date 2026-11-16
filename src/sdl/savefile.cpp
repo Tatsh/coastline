@@ -12,6 +12,8 @@
 #include <system_error>
 #include <utility>
 
+#include <fmt/format.h>
+
 #include "sha1.h"
 
 #ifdef _WIN32
@@ -38,10 +40,9 @@ std::filesystem::path Parent(const std::filesystem::path &path) {
 
 std::filesystem::path Temporary(const std::filesystem::path &path) {
     static std::atomic<unsigned long long> sequence{};
-    return Parent(path) /
-           (".coastline-save-" +
-            std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()) + "-" +
-            std::to_string(sequence.fetch_add(1)));
+    return Parent(path) / fmt::format(".coastline-save-{}-{}",
+                                      std::chrono::steady_clock::now().time_since_epoch().count(),
+                                      sequence.fetch_add(1));
 }
 
 #ifdef _WIN32

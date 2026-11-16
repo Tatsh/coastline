@@ -8,6 +8,7 @@
 #include <vector>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #include "common/recordingformat.h"
 #include "ghostnote.h"
@@ -576,9 +577,8 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
     }
 
     m_optionsMenuItems[OPTIONS_ITEM_BGM].name =
-        "BGM Volume: " + std::to_string(m_options.musicVolume);
-    m_optionsMenuItems[OPTIONS_ITEM_SFX].name =
-        "SFX Volume: " + std::to_string(m_options.sfxVolume);
+        fmt::format("BGM Volume: {}", m_options.musicVolume);
+    m_optionsMenuItems[OPTIONS_ITEM_SFX].name = fmt::format("SFX Volume: {}", m_options.sfxVolume);
     m_optionsMenuItems[OPTIONS_ITEM_UNITS].name =
         m_options.speedInMph ? "Units: mph" : "Units: kph";
     if (m_gameSettings) {

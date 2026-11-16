@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -232,7 +233,7 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
         const ImportProgress toolProgress = [&](const std::string &, double) {
             return !progress || progress("Preparing temporary FFmpeg...", 0.1);
         };
-        tools.path = directory / (".intro-tools-" + std::to_string(SDL_GetTicksNS()));
+        tools.path = directory / fmt::format(".intro-tools-{}", SDL_GetTicksNS());
         if (!std::filesystem::create_directory(tools.path, error) || error) {
             return "Cannot create temporary FFmpeg directory.";
         }
@@ -253,8 +254,8 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
 #endif
         const auto archive = tools.path / "ffmpeg.zip";
         if (auto failure = DownloadFile(url, archive, toolProgress)) {
-            return "Cannot download temporary FFmpeg. " + *failure +
-                   " Install FFmpeg in PATH and retry.";
+            return fmt::format(
+                "Cannot download temporary FFmpeg. {} Install FFmpeg in PATH and retry.", *failure);
         }
         if (!VerifySha256(archive, checksum)) {
             return "Temporary FFmpeg checksum does not match. Install FFmpeg in PATH and retry.";

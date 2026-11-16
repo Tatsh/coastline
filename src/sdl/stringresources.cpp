@@ -11,6 +11,7 @@
 #include <vector>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "common/strings.h"
@@ -184,8 +185,8 @@ GameText::GameText(const std::filesystem::path &assets, std::string language)
     : m_language(std::move(language)) {
     assert(Active() == nullptr);
     auto directory = assets / "strings";
-    auto fallback = ReadStringsFile(directory / (std::string(DEFAULT_LANGUAGE) + ".json"));
-    auto selected = directory / (m_language + ".json");
+    auto fallback = ReadStringsFile(directory / fmt::format("{}.json", DEFAULT_LANGUAGE));
+    auto selected = directory / fmt::format("{}.json", m_language);
     std::error_code error;
     if (m_language != DEFAULT_LANGUAGE && !std::filesystem::exists(selected, error)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,

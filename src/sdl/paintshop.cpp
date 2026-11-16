@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #include "common/input.h"
 #include "consolesegment.h"
@@ -1037,7 +1038,7 @@ bool PaintShop::LoadTextureFromRom(PaintSprite &sprite) {
     auto expected =
         static_cast<std::size_t>(sprite.width * sprite.height * sprite.bitsPerTexel) >> 3;
     sprite.texture.reset();
-    auto path = m_release / (sprite.asset + ".bin");
+    auto path = m_release / fmt::format("{}.bin", sprite.asset);
     std::ifstream file(path, std::ios::binary);
     if (file) {
         sprite.pixels.assign(std::istreambuf_iterator<char>(file), {});
@@ -1462,12 +1463,11 @@ void PaintShop::DrawPaintShop() {
                            selected ? 0x20 : 0x40,
                            selected ? 0xc8 : 0x40,
                            selected ? 0xff : 0x60);
-            DrawText("%ww" + std::to_string(panel + 1),
-                     (rect.x + rect.width / 2) / 2,
-                     (rect.y + 17) / 2);
+            DrawText(
+                fmt::format("%ww{}", panel + 1), (rect.x + rect.width / 2) / 2, (rect.y + 17) / 2);
         }
         const auto panel = m_car->Texture(m_decalSlot);
-        DrawText("%ww" + std::to_string(panel.width) + "x" + std::to_string(panel.height), 80, 131);
+        DrawText(fmt::format("%ww{}x{}", panel.width, panel.height), 80, 131);
     } else {
         for (std::size_t i = 0; i < DECAL_SLOTS; ++i) {
             if (!m_car->HasMaterial(static_cast<int>(i))) {

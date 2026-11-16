@@ -9,6 +9,7 @@
 #include <string>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #include "common/game.h"
 #include "common/race.h"
@@ -129,7 +130,7 @@ RaceSetup Menus::ChosenRace() const {
         auto index = static_cast<std::size_t>(player);
         if (m_config) {
             setup.cars[index].camera =
-                m_config->GetIndex("Player" + std::to_string(player + 1), "Camera", 4, 0);
+                m_config->GetIndex(fmt::format("Player{}", player + 1), "Camera", 4, 0);
         }
         if (m_carSelect[index].customDecals && m_customDecals[index] &&
             m_customDecalImages[index]) {
@@ -359,11 +360,12 @@ void Menus::DrawRaceResultsTitle(SceneRenderer &renderer) {
         // The track and the weather of the race, its name marked when it is mirrored.
         bool mirrored = m_resultsTrack >= MIRRORED_TRACKS && m_resultsTrack < CONSOLE_TRACK_COUNT;
         int track = mirrored ? m_resultsTrack - MIRRORED_TRACKS : m_resultsTrack;
-        title = std::string("%ry") + (mirrored ? "M-" : "") +
-                m_trackMenuItems[static_cast<std::size_t>(track)].name + "/" +
-                m_weatherNames[static_cast<std::size_t>(m_resultsWeather)];
+        title = fmt::format("%ry{}{}/{}",
+                            mirrored ? "M-" : "",
+                            m_trackMenuItems[static_cast<std::size_t>(track)].name,
+                            m_weatherNames[static_cast<std::size_t>(m_resultsWeather)]);
     } else {
-        title = "%ry" + m_seasons[static_cast<std::size_t>(m_resultsSeason)].name;
+        title = fmt::format("%ry{}", m_seasons[static_cast<std::size_t>(m_resultsSeason)].name);
     }
     TextStyle style;
     style.size = 30;
@@ -435,7 +437,7 @@ void Menus::DrawPlayerRaceResults(SceneRenderer &renderer, int player) {
             label = "Race time:";
             time = FormatLapTime(result.totalTime);
         } else {
-            label = "Lap " + std::to_string(lap + 1) + " time:";
+            label = fmt::format("Lap {} time:", lap + 1);
             time = lap < result.lap ?
                        FormatLapTime(result.lapTimes[static_cast<std::size_t>(lap)]) :
                        "--    ";
@@ -494,8 +496,9 @@ void Menus::DrawSeasonResults(SceneRenderer &renderer) {
         }
         style.align = TextStyle::Align::Left;
         text.Draw(renderer,
-                  m_trackMenuItems[static_cast<std::size_t>(track)].name + "/" +
-                      m_weatherNames[static_cast<std::size_t>(entry[1])],
+                  fmt::format("{}/{}",
+                              m_trackMenuItems[static_cast<std::size_t>(track)].name,
+                              m_weatherNames[static_cast<std::size_t>(entry[1])]),
                   WIDTH * 3 / 16 - shift,
                   y,
                   style,
@@ -515,18 +518,14 @@ void Menus::DrawSeasonResults(SceneRenderer &renderer) {
         std::string points = time;
         if (run) {
             int scored = PlacePoints(places[static_cast<std::size_t>(race)]);
-            points = std::to_string(scored) + " PTS";
+            points = fmt::format("{} PTS", scored);
             total += scored;
         }
         text.Draw(renderer, points, WIDTH * 13 / 16 + shift, y, style, flat);
     }
     y += 2;
-    text.Draw(renderer,
-              "TOTAL:    " + std::to_string(total) + " PTS ",
-              WIDTH * 13 / 16 + shift,
-              y,
-              style,
-              flat);
+    text.Draw(
+        renderer, fmt::format("TOTAL:    {} PTS ", total), WIDTH * 13 / 16 + shift, y, style, flat);
 }
 
 // DrawSeasonMessage() of the console.
@@ -662,9 +661,9 @@ void Menus::LoadExtraTrackRecords() {
     }
     bool reset = false;
     for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
-        const auto key = "Track" + std::to_string(EngineTrackForMenu(track));
+        const auto key = fmt::format("Track{}", EngineTrackForMenu(track));
         auto read = [this, &key, &reset](const char *kind) {
-            const auto field = key + kind;
+            const auto field = fmt::format("{}{}", key, kind);
             if (!m_config->Get("Records", field)) {
                 return 0.0f;
             }
@@ -691,10 +690,12 @@ bool Menus::SaveExtraTrackRecords() {
     }
     GameConfig original = *m_config;
     for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
-        const auto key = "Track" + std::to_string(EngineTrackForMenu(track));
+        const auto key = fmt::format("Track{}", EngineTrackForMenu(track));
         const auto index = static_cast<std::size_t>(track);
-        m_config->Set("Records", key + "Lap", std::to_string(m_profile.lapRecords[index]));
-        m_config->Set("Records", key + "Race", std::to_string(m_profile.raceRecords[index]));
+        m_config->Set(
+            "Records", fmt::format("{}Lap", key), std::to_string(m_profile.lapRecords[index]));
+        m_config->Set(
+            "Records", fmt::format("{}Race", key), std::to_string(m_profile.raceRecords[index]));
     }
     if (!m_config->Save(m_configPath)) {
         *m_config = std::move(original);

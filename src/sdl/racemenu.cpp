@@ -6,6 +6,7 @@
 #include <string>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "assetpack.h"
@@ -108,7 +109,7 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer,
             car.preview = release / car.directory / "model.gltf";
             if (pcPreviews) {
                 car.preview = release.parent_path().parent_path() / "cars" /
-                              (std::string(g_apszCarModelPrefixes[car.engineCar]) + ".gltf");
+                              fmt::format("{}.gltf", g_apszCarModelPrefixes[car.engineCar]);
             }
             car.exists = record.at("exists").get<bool>();
             car.driveType = record.at("driveType").get<int>();
@@ -153,10 +154,10 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer,
         item.coin = true;
         if (extra.file == "race" || extra.file == "bonus") {
             item.model = m_screen->LoadModel(
-                renderer, assets / "tracks" / (std::string(extra.file) + "-menu.gltf"));
+                renderer, assets / "tracks" / fmt::format("{}-menu.gltf", extra.file));
             item.coin = !item.model;
         }
-        auto gltf = assets / "tracks" / (std::string(extra.file) + ".gltf");
+        auto gltf = assets / "tracks" / fmt::format("{}.gltf", extra.file);
         auto glb = gltf;
         glb.replace_extension(".glb");
         std::error_code error;
@@ -251,7 +252,7 @@ void Menus::AddRegionalCars(const std::filesystem::path &cache,
             continue;
         }
         car.preview =
-            assets / "cars" / (std::string(g_apszCarModelPrefixes[car.engineCar]) + ".gltf");
+            assets / "cars" / fmt::format("{}.gltf", g_apszCarModelPrefixes[car.engineCar]);
         if (!japanese.empty() && exists(japanese / car.directory / "model.gltf")) {
             car.directory = (japanese / car.directory).string();
             car.preview = std::filesystem::path(car.directory) / "model.gltf";
@@ -359,8 +360,8 @@ void Menus::TrackMenuPostDraw(SceneRenderer &renderer, int item) {
                       100,
                       style,
                       flat);
-            points = "%ww" + std::to_string(needed) + " point" + (needed == 1 ? "" : "s") +
-                     " needed to advance to next season";
+            points = fmt::format(
+                "%ww{} point{} needed to advance to next season", needed, needed == 1 ? "" : "s");
         }
         text.Draw(renderer, points, 160, 90, style, flat);
     }
@@ -399,7 +400,8 @@ void Menus::SeasonRecordsPreDraw(SceneRenderer &renderer) {
     style.size = 20;
     style.align = TextStyle::Align::Center;
     style.colors = m_textCustomColors;
-    text.Draw(renderer, "%ry" + season.subtitle + ":", WIDTH / 2, HEIGHT * 20 / 64, style, flat);
+    text.Draw(
+        renderer, fmt::format("%ry{}:", season.subtitle), WIDTH / 2, HEIGHT * 20 / 64, style, flat);
 
     // The columns move right when a name is of the longer, mirrored tracks.
     int shift = 0;
@@ -434,11 +436,12 @@ void Menus::SeasonRecordsPreDraw(SceneRenderer &renderer) {
         }
         style.colors = m_textCustomColors;
         text.Draw(
-            renderer, "Race " + std::to_string(race + 1), WIDTH * 4 / 32 - shift, y, style, flat);
+            renderer, fmt::format("Race {}", race + 1), WIDTH * 4 / 32 - shift, y, style, flat);
         text.Draw(renderer,
-                  m_trackMenuItems[static_cast<std::size_t>(track)].name + "/" +
-                      m_weatherNames[static_cast<std::size_t>(
-                          season.races[static_cast<std::size_t>(race)][1])],
+                  fmt::format("{}/{}",
+                              m_trackMenuItems[static_cast<std::size_t>(track)].name,
+                              m_weatherNames[static_cast<std::size_t>(
+                                  season.races[static_cast<std::size_t>(race)][1])]),
                   WIDTH * 8 / 32 - shift + 4,
                   y,
                   style,
@@ -553,8 +556,10 @@ void Menus::ProcessTrackMenu(SceneRenderer &renderer, float seconds, const MenuB
             item.flags |= MENU_ITEM_IMMEDIATE;
         } else {
             m_screen->preDraw = nullptr;
-            item.name = "Race " + std::to_string(m_profile.round + 1) + ": " + name + "/" +
-                        m_weatherNames[static_cast<std::size_t>(m_currentWeather)];
+            item.name = fmt::format("Race {}: {}/{}",
+                                    m_profile.round + 1,
+                                    name,
+                                    m_weatherNames[static_cast<std::size_t>(m_currentWeather)]);
         }
         result = m_screen->Process(renderer,
                                    seconds,
@@ -573,7 +578,7 @@ void Menus::ProcessTrackMenu(SceneRenderer &renderer, float seconds, const MenuB
             named = m_screen->LastActiveIndex();
             MenuItem &item = m_trackMenuItems[static_cast<std::size_t>(named)];
             name = item.name;
-            item.name = name + ": " + std::to_string(m_totalLaps) + " laps";
+            item.name = fmt::format("{}: {} laps", name, m_totalLaps);
         }
         result = m_screen->Process(renderer,
                                    seconds,

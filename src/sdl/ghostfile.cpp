@@ -296,7 +296,10 @@ std::string FormatGhostJson(const nlohmann::ordered_json &json) {
     text += ",\n  \"frames\": [\n";
     const auto &frames = json.at("frames");
     for (std::size_t i = 0; i < frames.size(); ++i) {
-        text += "    " + frames[i].dump() + (i + 1 < frames.size() ? ",\n" : "\n");
+        fmt::format_to(std::back_inserter(text),
+                       "    {}{}",
+                       frames[i].dump(),
+                       i + 1 < frames.size() ? ",\n" : "\n");
     }
     text += "  ]\n}\n";
     return text;

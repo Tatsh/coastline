@@ -9,6 +9,8 @@
 #include <string_view>
 #include <system_error>
 
+#include <fmt/format.h>
+
 #include "assetstorage.h"
 #include "config.h"
 #include "savefile.h"
@@ -219,8 +221,7 @@ bool RecordImportFiles(const std::filesystem::path &defaults) {
     if (!digest) {
         return false;
     }
-    const auto complete =
-        "Coastline-Import-1 " + std::to_string(count) + " " + *digest + "\n" + body;
+    const auto complete = fmt::format("Coastline-Import-1 {} {}\n{}", count, *digest, body);
     return WriteSaveFile(manifest, complete);
 }
 
@@ -237,7 +238,7 @@ std::string ReimportMessage(std::span<const ImportSource> sources) {
         }
         message += Info(sources[i]).name;
     }
-    return message + " again.";
+    return fmt::format("{} again.", message);
 }
 
 } // namespace coastline

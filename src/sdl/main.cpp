@@ -19,6 +19,7 @@
 #include <vector>
 
 #include <argparse/argparse.hpp>
+#include <fmt/format.h>
 #if !defined(_WIN32)
 #define SDL_MAIN_HANDLED
 #endif
@@ -121,7 +122,7 @@ struct SdlSession {
 auto RequiredArgumentValue(const char *option) {
     return [option](const std::string &value) {
         if (value.empty()) {
-            throw std::invalid_argument(std::string(option) + " requires a value.");
+            throw std::invalid_argument(fmt::format("{} requires a value.", option));
         }
         return value;
     };
@@ -145,14 +146,15 @@ auto RequiredChoiceValue(const char *option, std::vector<std::string> choices) {
             }
         }
         if (match == nullptr || ambiguous) {
-            std::string message = "Invalid value '" + value + "' for " + option + ". Expected ";
+            std::string message =
+                fmt::format("Invalid value '{}' for {}. Expected ", value, option);
             for (std::size_t index = 0; index < choices.size(); ++index) {
                 if (index != 0) {
                     message += ", ";
                 }
                 message += choices[index];
             }
-            throw std::invalid_argument(message + '.');
+            throw std::invalid_argument(fmt::format("{}.", message));
         }
         return *match;
     };
@@ -1024,8 +1026,8 @@ int main(int argc, char *argv[]) {
         .nargs(argparse::nargs_pattern::optional)
         .default_value(std::string())
         .action(RequiredArgumentValue("directory"))
-        .help(std::string("Destination directory; defaults to ") + PORTABLE_EXPORT_DIRECTORY +
-              " in the launch directory.");
+        .help(fmt::format("Destination directory; defaults to {} in the launch directory.",
+                          PORTABLE_EXPORT_DIRECTORY));
     parser.add_subparser(makePortable);
 
     try {
@@ -1033,7 +1035,7 @@ int main(int argc, char *argv[]) {
         for (const char *option : {"--width", "--height"}) {
             if (const auto value = parser.present<int>(option);
                 value && (*value < 1 || *value > 16384)) {
-                throw std::invalid_argument(std::string(option) + " must be from 1 to 16384.");
+                throw std::invalid_argument(fmt::format("{} must be from 1 to 16384.", option));
             }
         }
         if (const auto samples = parser.present<int>("--antialias");
@@ -2317,7 +2319,7 @@ int main(int argc, char *argv[]) {
                             bool cameraChanged = false;
                             const auto cameras = raceSession.CameraChoices();
                             for (std::size_t player = 0; player < cameras.size(); ++player) {
-                                const auto section = "Player" + std::to_string(player + 1);
+                                const auto section = fmt::format("Player{}", player + 1);
                                 if (cameras[player] >= 0 &&
                                     config.GetInteger(section, "Camera", -1) != cameras[player]) {
                                     config.Set(section, "Camera", std::to_string(cameras[player]));

@@ -6,6 +6,7 @@
 #include <format>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <optional>
 #include <random>
@@ -20,6 +21,7 @@
 
 #include <argparse/argparse.hpp>
 #include <nlohmann/json.hpp>
+#include <spdlog/fmt/fmt.h>
 
 #include "elfobject.h"
 #include "fileio.h"
@@ -95,20 +97,20 @@ std::string quote(const std::string &value) {
     for (const char character : value) {
         quoted += character == '\'' ? "'\\''" : std::string(1, character);
     }
-    return quoted + "'";
+    return fmt::format("{}'", quoted);
 }
 
 int run(Context &context, const std::vector<std::string> &args) {
     std::string command;
     for (const auto &argument : args) {
-        command += quote(argument) + ' ';
+        fmt::format_to(std::back_inserter(command), "{} ", quote(argument));
     }
     if (context.options.verbose) {
         std::cerr << "+ " << command << '\n';
     }
     const auto log = context.scratch / "compiler.log";
-    command = "cd " + quote(context.scratch.string()) + " && " + command;
-    command += " >" + quote(log.string()) + " 2>&1";
+    command = fmt::format("cd {} && {}", quote(context.scratch.string()), command);
+    fmt::format_to(std::back_inserter(command), " >{} 2>&1", quote(log.string()));
     const int status = std::system(command.c_str());
     context.lastError = readText(log);
     return status;
@@ -116,7 +118,7 @@ int run(Context &context, const std::vector<std::string> &args) {
 
 Path binutil(const Context &context, const std::string &name) {
     for (const auto *prefix : {"mips64-elf-", "mips64-libdragon-elf-"}) {
-        const auto path = context.options.bin / (prefix + name);
+        const auto path = context.options.bin / fmt::format("{}{}", prefix, name);
         if (std::filesystem::is_regular_file(path)) {
             return path;
         }
@@ -155,12 +157,12 @@ std::vector<Range> ranges(const Tools::Common::ElfObject &object) {
     }
     std::vector<Range> gaps;
     if (result.front().offset) {
-        gaps.push_back({"^.." + result.front().name, 0, result.front().offset});
+        gaps.push_back({fmt::format("^..{}", result.front().name), 0, result.front().offset});
     }
     for (std::size_t index = 1; index < result.size(); ++index) {
         const auto end = result[index - 1].offset + result[index - 1].length;
         if (result[index].offset > end) {
-            gaps.push_back({result[index - 1].name + ".." + result[index].name,
+            gaps.push_back({fmt::format("{}..{}", result[index - 1].name, result[index].name),
                             end,
                             result[index].offset - end});
         }
@@ -172,7 +174,7 @@ std::vector<Range> ranges(const Tools::Common::ElfObject &object) {
             tail -= 4;
         }
         if (tail > end) {
-            gaps.push_back({result.back().name + "..$", end, tail - end});
+            gaps.push_back({fmt::format("{}..$", result.back().name), end, tail - end});
         }
     }
     result.insert(result.end(), gaps.begin(), gaps.end());
@@ -276,7 +278,7 @@ std::string globRegex(const std::string &glob) {
             pattern += character;
         }
     }
-    return pattern + '$';
+    return fmt::format("{}$", pattern);
 }
 
 std::vector<std::vector<std::string>> flagSets(const Options &options, const Path &source) {
@@ -347,7 +349,7 @@ bool compile(Context &context,
                                 root / "src/n64/libultra/include",
                                 root / "3rdparty/zlib-1.0.4",
                                 source.parent_path()}) {
-        command.push_back("-I" + include.string());
+        command.push_back(fmt::format("-I{}", include.string()));
     }
     const auto macros = defines(context.options.region);
     command.insert(command.end(), macros.begin(), macros.end());
@@ -358,15 +360,16 @@ bool compile(Context &context,
 
 bool assemble(Context &context, const Path &source, const Path &object) {
     const auto root = context.options.root;
-    std::vector<std::string> command{binutil(context, "gcc").string(),
-                                     "-c",
-                                     "-march=vr4300",
-                                     "-mabi=32",
-                                     "-mno-abicalls",
-                                     "-fno-pic",
-                                     "-G0",
-                                     "-I" + (root / "src/common/libultra/include").string(),
-                                     "-I" + (root / "src").string()};
+    std::vector<std::string> command{
+        binutil(context, "gcc").string(),
+        "-c",
+        "-march=vr4300",
+        "-mabi=32",
+        "-mno-abicalls",
+        "-fno-pic",
+        "-G0",
+        fmt::format("-I{}", (root / "src/common/libultra/include").string()),
+        fmt::format("-I{}", (root / "src").string())};
     const auto macros = defines(context.options.region);
     command.insert(command.end(), macros.begin(), macros.end());
     command.insert(command.end(),
@@ -477,9 +480,10 @@ int verify(Context &context) {
                                                  romNames.at(options.region)));
         }
     } else {
-        const auto baseline = options.baseline.empty() ?
-                                  options.root / "tools/matching" / (options.region + ".json") :
-                                  options.baseline;
+        const auto baseline =
+            options.baseline.empty() ?
+                options.root / "tools/matching" / fmt::format("{}.json", options.region) :
+                options.baseline;
         const auto file = readJson(baseline);
         if (file.at("region") != options.region || file.at("rom_sha1") != expectedSha) {
             throw std::runtime_error("The matching baseline describes another ROM.");
