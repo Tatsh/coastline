@@ -1055,9 +1055,7 @@ void Menus::SaveCarChoice(int player) {
         m_config->Set(section, "Tires", std::to_string(profile.tires));
         m_config->Set(section, "Suspension", std::to_string(profile.suspension));
     }
-    if (!m_config->Save(m_configPath)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot write BossRally.ini.");
-    }
+    SaveConfig();
 }
 
 void Menus::LeaveCarSelect() {

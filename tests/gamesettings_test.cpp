@@ -194,8 +194,8 @@ int main() {
     const auto reflections = Find(settings, "Window reflections:");
     assert(settings.Label(reflections) == "Window reflections: Auto");
     assert(!settings.RequiresRestart(reflections));
-    assert(settings.AdjustAndSave(reflections, 1, directory / "BossRally.ini") ==
-           GameSettings::Adjustment::Saved);
+    assert(settings.Step(reflections, 1));
+    assert(config.Save(directory / "BossRally.ini"));
     assert(GameConfig::Load(directory / "BossRally.ini").Get("Game", "WindowReflections") == "PC");
     assert(settings.Step(reflections, 1));
     assert(settings.Label(reflections) == "Window reflections: N64");
@@ -246,13 +246,10 @@ int main() {
         assert(restored.Label(index) == settings.Label(index));
     }
     assert(loaded.Get("Other", "Preserved") == "value");
-    const auto previousMusic = settings.Label(music);
-    assert(settings.AdjustAndSave(music, 1, directory) == GameSettings::Adjustment::SaveFailed);
-    assert(settings.Label(music) == previousMusic);
+    assert(!settings.Step(settings.Count(), 1));
+    assert(settings.Step(music, 1));
     assert(config.Get("Other", "Preserved") == "value");
-    assert(settings.AdjustAndSave(settings.Count(), 1, directory) ==
-           GameSettings::Adjustment::Unchanged);
-    assert(settings.AdjustAndSave(music, 1, path) == GameSettings::Adjustment::Saved);
+    assert(config.Save(path));
     assert(GameConfig::Load(path).Get("Game", "Music") == "XM");
 
     loaded.Set("Game", "AssetPack", "my-pack");
@@ -293,7 +290,8 @@ int main() {
     GameSettings presets(presetConfig, roots);
     const auto preset = Find(presets, "Preset:");
     assert(presets.Label(preset) == "Preset: Custom");
-    assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
+    assert(presets.Step(preset, 1));
+    assert(presetConfig.Save(path));
     assert(presetConfig.Get("Video", "GraphicsPreset") == "n64");
     assert(presetConfig.Get("Game", "AssetPack") == "default");
     assert(presetConfig.Get("Game", "Effects") == "N64");
@@ -349,11 +347,12 @@ int main() {
     assert(presetConfig.Get("Video", "DrawDistance") == "1");
     assert(presetConfig.Get("Video", "AntialiasPost") == "none");
     assert(presetConfig.Get("Video", "ScaleFilter") == "nearest");
-    assert(presets.AdjustAndSave(Find(presets, "Music:"), -1, path) ==
-           GameSettings::Adjustment::Saved);
+    assert(presets.Step(Find(presets, "Music:"), -1));
+    assert(presetConfig.Save(path));
     assert(GameConfig::Load(path).Get("Game", "Music") == "XM");
-    assert(presets.AdjustAndSave(preset, -1, path) == GameSettings::Adjustment::Saved);
-    assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
+    assert(presets.Step(preset, -1));
+    assert(presets.Step(preset, 1));
+    assert(presetConfig.Save(path));
     assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
     presets.FinishPresetSelection();
     presetConfig.Set("Video", "AspectRatio", "32:9");
@@ -412,7 +411,6 @@ int main() {
     assert(presetConfig.Get("Video", "HdrOutput") == "off");
     assert(presets.Step(Find(presets, "Screen shader:"), 1));
     assert(presets.Label(preset) == "Preset: Custom");
-    assert(presets.AdjustAndSave(preset, 1, directory) == GameSettings::Adjustment::SaveFailed);
     assert(presets.Label(preset) == "Preset: Custom");
     assert(presetConfig.Get("Game", "AssetPack") == "boss");
     assert(!coastline::ApplyGraphicsPreset(presetConfig, "unknown"));
@@ -422,18 +420,20 @@ int main() {
     GameSettings browsing(browsingConfig, roots);
     const auto browsingPreset = Find(browsing, "Preset:");
     for (int selection = 0; selection < 3; ++selection) {
-        assert(browsing.AdjustAndSave(browsingPreset, 1, path) == GameSettings::Adjustment::Saved);
+        assert(browsing.Step(browsingPreset, 1));
     }
+    assert(browsingConfig.Save(path));
     assert(browsingConfig.Get("Video", "GraphicsPreset") == "ultra");
     auto savedUltra = GameConfig::Load(path);
     assert(savedUltra.Get("Game", "Music") == "XM");
     assert(savedUltra.Get("Game", "SoundEffects") == "N64");
     assert(savedUltra.Get("Game", "AssetPack") == "custom");
     browsing.FinishPresetSelection();
-    assert(browsing.AdjustAndSave(browsingPreset, -1, path) == GameSettings::Adjustment::Saved);
+    assert(browsing.Step(browsingPreset, -1));
     assert(browsingConfig.Get("Game", "Music") == "CD");
     browsing.FinishPresetSelection();
-    assert(browsing.AdjustAndSave(browsingPreset, 1, path) == GameSettings::Adjustment::Saved);
+    assert(browsing.Step(browsingPreset, 1));
+    assert(browsingConfig.Save(path));
     assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
 
     GameConfig saved;
@@ -450,7 +450,6 @@ int main() {
     assert(locked.IsEnabled(lockedAntialias));
     assert(locked.Label(lockedAspect) == "Aspect ratio: 4:3");
     assert(!locked.Step(lockedAspect, 1));
-    assert(locked.AdjustAndSave(lockedAspect, 1, directory) == GameSettings::Adjustment::Unchanged);
     assert(saved.Get("Video", "AspectRatio") == "auto");
     assert(coastline::ApplyGraphicsPreset(overrides, "n64"));
     overrides.Set("Video", "AspectRatio", "21:9");

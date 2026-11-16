@@ -21,6 +21,7 @@
 #include <nlohmann/json.hpp>
 
 #include "config.h"
+#include "configsaver.h"
 #include "frontend.h"
 #include "gamesettings.h"
 #include "menuscreen.h"
@@ -159,6 +160,7 @@ public:
      * @param config The settings of BossRally.ini, with the cars the players chose last. The
      * settings outlive the menus.
      * @param configPath The file of the settings, written whenever a player chooses a car.
+     * @param configSaver The thread that writes the settings. The thread outlives the menus.
      * @param dataRoots The imported data roots for available packs and cartridge regions.
      * @param assetPack The active pack, or empty to use the configured pack.
      * @param unitsRegion The explicit CLI region for automatic units, or empty to use locale.
@@ -172,6 +174,7 @@ public:
          const std::filesystem::path &cache,
          GameConfig &config,
          const std::filesystem::path &configPath,
+         ConfigSaver &configSaver,
          std::span<const std::filesystem::path> dataRoots = {},
          std::string_view assetPack = {},
          std::string_view unitsRegion = {},
@@ -366,8 +369,9 @@ private:
     bool LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::path &release);
     void LoadPakData();
     void ApplyVolumeSettings() const;
-    bool RememberSpeedUnits();
-    bool RememberSfxVolume(bool automatic = false);
+    void SaveConfig();
+    void RememberSpeedUnits();
+    void RememberSfxVolume(bool automatic = false);
     void ToggleSpeedUnits();
     bool SaveOptionsNote(int player) const;
     std::vector<u8> SeasonNote(const MenuProfile &profile) const;
@@ -411,6 +415,7 @@ private:
     std::filesystem::path m_cache;
     GameConfig *m_config = nullptr;
     std::filesystem::path m_configPath;
+    ConfigSaver *m_configSaver = nullptr;
     PaintShopInput m_pointer;
     bool m_escapeDown = false;
     // The decals each player loaded from the Controller Pak on the car select screen, the images
@@ -538,7 +543,6 @@ private:
     std::future<bool> m_autoSave;
     std::unique_ptr<GameSettings> m_gameSettings;
     int m_gameSettingsStart = 0;
-    bool m_gameSettingsSaveError = false;
     bool m_settingsPending = false;
     bool m_reinitializePending = false;
     bool m_loadConfigurationPending = false;

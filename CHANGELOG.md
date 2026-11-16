@@ -61,6 +61,15 @@
   images to the GPU. The game now reads the document of each car once and paints and uploads only
   the material images for a new colour. The document retains the textures of each colour and is
   read again after 16 colours.
+- Removed a stall of about 16 ms on each settings change in Options (every Left or Right press,
+  SFX volume, and Units), on the controller preset screen, at a car choice, and at a track-record
+  reset. The game wrote `BossRally.ini` on the main thread and flushed the file and its directory
+  to disk. A thread now writes settings, and a newer copy replaces a copy not yet written. A
+  button pressed down writes only the latest settings. The race camera and the automatic save
+  after a race also write settings through the thread. Options shows
+  `Settings could not be saved.` when the last write failed. A failed write no longer restores the
+  previous setting in memory; the setting remains and is written again at the next save or at exit.
+  A manual save of records from the save menu still waits for the write and reports the result.
 
 ## [0.0.3] - 2026-11-11
 

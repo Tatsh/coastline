@@ -286,6 +286,7 @@ add_library(
   assetstorage.cpp
   carselect.cpp
   config.cpp
+  configsaver.cpp
   consolesegment.cpp
   consolestrings.cpp
   controllerpak.cpp

@@ -40,6 +40,7 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &cache,
                                    GameConfig &config,
                                    const std::filesystem::path &configPath,
+                                   ConfigSaver &configSaver,
                                    std::span<const std::filesystem::path> dataRoots,
                                    std::string_view assetPack,
                                    std::string_view unitsRegion,
@@ -86,6 +87,7 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->m_ghostFramesFile = saves / "ghost-frames.bin";
     menus->m_config = &config;
     menus->m_configPath = configPath;
+    menus->m_configSaver = &configSaver;
     menus->LoadPakData();
     std::string country;
     int localeCount = 0;

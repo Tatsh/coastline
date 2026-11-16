@@ -406,21 +406,4 @@ void GameSettings::FinishPresetSelection() {
     m_presetBaseline.reset();
 }
 
-GameSettings::Adjustment
-GameSettings::AdjustAndSave(std::size_t index, int direction, const std::filesystem::path &path) {
-    GameConfig original = m_config;
-    const bool originalRestart = m_presetRestart;
-    const auto originalBaseline = m_presetBaseline;
-    if (!Step(index, direction)) {
-        return Adjustment::Unchanged;
-    }
-    if (m_config.Save(path)) {
-        return Adjustment::Saved;
-    }
-    m_config = std::move(original);
-    m_presetRestart = originalRestart;
-    m_presetBaseline = originalBaseline;
-    return Adjustment::SaveFailed;
-}
-
 } // namespace coastline

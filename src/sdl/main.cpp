@@ -47,6 +47,7 @@
 #include "common/soundbuffer.h"
 #include "common/strings.h"
 #include "config.h"
+#include "configsaver.h"
 #include "controllerpak.h"
 #include "controls.h"
 #include "ear/sdlmixer.h"
@@ -1402,6 +1403,7 @@ int main(int argc, char *argv[]) {
         std::filesystem::create_directories(scriptFrames, error);
     }
     auto config = coastline::GameConfig::Load(configPath);
+    coastline::ConfigSaver configSaver;
     // Every setting is written to the file on the first run: the keys of the PC release first,
     // then the keys of this game.
     for (const auto &[section, key, value] : {std::tuple{"Video", "Driver", "SDL"},
@@ -1756,6 +1758,7 @@ int main(int argc, char *argv[]) {
                                                       paths->cache,
                                                       config,
                                                       configPath,
+                                                      configSaver,
                                                       std::array{assetData, paths->data},
                                                       pack,
                                                       parser.present("--region").value_or(""),
@@ -2330,10 +2333,7 @@ int main(int argc, char *argv[]) {
                             }
                             if (end != coastline::RaceEnd::Running && cameraUnsaved) {
                                 cameraUnsaved = false;
-                                if (!config.Save(configPath)) {
-                                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                                                 "Cannot save camera settings.");
-                                }
+                                configSaver.Save(config, configPath);
                             }
                             if (end != coastline::RaceEnd::Running) {
                                 // The module of the track plays on after the race until the main
@@ -2605,6 +2605,8 @@ int main(int argc, char *argv[]) {
     if (setupQuit && !setupFailed) {
         status = EXIT_SUCCESS;
     }
+    // The copies the thread writes precede the final settings.
+    configSaver.Flush();
     if (!config.Save(configPath)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot write %s.", configPath.string().c_str());
     }

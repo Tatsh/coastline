@@ -678,8 +678,8 @@ void Menus::LoadExtraTrackRecords() {
         m_profile.lapRecords[static_cast<std::size_t>(track)] = read("Lap");
         m_profile.raceRecords[static_cast<std::size_t>(track)] = read("Race");
     }
-    if (reset && !m_config->Save(m_configPath)) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot reset invalid track records.");
+    if (reset) {
+        SaveConfig();
     }
 }
 
@@ -698,14 +698,10 @@ bool Menus::SaveExtraTrackRecords() {
     if (!m_config) {
         return false;
     }
-    GameConfig original = *m_config;
+    // A manual save waits for the thread and reports its result.
     SetExtraTrackRecords();
-    if (!m_config->Save(m_configPath)) {
-        *m_config = std::move(original);
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save track records.");
-        return false;
-    }
-    return true;
+    SaveConfig();
+    return m_configSaver == nullptr || m_configSaver->Flush();
 }
 
 } // namespace coastline

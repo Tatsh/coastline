@@ -286,11 +286,7 @@ void Menus::ProcessControllerConfigScreen(SceneRenderer &renderer,
         if (m_config != nullptr) {
             m_config->Set("Controls", CONTROL_PRESET_KEY, std::string(preset.name));
             LoadControls(*m_config);
-            if (!m_config->Save(m_configPath)) {
-                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Cannot write %s.",
-                             m_configPath.string().c_str());
-            }
+            SaveConfig();
         }
     }
     // Either way, go back to the options.

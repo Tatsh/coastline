@@ -449,6 +449,15 @@ target_compile_options(gamesettings_test PRIVATE -Wall -Wextra -fsanitize=addres
 target_link_options(gamesettings_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME gamesettings COMMAND gamesettings_test)
 
+add_executable(configsaver_test configsaver_test.cpp "${_src}/sdl/configsaver.cpp"
+  "${_src}/sdl/config.cpp")
+set_target_properties(configsaver_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(configsaver_test PRIVATE "${_src}/sdl")
+target_compile_options(configsaver_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(configsaver_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(configsaver_test PRIVATE savefile_test_support SDL3::SDL3)
+add_test(NAME configsaver COMMAND configsaver_test)
+
 add_executable(gltfdocument_test gltfdocument_test.cpp "${_src}/sdl/gltfdocument.cpp"
   "${_src}/sdl/readfile.cpp")
 set_target_properties(gltfdocument_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)

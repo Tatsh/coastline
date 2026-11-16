@@ -50,13 +50,6 @@ int SoundEffectsVolume(const GameConfig &config, bool n64);
 /** Persistent game choices for the options menu. */
 class GameSettings {
 public:
-    /** The outcome of an immediate setting adjustment and persistence attempt. */
-    enum class Adjustment {
-        Unchanged, /*!< The request did not change the configuration. */
-        Saved,     /*!< The changed configuration was written successfully. */
-        SaveFailed /*!< Writing failed and the previous in-memory configuration was restored. */
-    };
-
     /**
      * Build available options from the configuration, installed packs, and display modes.
      *
@@ -106,15 +99,6 @@ public:
     bool Step(std::size_t index, int direction);
     /** End preset browsing; the next preset adjustment captures a new baseline. */
     void FinishPresetSelection();
-    /**
-     * Save an adjustment immediately; restore in-memory configuration if writing fails.
-     *
-     * @param index The zero-based option index.
-     * @param direction A negative value for the previous choice, positive for the next.
-     * @param path The INI file to write.
-     * @return Unchanged for an ignored request, Saved on success, or SaveFailed after rollback.
-     */
-    Adjustment AdjustAndSave(std::size_t index, int direction, const std::filesystem::path &path);
 
 private:
     /** A stored value and its label in an options menu. */

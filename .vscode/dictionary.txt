@@ -189,6 +189,7 @@ colorkeyenable
 combkey
 configfile
 configsafety
+configsaver
 congrat
 consolesegment
 consolestrings

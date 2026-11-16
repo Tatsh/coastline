@@ -285,43 +285,32 @@ void Menus::ApplyVolumeSettings() const {
         std::clamp(m_options.sfxVolume, 0, MAX_VOLUME_LEVEL))];
 }
 
-bool Menus::RememberSfxVolume(bool automatic) {
-    if (!m_config) {
-        return true;
+void Menus::SaveConfig() {
+    if (m_config && m_configSaver) {
+        m_configSaver->Save(*m_config, m_configPath);
     }
-    const auto original = *m_config;
-    m_config->Set("Game", "SfxVolume", automatic ? "auto" : std::to_string(m_options.sfxVolume));
-    m_gameSettingsSaveError = !m_config->Save(m_configPath);
-    if (m_gameSettingsSaveError) {
-        *m_config = original;
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save SFX volume.");
-        return false;
-    }
-    return true;
 }
 
-bool Menus::RememberSpeedUnits() {
+void Menus::RememberSfxVolume(bool automatic) {
     if (!m_config) {
-        return true;
+        return;
     }
-    const auto original = *m_config;
+    m_config->Set("Game", "SfxVolume", automatic ? "auto" : std::to_string(m_options.sfxVolume));
+    SaveConfig();
+}
+
+void Menus::RememberSpeedUnits() {
+    if (!m_config) {
+        return;
+    }
     m_config->Set("Game", "Units", m_options.speedInMph ? "mph" : "kph");
-    m_gameSettingsSaveError = !m_config->Save(m_configPath);
-    if (m_gameSettingsSaveError) {
-        *m_config = original;
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save speed units.");
-        return false;
-    }
-    return true;
+    SaveConfig();
 }
 
 void Menus::ToggleSpeedUnits() {
     m_options.speedInMph = !m_options.speedInMph;
-    if (RememberSpeedUnits()) {
-        m_optionsChanged = true;
-    } else {
-        m_options.speedInMph = !m_options.speedInMph;
-    }
+    RememberSpeedUnits();
+    m_optionsChanged = true;
 }
 
 bool Menus::SaveOptionsNote(int player) const {
@@ -358,8 +347,9 @@ int Menus::SaveGhostNote() const {
     return PAK_ERROR_NONE;
 }
 
-// Each save forces its file to disk, and a thread writes the notes, the ghost frames, and the
-// settings with the records. The records remain in the settings in memory when the save fails.
+// Each save forces its file to disk. A thread writes the notes and the ghost frames, and the
+// thread of the settings writes the records. The records remain in the settings in memory when the
+// save fails.
 void Menus::StartAutoSave() {
     FinishAutoSave(true);
     m_autoSaveFailed = false;
@@ -373,6 +363,7 @@ void Menus::StartAutoSave() {
     }
     auto season = SeasonNote(checkpoint);
     SetExtraTrackRecords();
+    SaveConfig();
     std::optional<std::vector<u8>> ghost;
     std::span<const u8> recording;
     const bool ghostWanted = m_gameMode == GameMode::TimeAttack && m_ghostSaveAvailable;
@@ -384,8 +375,7 @@ void Menus::StartAutoSave() {
     m_autoSave =
         std::async(std::launch::async,
                    [pak = m_pak,
-                    config = *m_config,
-                    configPath = m_configPath,
+                    saver = m_configSaver,
                     season = std::move(season),
                     ghostWanted,
                     ghost = std::move(ghost),
@@ -393,7 +383,7 @@ void Menus::StartAutoSave() {
                     frames = m_ghostFrames,
                     framesFile = m_ghostFramesFile] {
                        const bool seasonSaved = pak.WriteNote(SEASON_NOTE, season);
-                       const bool recordsSaved = config.Save(configPath);
+                       const bool recordsSaved = saver == nullptr || saver->Flush();
                        const bool ghostSaved =
                            !ghostWanted || (ghost && pak.WriteNote(GHOST_NOTE, *ghost) &&
                                             SaveGhostFrames(framesFile, recording, frames));
@@ -573,8 +563,9 @@ void Menus::OptionsMenuPostDraw(SceneRenderer &renderer, int item) {
         const bool restart = m_gameSettings->RequiresRestart(item - m_gameSettingsStart);
         const bool enabled = m_gameSettings->IsEnabled(item - m_gameSettingsStart);
         m_screen->Text().Draw(renderer,
-                              !enabled                ? "%wwControlled by a command-line option." :
-                              m_gameSettingsSaveError ? "%wwSettings could not be saved." :
+                              !enabled ? "%wwControlled by a command-line option." :
+                              m_configSaver != nullptr && m_configSaver->Failed() ?
+                                         "%wwSettings could not be saved." :
                               restart ? "%wwApplies when you exit Options. Restarts the game." :
                                         "%wwApplies when you exit Options.",
                               160,
@@ -655,14 +646,9 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
     }
     if (m_optionsMenuSelection >= m_gameSettingsStart && m_gameSettings &&
         (result == MenuResult::Up || result == MenuResult::Down || result == MenuResult::Chosen)) {
-        const auto adjustment =
-            m_gameSettings->AdjustAndSave(m_optionsMenuSelection - m_gameSettingsStart,
-                                          result == MenuResult::Down ? -1 : 1,
-                                          m_configPath);
-        if (adjustment != GameSettings::Adjustment::Unchanged) {
-            m_gameSettingsSaveError = adjustment == GameSettings::Adjustment::SaveFailed;
-        }
-        if (adjustment == GameSettings::Adjustment::Saved) {
+        if (m_gameSettings->Step(m_optionsMenuSelection - m_gameSettingsStart,
+                                 result == MenuResult::Down ? -1 : 1)) {
+            SaveConfig();
             m_settingsPending = true;
             m_reinitializePending |=
                 m_gameSettings->RequiresRestart(m_optionsMenuSelection - m_gameSettingsStart);
@@ -681,12 +667,8 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         if (m_optionsMenuSelection == OPTIONS_ITEM_BGM) {
             step(m_options.musicVolume, result == MenuResult::Up ? 1 : -1);
         } else if (m_optionsMenuSelection == OPTIONS_ITEM_SFX) {
-            const int original = m_options.sfxVolume;
             step(m_options.sfxVolume, result == MenuResult::Up ? 1 : -1);
-            if (!RememberSfxVolume()) {
-                m_options.sfxVolume = original;
-                ApplyVolumeSettings();
-            }
+            RememberSfxVolume();
         } else if (m_optionsMenuSelection == OPTIONS_ITEM_UNITS) {
             ToggleSpeedUnits();
         }
