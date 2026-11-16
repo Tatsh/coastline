@@ -1662,6 +1662,9 @@ int main(int argc, char *argv[]) {
                     }
                 };
                 float raceTime = 0.0f;
+                // A camera change mid-race is saved when the race ends. Each save forces the file
+                // to disk.
+                bool cameraUnsaved = false;
                 bool leaveDemo = false;
                 const bool menuAttractDemo = packSettings.contains("mainMenuAttractDemo") &&
                                              packSettings.at("mainMenuAttractDemo").is_boolean() &&
@@ -2316,19 +2319,21 @@ int main(int argc, char *argv[]) {
                                 raceTime -= RACE_STEP;
                                 end = raceSession.Step();
                             }
-                            bool cameraChanged = false;
                             const auto cameras = raceSession.CameraChoices();
                             for (std::size_t player = 0; player < cameras.size(); ++player) {
                                 const auto section = fmt::format("Player{}", player + 1);
                                 if (cameras[player] >= 0 &&
                                     config.GetInteger(section, "Camera", -1) != cameras[player]) {
                                     config.Set(section, "Camera", std::to_string(cameras[player]));
-                                    cameraChanged = true;
+                                    cameraUnsaved = true;
                                 }
                             }
-                            if (cameraChanged && !config.Save(configPath)) {
-                                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                                             "Cannot save camera settings.");
+                            if (end != coastline::RaceEnd::Running && cameraUnsaved) {
+                                cameraUnsaved = false;
+                                if (!config.Save(configPath)) {
+                                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                                                 "Cannot save camera settings.");
+                                }
                             }
                             if (end != coastline::RaceEnd::Running) {
                                 // The module of the track plays on after the race until the main

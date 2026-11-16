@@ -30,6 +30,9 @@
   verification.
 - Stopped FFmpeg from opening a console window on Windows while it converts the intro movie
   during import.
+- Stopped races from stalling when a player changed the camera. The game saved `BossRally.ini`
+  and flushed the file and its directory to disk on the frame of the change. It now saves the
+  camera choice when the race ends.
 
 ## [0.0.3] - 2026-11-11
 
