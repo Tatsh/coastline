@@ -2,7 +2,7 @@
   uses_user_defaults: true,
   project_name: 'coastline',
   project_type: 'c',
-  version: '0.0.3',
+  version: '0.0.4',
   description: 'Reconstructed source of the Nintendo 64 game Top Gear Rally.',
   keywords: ['decompilation', 'game', 'nintendo 64', 'reverse engineering', 'top gear rally'],
   // CodeQL uses a manual SDL build and an Actions analysis job in the custom workflow.
@@ -125,7 +125,7 @@
         name: 'coastline',
         sources: [
           {
-            tag: 'v0.0.3',
+            tag: 'v0.0.4',
             url: 'https://github.com/Tatsh/coastline.git',
             // Retain .git so the build can read the source revision.
             type: 'git',
@@ -223,7 +223,7 @@
         |||,
         plugin: 'cmake',
         source: 'https://github.com/Tatsh/coastline.git',
-        'source-tag': 'v0.0.3',
+        'source-tag': 'v0.0.4',
         // SDL and GameMode load these runtime libraries dynamically.
         'stage-packages': [
           'libasound2t64',

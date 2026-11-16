@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.28)
-project(coastline VERSION 0.0.3 LANGUAGES C)
+project(coastline VERSION 0.0.4 LANGUAGES C)
 # The sources import no C++ modules, and the scan of CMake 3.28 for them is skipped.
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 

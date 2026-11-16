@@ -87,7 +87,7 @@ modules:
       - '-DTGR_PLATFORM=sdl'
     name: 'coastline'
     sources:
-      - tag: 'v0.0.3'
+      - tag: 'v0.0.4'
         type: 'git'
         url: 'https://github.com/Tatsh/coastline.git'
 runtime: 'org.freedesktop.Platform'

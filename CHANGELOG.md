@@ -2,6 +2,8 @@
 
 ## [unreleased]
 
+## [0.0.4] - 2026-11-16
+
 ### Added
 
 - Added a **Run Coastline** checkbox, selected by default, to the final page of the Windows
@@ -24,9 +26,9 @@
 ### Fixed
 
 - Fixed the Season Champion code of the main menu (Up, Up, Down, Down, Left, Right, Left, Right, L,
-  and R) on keyboards without a numeric keypad. The code read directions from the directional pad alone,
-  and the keyboard mapped the pad only to the numeric keypad. The code now also accepts the analogue
-  stick and the arrow keys. On the keyboard, A and S enter L and R.
+  and R) on keyboards without a numeric keypad. The code read directions from the directional pad
+  alone, and the keyboard mapped the pad only to the numeric keypad. The code now also accepts the
+  analogue stick and the arrow keys. On the keyboard, A and S enter L and R.
 - Prevented the game from exiting at startup on Windows, and under Wine with vkd3d-proton, when
   Direct3D 12 is available. The game requested DXIL shaders it did not ship, SDL selected
   Direct3D 12, and shader creation failed with `GPU driver requires SPIR-V or MSL support`.
@@ -62,7 +64,7 @@
   game wrote the season note, the track records in `BossRally.ini`, and, in Time Attack, the ghost
   note and `ghost-frames.bin` on the main thread, and flushed each file and its directory to disk.
   A thread now writes the files, and the results screen shows the auto-save warning when the
-  thread reports a failure. Leaving the results screen or opening the save menu waits for the
+  thread reports a failure. Exiting the results screen or opening the save menu waits for the
   automatic save, and a manual save is never overwritten by an older automatic one. Track records
   that fail to save remain in the settings and are saved again at exit.
 - Removed a stall on the car select screen when a player changes the paint colour or look of a
