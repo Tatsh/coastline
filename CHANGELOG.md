@@ -78,6 +78,12 @@
   path replaces a pending check. After a directory search, the focus moves to the disc field when
   the search found no disc, to the first ROM field when it found no base ROM, and otherwise to
   **Next**.
+- Removed a possible gap in the music with `Music=CD` when the disk responds slowly. The FLAC
+  decoder read the file and opened the next track inside the audio callback of SDL, on the thread
+  of the audio device. A thread now decodes the CD audio and retains about half a second queued in
+  the SDL stream, decoding a tenth of a second at a time. A track change (F12 or a new race) clears
+  the queue, and the new track starts at once. Pausing and a BGM volume of zero still pause the
+  audio device.
 
 ## [0.0.3] - 2026-11-11
 
