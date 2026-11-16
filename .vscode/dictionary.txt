@@ -606,6 +606,7 @@ hglobal
 higuy
 hilite
 hinstance
+hinternet
 histk
 hkcu
 hklm
