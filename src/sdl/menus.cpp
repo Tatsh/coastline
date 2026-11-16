@@ -24,6 +24,10 @@ void Menus::FinishCredits() {
 }
 
 void Menus::SetCurrentScreen(Screen screen) {
+    // A save of the next screen must not be overwritten by the older automatic save.
+    if (m_current == Screen::RaceResultsScreen && screen != Screen::RaceResultsScreen) {
+        FinishAutoSave(true);
+    }
     m_current = screen;
 }
 

@@ -43,6 +43,13 @@
   memory, and a thread encodes and writes the file and logs `Saved frame`. Up to four saves are
   pending at once, and a fifth waits for the oldest. Pending saves finish before the window is
   destroyed, and a script that quits after a screenshot writes complete files.
+- Removed a stall at the switch to the results screen when `Auto-save race progress` is on. The
+  game wrote the season note, the track records in `BossRally.ini`, and, in Time Attack, the ghost
+  note and `ghost-frames.bin` on the main thread, and flushed each file and its directory to disk.
+  A thread now writes the files, and the results screen shows the auto-save warning when the
+  thread reports a failure. Leaving the results screen or opening the save menu waits for the
+  automatic save, and a manual save is never overwritten by an older automatic one. Track records
+  that fail to save remain in the settings and are saved again at exit.
 
 ## [0.0.3] - 2026-11-11
 

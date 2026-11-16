@@ -202,9 +202,7 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results, bool sfxVolumeAd
         if (m_gameMode == GameMode::TimeAttack) {
             KeepTimeAttackRecording(results.ghostRecording, results.ghostFrames);
         }
-        m_autoSaveFailed = !AutoSaveProgress();
-        m_progressAutoSaved =
-            m_config && m_config->GetBoolean("Game", "AutoSave", true) && !m_autoSaveFailed;
+        StartAutoSave();
         m_resultsInitialized = false;
         SetCurrentScreen(Screen::RaceResultsScreen);
     } else if (end == RaceEnd::SeasonMenu || end == RaceEnd::Credits) {
@@ -373,6 +371,7 @@ void Menus::DrawRaceResultsTitle(SceneRenderer &renderer) {
     style.colors = m_textCustomColors;
     m_screen->Text().Draw(
         renderer, title, WIDTH / 2, HEIGHT / 6 - 2, style, MenuScreen::FlatFor(renderer));
+    FinishAutoSave(false);
     if (m_autoSaveFailed) {
         style.size = 9;
         m_screen->Text().Draw(renderer,
@@ -684,11 +683,7 @@ void Menus::LoadExtraTrackRecords() {
     }
 }
 
-bool Menus::SaveExtraTrackRecords() {
-    if (!m_config) {
-        return false;
-    }
-    GameConfig original = *m_config;
+void Menus::SetExtraTrackRecords() {
     for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
         const auto key = fmt::format("Track{}", EngineTrackForMenu(track));
         const auto index = static_cast<std::size_t>(track);
@@ -697,6 +692,14 @@ bool Menus::SaveExtraTrackRecords() {
         m_config->Set(
             "Records", fmt::format("{}Race", key), std::to_string(m_profile.raceRecords[index]));
     }
+}
+
+bool Menus::SaveExtraTrackRecords() {
+    if (!m_config) {
+        return false;
+    }
+    GameConfig original = *m_config;
+    SetExtraTrackRecords();
     if (!m_config->Save(m_configPath)) {
         *m_config = std::move(original);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save track records.");

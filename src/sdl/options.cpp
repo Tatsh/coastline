@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <chrono>
 #include <cstdint>
 #include <span>
 #include <string>
@@ -332,11 +333,15 @@ bool Menus::SaveOptionsNote(int player) const {
     return m_pak.WriteNote(OPTIONS_NOTE, note);
 }
 
-bool Menus::SaveSeasonNote(const MenuProfile &profile) const {
+std::vector<u8> Menus::SeasonNote(const MenuProfile &profile) const {
     auto note = ReadSavedNote(SEASON_NOTE).value_or(std::vector<u8>());
     note.resize(SEASON_NOTE_SIZE);
     WriteProfile(note, profile);
-    return m_pak.WriteNote(SEASON_NOTE, note);
+    return note;
+}
+
+bool Menus::SaveSeasonNote(const MenuProfile &profile) const {
+    return m_pak.WriteNote(SEASON_NOTE, SeasonNote(profile));
 }
 
 int Menus::SaveGhostNote() const {
@@ -353,23 +358,61 @@ int Menus::SaveGhostNote() const {
     return PAK_ERROR_NONE;
 }
 
-bool Menus::AutoSaveProgress() {
+// Each save forces its file to disk, and a thread writes the notes, the ghost frames, and the
+// settings with the records. The records remain in the settings in memory when the save fails.
+void Menus::StartAutoSave() {
+    FinishAutoSave(true);
+    m_autoSaveFailed = false;
+    m_progressAutoSaved = false;
     if (!m_config || !m_config->GetBoolean("Game", "AutoSave", true)) {
-        return true;
+        return;
     }
     auto checkpoint = m_profile;
     if (m_gameMode == GameMode::Championship) {
         AdvanceSeason(checkpoint);
     }
-    const bool seasonSaved = SaveSeasonNote(checkpoint);
-    const bool recordsSaved = SaveExtraTrackRecords();
-    const bool ghostSaved = m_gameMode != GameMode::TimeAttack || !m_ghostSaveAvailable ||
-                            SaveGhostNote() == PAK_ERROR_NONE;
-    if (!seasonSaved || !recordsSaved || !ghostSaved) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save race progress automatically.");
-        return false;
+    auto season = SeasonNote(checkpoint);
+    SetExtraTrackRecords();
+    std::optional<std::vector<u8>> ghost;
+    std::span<const u8> recording;
+    const bool ghostWanted = m_gameMode == GameMode::TimeAttack && m_ghostSaveAvailable;
+    if (ghostWanted) {
+        recording = std::span<const u8>(m_ghostRecording)
+                        .first(static_cast<std::size_t>(m_ghostRecordingSize));
+        ghost = PackGhostNote(recording);
     }
-    return true;
+    m_autoSave =
+        std::async(std::launch::async,
+                   [pak = m_pak,
+                    config = *m_config,
+                    configPath = m_configPath,
+                    season = std::move(season),
+                    ghostWanted,
+                    ghost = std::move(ghost),
+                    recording = std::vector<u8>(recording.begin(), recording.end()),
+                    frames = m_ghostFrames,
+                    framesFile = m_ghostFramesFile] {
+                       const bool seasonSaved = pak.WriteNote(SEASON_NOTE, season);
+                       const bool recordsSaved = config.Save(configPath);
+                       const bool ghostSaved =
+                           !ghostWanted || (ghost && pak.WriteNote(GHOST_NOTE, *ghost) &&
+                                            SaveGhostFrames(framesFile, recording, frames));
+                       if (!seasonSaved || !recordsSaved || !ghostSaved) {
+                           SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                                        "Cannot save race progress automatically.");
+                           return false;
+                       }
+                       return true;
+                   });
+}
+
+void Menus::FinishAutoSave(bool wait) {
+    if (!m_autoSave.valid() ||
+        (!wait && m_autoSave.wait_for(std::chrono::seconds(0)) != std::future_status::ready)) {
+        return;
+    }
+    m_autoSaveFailed = !m_autoSave.get();
+    m_progressAutoSaved = !m_autoSaveFailed;
 }
 
 void Menus::DrawMessageBox(int x, int y, int width, int height) {
@@ -694,6 +737,7 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
 }
 
 void Menus::StartDataSaveLoadMenu(SaveLoadEntry entry) {
+    FinishAutoSave(true);
     if (entry != SaveLoadEntry::MainMenu && m_progressAutoSaved) {
         SetCurrentScreen(entry == SaveLoadEntry::Season ? Screen::TrackMenu : Screen::MainMenu);
         return;

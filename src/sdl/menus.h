@@ -9,6 +9,7 @@
 #include <array>
 #include <filesystem>
 #include <functional>
+#include <future>
 #include <memory>
 #include <optional>
 #include <span>
@@ -302,6 +303,7 @@ private:
     void LoadSeasonCars(SceneRenderer &renderer);
     bool IsTrackUnlocked(int track) const;
     void LoadExtraTrackRecords();
+    void SetExtraTrackRecords();
     bool SaveExtraTrackRecords();
     void ValidateChampionshipProgress();
     void TrackMenuPostDraw(SceneRenderer &renderer, int item);
@@ -368,9 +370,11 @@ private:
     bool RememberSfxVolume(bool automatic = false);
     void ToggleSpeedUnits();
     bool SaveOptionsNote(int player) const;
+    std::vector<u8> SeasonNote(const MenuProfile &profile) const;
     bool SaveSeasonNote(const MenuProfile &profile) const;
     int SaveGhostNote() const;
-    bool AutoSaveProgress();
+    void StartAutoSave();
+    void FinishAutoSave(bool wait);
     void DrawMessageBox(int x, int y, int width, int height);
     void SetMessageText();
     bool ProcessPakDataScreen(SceneRenderer &renderer, int dataType);
@@ -527,6 +531,9 @@ private:
     bool m_optionsChanged = false;
     bool m_autoSaveFailed = false;
     bool m_progressAutoSaved = false;
+    // A thread writes the automatic save of the last race. Both flags above are set when the save
+    // finishes.
+    std::future<bool> m_autoSave;
     std::unique_ptr<GameSettings> m_gameSettings;
     int m_gameSettingsStart = 0;
     bool m_gameSettingsSaveError = false;
