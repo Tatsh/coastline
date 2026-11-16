@@ -84,6 +84,13 @@
   the SDL stream, decoding a tenth of a second at a time. A track change (F12 or a new race) clears
   the queue, and the new track starts at once. Pausing and a BGM volume of zero still pause the
   audio device.
+- Shortened the loading of tracks, cars, menu models, and splash models. The game read and decoded
+  the PNG images of a glTF model one at a time on the main thread. On the jungle track with the
+  asset files not cached, the images took 97 ms of a 134 ms track load (41 ms of 78 ms when cached).
+  Up to eight threads now read and decode the images of a model, and the main thread creates and
+  uploads the textures in order. The images now take about 30 ms with the files not cached and 22
+  to 28 ms when cached. The race view loads in 165 to 198 ms with the files not cached (from 227 to
+  251 ms) and in 123 to 157 ms when cached (RTX 4090, NVMe).
 
 ## [0.0.3] - 2026-11-11
 

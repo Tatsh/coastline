@@ -4,10 +4,14 @@
 #include <bit>
 #include <cmath>
 #include <cstring>
+#include <future>
 #include <map>
+#include <memory>
 #include <numeric>
 #include <string>
+#include <thread>
 #include <variant>
+#include <vector>
 
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
@@ -785,6 +789,52 @@ bool AddImage(Uploader &upload,
     return true;
 }
 
+struct SurfaceDeleter {
+    void operator()(SDL_Surface *surface) const {
+        SDL_DestroySurface(surface);
+    }
+};
+
+// Images of a document, each decoded or null, with the failure reason in errors.
+struct DecodedPngs {
+    std::vector<std::unique_ptr<SDL_Surface, SurfaceDeleter>> surfaces;
+    std::vector<std::string> errors;
+};
+
+// Read and decode document images on up to 8 threads, interleaving the images between threads.
+DecodedPngs DecodeImages(const GltfDocument &document, std::size_t count) {
+    DecodedPngs pngs;
+    pngs.surfaces.resize(count);
+    pngs.errors.resize(count);
+    const std::size_t workers =
+        std::min<std::size_t>(std::clamp(std::thread::hardware_concurrency(), 1U, 8U), count);
+    const auto decode = [&](std::size_t first) {
+        for (std::size_t index = first; index < count; index += workers) {
+            auto bytes = document.Image(index);
+            if (!bytes || bytes->empty()) {
+                pngs.errors[index] = bytes ? "The image is empty." : bytes.error();
+                continue;
+            }
+            pngs.surfaces[index].reset(
+                SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes->data(), bytes->size()), true));
+            if (!pngs.surfaces[index]) {
+                pngs.errors[index] = SDL_GetError();
+            }
+        }
+    };
+    std::vector<std::future<void>> threads;
+    for (std::size_t worker = 1; worker < workers; ++worker) {
+        threads.push_back(std::async(std::launch::async, decode, worker));
+    }
+    if (workers > 0) {
+        decode(0);
+    }
+    for (auto &thread : threads) {
+        thread.get();
+    }
+    return pngs;
+}
+
 // A glTF document on the GPU, which every model of its parts shares.
 struct DocumentData {
     SDL_GPUDevice *device = nullptr;
@@ -1388,20 +1438,19 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         state->imageOptions.damageMasks = *options.damageMasks;
     }
     state->imageOptions.mipmapped = mipmapped;
+    // Reading and decoding PNG images took about half of a warm track load and most of a cold one.
+    // Worker threads decode the images, and textures are created and uploaded here in order.
+    auto pngs = DecodeImages(replacement != nullptr ? *replacement : *source, images.size());
     Uploader upload(device);
     for (std::size_t index = 0; index < images.size(); ++index) {
         const auto &image = images[index];
-        auto bytes = (replacement != nullptr ? *replacement : *source).Image(index);
-        SDL_Surface *loaded =
-            bytes && !bytes->empty() ?
-                SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes->data(), bytes->size()), true) :
-                nullptr;
+        SDL_Surface *loaded = pngs.surfaces[index].release();
         if (loaded == nullptr) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "Cannot read image %llu in %s: %s",
                          static_cast<unsigned long long>(index),
                          path.string().c_str(),
-                         bytes ? SDL_GetError() : bytes.error().c_str());
+                         pngs.errors[index].c_str());
             return nullptr;
         }
         DecodedImage decoded;
