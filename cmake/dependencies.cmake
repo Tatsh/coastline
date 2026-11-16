@@ -62,8 +62,11 @@ function(coastline_dependency name)
     return()
   endif()
   _coastline_set_release_options(${_dependency_OPTIONS})
-  FetchContent_Declare(${_dependency_PACKAGE} URL "${_dependency_URL}" URL_HASH
-                                                  "SHA256=${_dependency_HASH}" SYSTEM)
+  # A release outside the default build does not install files. FLAC installs its library and
+  # headers and does not offer an option to disable the installation.
+  FetchContent_Declare(
+    ${_dependency_PACKAGE} URL "${_dependency_URL}" URL_HASH "SHA256=${_dependency_HASH}" SYSTEM
+    EXCLUDE_FROM_ALL)
   _coastline_fetch_silently(${_dependency_PACKAGE})
   message(STATUS "${_dependency_PACKAGE} comes from the pinned release ${_dependency_URL}.")
 endfunction()

@@ -4,8 +4,10 @@
 # Each dependency comes from vcpkg when the vcpkg toolchain is in use, otherwise from the system,
 # and otherwise from the pinned release below. zlib comes only from vcpkg or the system. The vcpkg
 # manifest is vcpkg.json at the repository root, selected through VCPKG_MANIFEST_DIR.
-cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.28)
 project(coastline_tools CXX)
+# The sources import no C++ modules, and the scan of CMake 3.28 for them is skipped.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

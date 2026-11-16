@@ -38,6 +38,11 @@
 - Updated the checksum of the temporary FFmpeg download on Apple Silicon macOS. The publisher
   replaced the archive with a rebuild of FFmpeg 9.0.2, and the download failed checksum
   verification.
+- Fixed `cmake --install` of builds with pinned dependencies, including the Flatpak, AppImage, snap,
+  and system installations, installing the static library, pkg-config file, CMake package files,
+  and headers of FLAC and FLAC++ into the prefix (such as `/app/lib/libFLAC.a` and
+  `/app/include/FLAC`). Pinned dependency releases are excluded from the default build, and their
+  install rules do not run. The build requires CMake 3.28 or later.
 - Stopped FFmpeg from opening a console window on Windows while it converts the intro movie
   during import.
 - Stopped races from stalling when a player changed the camera. The game saved `BossRally.ini`
