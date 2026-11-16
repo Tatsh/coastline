@@ -18,13 +18,14 @@ struct ExtraMenuTrack {
     bool selectable = true; /*!< Whether ordinary track selection can offer this entry. */
 };
 
-/** PC-only track entries; GAMEWIN remains indexed but unavailable for ordinary selection. */
+/** PC-only track entries; Season Champion (gamewin) remains indexed but unavailable for ordinary
+ * selection. */
 inline constexpr std::array<ExtraMenuTrack, 5> EXTRA_MENU_TRACKS{{
     {5, "Race Track", "race", false},
     {11, "Mirror Race Track", "race", true},
     {14, "Bonus Track", "bonus", false},
     {13, "Mirror Bonus Track", "bonus", true},
-    {12, "Gamewin", "gamewin", false, false},
+    {12, "Season Champion", "gamewin", false, false},
 }};
 
 /** The number of track entries before menu actions, including unavailable entries. */

@@ -19,11 +19,12 @@
   `paint-shop` in the cache directory, and read and decoded the files again. The game now builds
   the glTF document in memory, with each PNG in a buffer view checked by decoding it. Paint Shop
   no longer writes `paint-shop` in the cache directory.
+- Renamed the unlockable GAMEWIN course of track selection to Season Champion.
 
 ### Fixed
 
-- Fixed the GAMEWIN code of the main menu (Up, Up, Down, Down, Left, Right, Left, Right, L, and R)
-  on keyboards without a numeric keypad. The code read directions from the directional pad alone,
+- Fixed the Season Champion code of the main menu (Up, Up, Down, Down, Left, Right, Left, Right, L,
+  and R) on keyboards without a numeric keypad. The code read directions from the directional pad alone,
   and the keyboard mapped the pad only to the numeric keypad. The code now also accepts the analogue
   stick and the arrow keys. On the keyboard, A and S enter L and R.
 - Prevented the game from exiting at startup on Windows, and under Wine with vkd3d-proton, when

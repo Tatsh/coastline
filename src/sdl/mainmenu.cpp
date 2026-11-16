@@ -163,7 +163,7 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
         if (m_gamewinCheatProgress == code.size()) {
             m_gamewinCheatProgress = 0;
             m_gamewinUnlocked = true;
-            SDL_Log("Unlocking GAMEWIN track selection.");
+            SDL_Log("Unlocking Season Champion track selection.");
         }
     }
     if (m_mainMenuInitState <= 0) {
