@@ -186,6 +186,8 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
   set(DOXYGEN_MARKDOWN_ID_STYLE GITHUB)
   set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md")
+  # The pages under docs show the screenshots under docs/images, which the site copies.
+  set(DOXYGEN_IMAGE_PATH "${CMAKE_SOURCE_DIR}/docs/images")
   set(DOXYGEN_INTERACTIVE_SVG YES)
   set(DOXYGEN_GENERATE_TAGFILE "${CMAKE_BINARY_DIR}/html/${CMAKE_PROJECT_NAME}.tags")
   # The C and C++ libraries link to cppreference.com, the Win32 API to learn.microsoft.com, the
@@ -221,7 +223,7 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_FILE_PATTERNS "*.h" "*.md")
   set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}")
   find_package(Doxygen REQUIRED COMPONENTS dot)
-  doxygen_add_docs(docs README.md PROGRESS.md progress src ALL)
+  doxygen_add_docs(docs README.md docs PROGRESS.md progress src ALL)
   if(INSTALL_DOCS)
     install(
       DIRECTORY "${CMAKE_BINARY_DIR}/html"
