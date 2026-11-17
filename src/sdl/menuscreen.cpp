@@ -176,8 +176,8 @@ struct MenuScreen::State {
     std::vector<s8> selectSound;
 
     ScreenFade fade;
-    ScreenFade sfxFade{.level = 1.0f, .target = 1.0f};
-    ScreenFade musicFade{.level = 1.0f, .target = 1.0f};
+    ScreenFade sfxFade{1.0f};
+    ScreenFade musicFade{1.0f};
     bool initialized = false;
     int cursor = 0;
     int previous = 0;
@@ -438,13 +438,13 @@ void MenuScreen::FadeIn(bool fadeMusic, bool fadeSounds) {
     State &s = *m_state;
     s.fade = {};
     s.fade.SetTarget(1.0f, FADE_TIME);
-    s.sfxFade = {.level = s.sfxFade.level, .target = s.sfxFade.target};
+    s.sfxFade.Stop();
     if (fadeSounds) {
         s.sfxFade.SetTarget(1.0f, FADE_TIME);
     }
     // The music fades in from its level after the race, which a quit from the pause menu silences.
     float music = static_cast<float>(g_bMusicVolume) / MAX_SFX_VOLUME;
-    s.musicFade = {.level = music, .target = music};
+    s.musicFade = ScreenFade(music);
     if (fadeMusic) {
         s.musicFade.SetTarget(1.0f, FADE_TIME);
     }
@@ -468,8 +468,8 @@ void MenuScreen::UpdateFade(float seconds) {
     s.fade.Update(seconds);
     s.sfxFade.Update(seconds);
     s.musicFade.Update(seconds);
-    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.level * MAX_SFX_VOLUME));
-    g_bMusicVolume = static_cast<u8>(static_cast<int>(s.musicFade.level * MAX_SFX_VOLUME));
+    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.Level() * MAX_SFX_VOLUME));
+    g_bMusicVolume = static_cast<u8>(static_cast<int>(s.musicFade.Level() * MAX_SFX_VOLUME));
 }
 
 bool MenuScreen::FadingOut() const {

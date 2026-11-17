@@ -654,31 +654,6 @@ struct QuadDraw {
     RenderQuadBuffer *buffer = nullptr;
 };
 
-// The textures of images of a document by the image: each image, its palette variants, and its
-// damaged images, the side of the car and the image at each level of damage after the first.
-struct ImageSet {
-    std::map<std::size_t, SDL_GPUTexture *> images;
-    std::map<std::size_t, std::vector<SDL_GPUTexture *>> variants;
-    std::map<std::size_t, std::pair<int, std::vector<SDL_GPUTexture *>>> damaged;
-
-    void Release(SDL_GPUDevice *device) {
-        for (auto &[image, texture] : images) {
-            ReleaseGpuTexture(device, texture);
-        }
-        for (auto &[image, textures] : variants) {
-            for (auto *texture : textures) {
-                ReleaseGpuTexture(device, texture);
-            }
-        }
-        for (auto &[image, levels] : damaged) {
-            for (auto *texture : levels.second) {
-                ReleaseGpuTexture(device, texture);
-            }
-        }
-        *this = {};
-    }
-};
-
 // The textures of an image a model draws: the image, its palette variants, and its damaged images,
 // each none where the image has none.
 struct ModelImage {
@@ -739,55 +714,116 @@ std::optional<std::vector<std::uint8_t>> ImageTexels(SDL_Surface *image, int &wi
     return texels;
 }
 
-// Add the textures of an image to a set: the image, its palette variants where it is the image of
-// a material whose palette a variant changes, and its damaged images. The image is not changed.
-bool AddImage(Uploader &upload,
-              ImageSet &set,
-              std::size_t index,
-              SDL_Surface *image,
-              const DecodedImage &decoded,
-              const ImageOptions &options) {
-    int width = 0;
-    int height = 0;
-    if (options.paletteVariant && decoded.material >= 0 &&
-        SDL_GetSurfacePalette(image) != nullptr) {
-        std::vector<SDL_GPUTexture *> textures;
-        for (int variant = 0; variant < options.variants; ++variant) {
-            SDL_Surface *copy = CopyImage(image);
-            if (copy == nullptr ||
-                !options.paletteVariant(SDL_GetSurfacePalette(copy), decoded.material, variant)) {
+// The textures of images of a document by the image: each image, its palette variants, and its
+// damaged images (the side of the car and the image at each level of damage after the first).
+class ImageSet {
+public:
+    ImageSet() = default;
+    ImageSet(const ImageSet &) = delete;
+    ImageSet &operator=(const ImageSet &) = delete;
+    ImageSet(ImageSet &&) = default;
+    ImageSet &operator=(ImageSet &&) = default;
+
+    // Add the textures of an image: the image, its palette variants where it is the image of a
+    // material whose palette a variant changes, and its damaged images. The image is not changed.
+    bool Add(Uploader &upload,
+             std::size_t index,
+             SDL_Surface *image,
+             const DecodedImage &decoded,
+             const ImageOptions &options) {
+        int width = 0;
+        int height = 0;
+        if (options.paletteVariant && decoded.material >= 0 &&
+            SDL_GetSurfacePalette(image) != nullptr) {
+            std::vector<SDL_GPUTexture *> textures;
+            for (int variant = 0; variant < options.variants; ++variant) {
+                SDL_Surface *copy = CopyImage(image);
+                if (copy == nullptr || !options.paletteVariant(SDL_GetSurfacePalette(copy),
+                                                               decoded.material,
+                                                               variant)) {
+                    SDL_DestroySurface(copy);
+                    break;
+                }
+                auto texels = ImageTexels(copy, width, height);
                 SDL_DestroySurface(copy);
-                break;
+                if (!texels) {
+                    break;
+                }
+                textures.push_back(upload.Texture(width, height, *texels, options.mipmapped));
             }
-            auto texels = ImageTexels(copy, width, height);
-            SDL_DestroySurface(copy);
-            if (!texels) {
-                break;
+            if (!textures.empty()) {
+                m_variants[index] = std::move(textures);
             }
-            textures.push_back(upload.Texture(width, height, *texels, options.mipmapped));
         }
-        if (!textures.empty()) {
-            set.variants[index] = std::move(textures);
+        auto texels = ImageTexels(image, width, height);
+        if (!texels) {
+            return false;
+        }
+        if (decoded.damage) {
+            std::vector<SDL_GPUTexture *> levels;
+            for (const auto &mask : options.damageMasks) {
+                levels.push_back(
+                    upload.Texture(width,
+                                   height,
+                                   DamageTexels(*texels, width, height, mask, *decoded.damage),
+                                   options.mipmapped));
+            }
+            m_damaged[index] = {decoded.damage->side, std::move(levels)};
+        }
+        m_images[index] = upload.Texture(width, height, *texels, options.mipmapped);
+        return true;
+    }
+
+    // The number of images up to the last image the set has a texture of.
+    std::size_t Extent() const {
+        std::size_t count = 0;
+        auto grow = [&count](const auto &map) {
+            if (!map.empty()) {
+                count = std::max(count, map.rbegin()->first + 1);
+            }
+        };
+        grow(m_images);
+        grow(m_variants);
+        grow(m_damaged);
+        return count;
+    }
+
+    // Point the textures of each image of a model at the textures of the set, at least Extent()
+    // images, and the palette variants only when the model draws them.
+    void Resolve(std::vector<ModelImage> &images, bool varied) const {
+        for (const auto &[image, texture] : m_images) {
+            images[image].texture = texture;
+        }
+        for (const auto &[image, textures] : m_variants) {
+            images[image].variants = varied ? &textures : nullptr;
+        }
+        for (const auto &[image, levels] : m_damaged) {
+            images[image].damaged = &levels;
         }
     }
-    auto texels = ImageTexels(image, width, height);
-    if (!texels) {
-        return false;
-    }
-    if (decoded.damage) {
-        std::vector<SDL_GPUTexture *> levels;
-        for (const auto &mask : options.damageMasks) {
-            levels.push_back(
-                upload.Texture(width,
-                               height,
-                               DamageTexels(*texels, width, height, mask, *decoded.damage),
-                               options.mipmapped));
+
+    void Release(SDL_GPUDevice *device) {
+        for (auto &[image, texture] : m_images) {
+            ReleaseGpuTexture(device, texture);
         }
-        set.damaged[index] = {decoded.damage->side, std::move(levels)};
+        for (auto &[image, textures] : m_variants) {
+            for (auto *texture : textures) {
+                ReleaseGpuTexture(device, texture);
+            }
+        }
+        for (auto &[image, levels] : m_damaged) {
+            for (auto *texture : levels.second) {
+                ReleaseGpuTexture(device, texture);
+            }
+        }
+        *this = {};
     }
-    set.images[index] = upload.Texture(width, height, *texels, options.mipmapped);
-    return true;
-}
+
+private:
+    std::map<std::size_t, SDL_GPUTexture *> m_images;
+    std::map<std::size_t, std::vector<SDL_GPUTexture *>> m_variants;
+    std::map<std::size_t, std::pair<int, std::vector<SDL_GPUTexture *>>> m_damaged;
+};
 
 struct SurfaceDeleter {
     void operator()(SDL_Surface *surface) const {
@@ -836,83 +872,202 @@ DecodedPngs DecodeImages(const GltfDocument &document, std::size_t count) {
 }
 
 // A glTF document on the GPU, which every model of its parts shares.
-struct DocumentData {
-    SDL_GPUDevice *device = nullptr;
-    std::filesystem::path path;
-    // The nodes and the scenes of the glTF document.
-    nlohmann::json document;
-    std::vector<SDL_GPUSampler *> samplers;
-    // Whether the shader filters the texels of the images as the RDP does.
-    bool threePoint = false;
-    std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
-    std::vector<Mesh> meshes;
-    // Every buffer of the meshes, each released once however many primitives draw from it.
-    std::vector<SDL_GPUBuffer *> buffers;
-    // The positions of the vertices of each accessor of positions, and those each mesh reads in
-    // the order of its primitives, for the bounds of a model.
-    std::vector<std::vector<std::array<float, 3>>> positions;
-    std::vector<std::vector<std::size_t>> meshPositions;
-    std::vector<VertexAnimationInfo> animations;
-    ImageOptions imageOptions;
-    // The textures of the images the paint does not colour.
-    ImageSet plain;
-    // The decoded images of the materials, which the paint colours.
-    std::map<std::size_t, DecodedImage> materials;
-    // The textures of the images of the materials in each colour, or unpainted under none.
-    std::map<std::optional<std::array<std::uint8_t, 3>>, ImageSet> painted;
+class DocumentData {
+public:
+    DocumentData(SDL_GPUDevice *device,
+                 std::filesystem::path path,
+                 bool threePoint,
+                 ImageOptions imageOptions)
+        : m_device(device), m_path(std::move(path)), m_threePoint(threePoint),
+          m_imageOptions(std::move(imageOptions)) {
+    }
 
-    DocumentData() = default;
     DocumentData(const DocumentData &) = delete;
     DocumentData &operator=(const DocumentData &) = delete;
+
+    ~DocumentData() {
+        m_plain.Release(m_device);
+        for (auto &[paint, set] : m_painted) {
+            set.Release(m_device);
+        }
+        for (auto &[index, decoded] : m_materials) {
+            SDL_DestroySurface(decoded.surface);
+        }
+        for (auto *buffer : m_buffers) {
+            ReleaseGpuBuffer(m_device, buffer);
+        }
+        for (auto *sampler : m_samplers) {
+            SDL_ReleaseGPUSampler(m_device, sampler);
+        }
+    }
+
+    // Add a decoded image. The document takes the image of a material, for the paint to colour it
+    // for each colour as a model takes it. The textures of another image are uploaded and the
+    // image is destroyed.
+    bool AddImage(Uploader &upload, std::size_t index, SDL_Surface *image, DecodedImage decoded) {
+        if (decoded.material >= 0) {
+            decoded.surface = image;
+            m_materials.emplace(index, decoded);
+            return true;
+        }
+        bool added = m_plain.Add(upload, index, image, decoded, m_imageOptions);
+        SDL_DestroySurface(image);
+        return added;
+    }
+
+    void AddSampler(const SDL_GPUSamplerCreateInfo &info) {
+        m_samplers.push_back(SDL_CreateGPUSampler(m_device, &info));
+    }
+
+    void AddTexture(std::size_t image, std::size_t sampler) {
+        m_textures.push_back({image, sampler});
+    }
+
+    // A buffer of the meshes, released with the document, or none when it was not created.
+    SDL_GPUBuffer *UploadBuffer(Uploader &upload,
+                                SDL_GPUBufferUsageFlags usage,
+                                std::span<const std::uint8_t> bytes) {
+        SDL_GPUBuffer *created = upload.Buffer(usage, bytes);
+        if (created != nullptr) {
+            m_buffers.push_back(created);
+        }
+        return created;
+    }
+
+    // Add a mesh that does not read positions yet.
+    Mesh &AddMesh() {
+        m_meshPositions.emplace_back();
+        return m_meshes.emplace_back();
+    }
+
+    // Add the positions of the vertices of an accessor of positions, and return their pool.
+    std::size_t AddPositions(std::vector<std::array<float, 3>> positions) {
+        m_positions.push_back(std::move(positions));
+        return m_positions.size() - 1;
+    }
+
+    // Record that the last mesh reads a pool of positions, once in the order of its primitives.
+    void UsePositions(std::size_t pool) {
+        auto &pools = m_meshPositions.back();
+        if (std::find(pools.begin(), pools.end(), pool) == pools.end()) {
+            pools.push_back(pool);
+        }
+    }
+
+    void AddAnimation(VertexAnimationInfo animation) {
+        m_animations.push_back(std::move(animation));
+    }
+
+    // Take the nodes and the scenes of a parsed glTF document.
+    void TakeScene(nlohmann::json &document) {
+        for (const char *key : {"nodes", "scene", "scenes"}) {
+            if (document.contains(key)) {
+                m_scene[key] = std::move(document[key]);
+            }
+        }
+    }
 
     // The images of the materials in a colour, painted and uploaded the first time, or none when
     // they were not uploaded.
     const ImageSet *Painted(const std::optional<std::array<std::uint8_t, 3>> &paint) {
-        if (auto found = painted.find(paint); found != painted.end()) {
+        if (auto found = m_painted.find(paint); found != m_painted.end()) {
             return &found->second;
         }
-        Uploader upload(device);
+        Uploader upload(m_device);
         ImageSet set;
-        for (const auto &[index, decoded] : materials) {
+        for (const auto &[index, decoded] : m_materials) {
             SDL_Surface *copy = CopyImage(decoded.surface);
             if (copy != nullptr && paint) {
                 PaintPalette(SDL_GetSurfacePalette(copy), *paint, decoded.material);
             }
-            bool added =
-                copy != nullptr && AddImage(upload, set, index, copy, decoded, imageOptions);
+            bool added = copy != nullptr && set.Add(upload, index, copy, decoded, m_imageOptions);
             SDL_DestroySurface(copy);
             if (!added) {
                 SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                              "Cannot paint image %llu in %s.",
                              static_cast<unsigned long long>(index),
-                             path.string().c_str());
-                set.Release(device);
+                             m_path.string().c_str());
+                set.Release(m_device);
                 return nullptr;
             }
         }
         if (!upload.Submit()) {
             SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload paint: %s", SDL_GetError());
-            set.Release(device);
+            set.Release(m_device);
             return nullptr;
         }
-        return &painted.emplace(paint, std::move(set)).first->second;
+        return &m_painted.emplace(paint, std::move(set)).first->second;
     }
 
-    ~DocumentData() {
-        plain.Release(device);
-        for (auto &[paint, set] : painted) {
-            set.Release(device);
-        }
-        for (auto &[index, decoded] : materials) {
-            SDL_DestroySurface(decoded.surface);
-        }
-        for (auto *buffer : buffers) {
-            ReleaseGpuBuffer(device, buffer);
-        }
-        for (auto *sampler : samplers) {
-            SDL_ReleaseGPUSampler(device, sampler);
-        }
+    std::size_t PaintCount() const {
+        return m_painted.size();
     }
+
+    // The textures of the images the paint does not colour.
+    const ImageSet &Plain() const {
+        return m_plain;
+    }
+
+    const std::filesystem::path &Path() const {
+        return m_path;
+    }
+
+    // The nodes and the scenes of the glTF document.
+    const nlohmann::json &Scene() const {
+        return m_scene;
+    }
+
+    // Whether the shader filters the texels of the images as the RDP does.
+    bool ThreePoint() const {
+        return m_threePoint;
+    }
+
+    // The image and the sampler of a texture, or none past the last texture.
+    const std::pair<std::size_t, std::size_t> *Texture(std::size_t texture) const {
+        return texture < m_textures.size() ? &m_textures[texture] : nullptr;
+    }
+
+    SDL_GPUSampler *Sampler(std::size_t sampler) const {
+        return m_samplers.at(sampler);
+    }
+
+    const Mesh &MeshAt(std::size_t mesh) const {
+        return m_meshes[mesh];
+    }
+
+    // The pools of positions a mesh reads, in the order of its primitives.
+    const std::vector<std::size_t> &MeshPositions(std::size_t mesh) const {
+        return m_meshPositions[mesh];
+    }
+
+    // The positions of the vertices of a pool, for the bounds of a model.
+    const std::vector<std::array<float, 3>> &Positions(std::size_t pool) const {
+        return m_positions[pool];
+    }
+
+    const std::vector<VertexAnimationInfo> &Animations() const {
+        return m_animations;
+    }
+
+private:
+    SDL_GPUDevice *m_device;
+    std::filesystem::path m_path;
+    nlohmann::json m_scene;
+    std::vector<SDL_GPUSampler *> m_samplers;
+    bool m_threePoint;
+    std::vector<std::pair<std::size_t, std::size_t>> m_textures; // Image and sampler.
+    std::vector<Mesh> m_meshes;
+    // Every buffer of the meshes, each released once however many primitives draw from it.
+    std::vector<SDL_GPUBuffer *> m_buffers;
+    std::vector<std::vector<std::array<float, 3>>> m_positions;
+    std::vector<std::vector<std::size_t>> m_meshPositions;
+    std::vector<VertexAnimationInfo> m_animations;
+    ImageOptions m_imageOptions;
+    ImageSet m_plain;
+    // The decoded images of the materials, for the paint to colour.
+    std::map<std::size_t, DecodedImage> m_materials;
+    // The textures of the images of the materials in each colour, or unpainted under none.
+    std::map<std::optional<std::array<std::uint8_t, 3>>, ImageSet> m_painted;
 };
 
 } // namespace
@@ -927,7 +1082,7 @@ RenderDocument::RenderDocument(std::unique_ptr<State> state) : m_state(std::move
 RenderDocument::~RenderDocument() = default;
 
 std::size_t RenderDocument::PaintCount() const {
-    return m_state->data.painted.size();
+    return m_state->data.PaintCount();
 }
 
 struct RenderModel::State {
@@ -956,32 +1111,16 @@ struct RenderModel::State {
     // paint does not colour.
     void ResolveImages() {
         std::size_t count = 0;
-        auto grow = [&count](const auto &map) {
-            if (!map.empty()) {
-                count = std::max(count, map.rbegin()->first + 1);
-            }
-        };
-        const std::array<const ImageSet *, 2> sets{&document->plain, painted};
+        const std::array<const ImageSet *, 2> sets{&document->Plain(), painted};
         for (const ImageSet *set : sets) {
             if (set != nullptr) {
-                grow(set->images);
-                grow(set->variants);
-                grow(set->damaged);
+                count = std::max(count, set->Extent());
             }
         }
         images.assign(count, {});
         for (const ImageSet *set : sets) {
-            if (set == nullptr) {
-                continue;
-            }
-            for (const auto &[image, texture] : set->images) {
-                images[image].texture = texture;
-            }
-            for (const auto &[image, textures] : set->variants) {
-                images[image].variants = varied ? &textures : nullptr;
-            }
-            for (const auto &[image, levels] : set->damaged) {
-                images[image].damaged = &levels;
+            if (set != nullptr) {
+                set->Resolve(images, varied);
             }
         }
     }
@@ -1338,7 +1477,7 @@ RenderModel::RenderModel(std::unique_ptr<State> state) : m_state(std::move(state
 RenderModel::~RenderModel() = default;
 
 const std::vector<VertexAnimationInfo> &RenderModel::Animations() const {
-    return m_state->document->animations;
+    return m_state->document->Animations();
 }
 
 std::array<float, 3> RenderModel::Centre() const {
@@ -1353,11 +1492,11 @@ std::span<const std::array<float, 3>> RenderModel::Positions() const {
     if (m_state->placed.empty()) {
         return {};
     }
-    const auto &pools = m_state->document->meshPositions[m_state->placed.front().mesh];
+    const auto &pools = m_state->document->MeshPositions(m_state->placed.front().mesh);
     if (pools.empty()) {
         return {};
     }
-    return m_state->document->positions[pools.front()];
+    return m_state->document->Positions(pools.front());
 }
 
 void RenderModel::SetVariant(int variant) {
@@ -1386,18 +1525,14 @@ std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float 
 std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                                                      const std::filesystem::path &path,
                                                      const ModelOptions &options) {
-    auto owned = std::make_unique<State>();
-    DocumentData *state = &owned->data;
-    state->device = renderer.m_state->device;
-    SDL_GPUDevice *device = state->device;
+    SDL_GPUDevice *device = renderer.m_state->device;
     auto source = ReadGltfDocument(path);
     if (!source) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", source.error().c_str());
         return nullptr;
     }
-    state->path = source->path;
-    nlohmann::json document = source->json;
-    const auto &buffer = source->buffer;
+    nlohmann::json document = source->Json();
+    const auto &buffer = source->Buffer();
 
     // The images of another document of the model, one for one, when it has as many.
     nlohmann::json images = document.value("images", nlohmann::json::array());
@@ -1415,9 +1550,10 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
             }
         }
         if (other != nullptr &&
-            other->json.value("images", nlohmann::ordered_json::array()).size() == images.size()) {
+            other->Json().value("images", nlohmann::ordered_json::array()).size() ==
+                images.size()) {
             replacement = other;
-            images = replacement->json["images"];
+            images = replacement->Json()["images"];
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                         "Image override %s does not match %s.",
@@ -1431,13 +1567,16 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
     const TextureFilter filter = renderer.m_state->window->Filter();
     const int anisotropy = renderer.m_state->window->Anisotropy();
     const bool mipmapped = anisotropy > 0 && filter == TextureFilter::Modern;
-    state->threePoint = filter == TextureFilter::N64;
-    state->imageOptions.variants = options.variants;
-    state->imageOptions.paletteVariant = options.paletteVariant;
+    ImageOptions imageOptions;
+    imageOptions.variants = options.variants;
+    imageOptions.paletteVariant = options.paletteVariant;
     if (options.damageMasks != nullptr) {
-        state->imageOptions.damageMasks = *options.damageMasks;
+        imageOptions.damageMasks = *options.damageMasks;
     }
-    state->imageOptions.mipmapped = mipmapped;
+    imageOptions.mipmapped = mipmapped;
+    std::unique_ptr<State> owned(new State{DocumentData(
+        device, source->Path(), filter == TextureFilter::N64, std::move(imageOptions))});
+    DocumentData *state = &owned->data;
     // Reading and decoding PNG images took about half of a warm track load and most of a cold one.
     // Worker threads decode the images, and textures are created and uploaded here in order.
     auto pngs = DecodeImages(replacement != nullptr ? *replacement : *source, images.size());
@@ -1464,15 +1603,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         if (options.damage && options.damageMasks != nullptr && paintSet >= 0) {
             decoded.damage = options.damage(paintSet);
         }
-        // The paint colours an image of a material for each colour as a model takes it.
-        if (decoded.material >= 0) {
-            decoded.surface = loaded;
-            state->materials.emplace(index, decoded);
-            continue;
-        }
-        bool added = AddImage(upload, state->plain, index, loaded, decoded, state->imageOptions);
-        SDL_DestroySurface(loaded);
-        if (!added) {
+        if (!state->AddImage(upload, index, loaded, std::move(decoded))) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "Cannot decode image %llu in %s.",
                          static_cast<unsigned long long>(index),
@@ -1495,11 +1626,11 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         info.address_mode_u = AddressMode(sampler.value("wrapS", 10497));
         info.address_mode_v = AddressMode(sampler.value("wrapT", 10497));
         info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;
-        state->samplers.push_back(SDL_CreateGPUSampler(device, &info));
+        state->AddSampler(info);
     }
     for (const auto &texture : document.value("textures", nlohmann::json::array())) {
-        state->textures.push_back(
-            {texture["source"].get<std::size_t>(), texture["sampler"].get<std::size_t>()});
+        state->AddTexture(texture["source"].get<std::size_t>(),
+                          texture["sampler"].get<std::size_t>());
     }
 
     // The meshes, with the vertices of each primitive in the layout of the shaders, and the
@@ -1509,16 +1640,8 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
     std::map<std::array<std::int64_t, 4>, SDL_GPUBuffer *> sharedVertices;
     std::map<std::int64_t, std::size_t> sharedPositions;
     std::map<std::string, SDL_GPUBuffer *> sharedTargets;
-    auto uploadBuffer = [&](SDL_GPUBufferUsageFlags usage, std::span<const std::uint8_t> bytes) {
-        SDL_GPUBuffer *created = upload.Buffer(usage, bytes);
-        if (created != nullptr) {
-            state->buffers.push_back(created);
-        }
-        return created;
-    };
     for (const auto &mesh : document["meshes"]) {
-        Mesh &drawn = state->meshes.emplace_back();
-        auto &meshPositions = state->meshPositions.emplace_back();
+        Mesh &drawn = state->AddMesh();
         for (const auto &primitive : mesh["primitives"]) {
             const auto &attributes = primitive["attributes"];
             auto position = Accessor(document, buffer, attributes["POSITION"], 12);
@@ -1540,18 +1663,17 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                 attributes.value("TEXCOORD_0", std::int64_t{-1}),
                 attributes.value("NORMAL", std::int64_t{-1}),
                 attributes.value("COLOR_0", std::int64_t{-1})};
-            auto [pool, newPool] =
-                sharedPositions.try_emplace(vertexKey[0], state->positions.size());
-            if (newPool) {
-                auto &positions = state->positions.emplace_back(position->count);
+            auto pool = sharedPositions.find(vertexKey[0]);
+            if (pool == sharedPositions.end()) {
+                std::vector<std::array<float, 3>> positions(position->count);
                 for (std::size_t i = 0; i < positions.size(); ++i) {
                     std::memcpy(positions[i].data(), position->data + i * position->stride, 12);
                 }
+                pool =
+                    sharedPositions.emplace(vertexKey[0], state->AddPositions(std::move(positions)))
+                        .first;
             }
-            if (std::find(meshPositions.begin(), meshPositions.end(), pool->second) ==
-                meshPositions.end()) {
-                meshPositions.push_back(pool->second);
-            }
+            state->UsePositions(pool->second);
             auto [shared, newVertices] = sharedVertices.try_emplace(vertexKey, nullptr);
             if (newVertices) {
                 std::vector<Vertex> vertices(position->count);
@@ -1571,9 +1693,10 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                     std::memcpy(v.color, rgba.data(), 4);
                 }
                 shared->second =
-                    uploadBuffer(SDL_GPU_BUFFERUSAGE_VERTEX,
-                                 {reinterpret_cast<const std::uint8_t *>(vertices.data()),
-                                  vertices.size() * sizeof(Vertex)});
+                    state->UploadBuffer(upload,
+                                        SDL_GPU_BUFFERUSAGE_VERTEX,
+                                        {reinterpret_cast<const std::uint8_t *>(vertices.data()),
+                                         vertices.size() * sizeof(Vertex)});
             }
             std::vector<std::uint32_t> list(indices->count);
             for (std::size_t i = 0; i < list.size(); ++i) {
@@ -1606,17 +1729,19 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                             }
                         }
                     }
-                    targets->second =
-                        uploadBuffer(SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ,
-                                     {reinterpret_cast<const std::uint8_t *>(displacements.data()),
-                                      displacements.size() * sizeof(float)});
+                    targets->second = state->UploadBuffer(
+                        upload,
+                        SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ,
+                        {reinterpret_cast<const std::uint8_t *>(displacements.data()),
+                         displacements.size() * sizeof(float)});
                 }
                 drawn.vertexCount = static_cast<int>(vertexCount);
                 drawn.targets = targets->second;
             }
             Primitive part;
             part.vertices = shared->second;
-            part.indices = uploadBuffer(
+            part.indices = state->UploadBuffer(
+                upload,
                 SDL_GPU_BUFFERUSAGE_INDEX,
                 {reinterpret_cast<const std::uint8_t *>(list.data()), list.size() * 4});
             part.indexCount = static_cast<std::uint32_t>(list.size());
@@ -1702,15 +1827,11 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                 info.keyTimes.push_back(time);
             }
         }
-        state->animations.push_back(std::move(info));
+        state->AddAnimation(std::move(info));
     }
     // A model of the document reads only the nodes and the scenes, and the rest of the parsed
     // document, megabytes for a track and its cars, is released.
-    for (const char *key : {"nodes", "scene", "scenes"}) {
-        if (document.contains(key)) {
-            state->document[key] = std::move(document[key]);
-        }
-    }
+    state->TakeScene(document);
     return std::shared_ptr<RenderDocument>(new RenderDocument(std::move(owned)));
 }
 
@@ -1735,7 +1856,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
     state->reflects = options.reflects;
     state->varied = options.variants > 0;
     const DocumentData &data = *state->document;
-    const nlohmann::json &document = data.document;
+    const nlohmann::json &document = data.Scene();
     state->painted = state->document->Painted(options.paint);
     if (state->painted == nullptr) {
         return nullptr;
@@ -1758,8 +1879,8 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
                 instance = extras.value("index", -1);
             }
             state->placed.push_back({mesh, matrix, instance, flags, parent});
-            for (std::size_t pool : data.meshPositions[mesh]) {
-                for (const auto &p : data.positions[pool]) {
+            for (std::size_t pool : data.MeshPositions(mesh)) {
+                for (const auto &p : data.Positions(pool)) {
                     auto world = Transform(matrix, p.data());
                     for (std::size_t axis = 0; axis < 3; ++axis) {
                         low[axis] = std::min(low[axis], world[axis]);
@@ -1798,7 +1919,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
         if (!options.optional) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "Missing drawable geometry in %s.",
-                         data.path.string().c_str());
+                         data.Path().string().c_str());
         }
         return nullptr;
     }
@@ -2555,10 +2676,11 @@ void SceneRenderer::RenderInto(SDL_GPUCommandBuffer *commands,
             threePoint |= shadows[0]->texture->m_threePoint ? 4u : 0u;
         }
         const DocumentData &document = *model.document;
-        if (primitive.texture && *primitive.texture < document.textures.size()) {
-            threePoint |= document.threePoint ? 1u : 0u;
-            threePoint |= document.threePoint && primitive.texel1 ? 2u : 0u;
-            auto [image, sampler] = document.textures[*primitive.texture];
+        const auto *texture = primitive.texture ? document.Texture(*primitive.texture) : nullptr;
+        if (texture != nullptr) {
+            threePoint |= document.ThreePoint() ? 1u : 0u;
+            threePoint |= document.ThreePoint() && primitive.texel1 ? 2u : 0u;
+            auto [image, sampler] = *texture;
             if (s.snowTint && primitive.snowStill && !primitive.frames.empty()) {
                 image = primitive.frames.front().second;
             } else {
@@ -2567,7 +2689,7 @@ void SceneRenderer::RenderInto(SDL_GPUCommandBuffer *commands,
             if (s.snow && primitive.snowImage) {
                 image = *primitive.snowImage;
             }
-            bindings[0].sampler = document.samplers.at(sampler);
+            bindings[0].sampler = document.Sampler(sampler);
             const ModelImage *resolved = model.Image(image);
             if (resolved != nullptr && resolved->texture != nullptr) {
                 bindings[0].texture = resolved->texture;
@@ -2586,7 +2708,7 @@ void SceneRenderer::RenderInto(SDL_GPUCommandBuffer *commands,
             }
             const ModelImage *texel1 = primitive.texel1 ? model.Image(*primitive.texel1) : nullptr;
             if (texel1 != nullptr && texel1->texture != nullptr) {
-                bindings[1] = {texel1->texture, document.samplers.at(sampler)};
+                bindings[1] = {texel1->texture, document.Sampler(sampler)};
             }
         }
         if (reflection != nullptr) {
@@ -2671,7 +2793,7 @@ void SceneRenderer::RenderInto(SDL_GPUCommandBuffer *commands,
             if (placed.flags & draw.state.hiddenFlags) {
                 continue;
             }
-            const Mesh &mesh = model.document->meshes[placed.mesh];
+            const Mesh &mesh = model.document->MeshAt(placed.mesh);
             Matrix4 local = placed.matrix;
             const float *moved = placed.instance >= 0 && s.instanceMatrix ?
                                      s.instanceMatrix(placed.instance) :

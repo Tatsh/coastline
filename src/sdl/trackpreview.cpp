@@ -56,47 +56,70 @@ std::uint32_t Word(std::span<const std::uint8_t> bytes, std::size_t offset) {
            (static_cast<std::uint32_t>(bytes[offset + 3]) << 24);
 }
 
-struct Accessor {
-    std::span<const std::uint8_t> bytes;
-    std::size_t count;
-    std::size_t stride;
-    int component;
+class Accessor {
+public:
+    static Accessor Load(const GltfModel &model, std::size_t index, std::size_t axes) {
+        const auto &accessor = model.json.at("accessors").at(index);
+        const auto &view =
+            model.json.at("bufferViews").at(accessor.at("bufferView").get<std::size_t>());
+        const int component = accessor.at("componentType");
+        if (component != 5121 && component != 5125 && component != 5126) {
+            throw std::runtime_error("Unsupported track-preview component type.");
+        }
+        const auto size = axes * (component == 5121 ? 1u : 4u);
+        const auto stride = view.value("byteStride", size);
+        const auto count = accessor.at("count").get<std::size_t>();
+        const auto start = view.value("byteOffset", std::size_t{});
+        const auto length = view.at("byteLength").get<std::size_t>();
+        const auto offset = accessor.value("byteOffset", std::size_t{});
+        if (stride < size || start > model.buffer.size() || length > model.buffer.size() - start ||
+            offset > length ||
+            (count && (size > length - offset || count - 1 > (length - offset - size) / stride))) {
+            throw std::runtime_error("Invalid track-preview accessor bounds.");
+        }
+        return Accessor(std::span(model.buffer).subspan(start + offset, length - offset),
+                        count,
+                        stride,
+                        component);
+    }
 
     float Read(std::size_t vertex, std::size_t axis) const {
-        if (vertex >= count) {
+        if (vertex >= m_count) {
             throw std::runtime_error("Track-preview vertex index exceeds its accessor.");
         }
-        const auto offset = vertex * stride + axis * (component == 5121 ? 1 : 4);
-        if (component == 5121) {
-            return bytes[offset] / 255.0f;
+        const auto offset = vertex * m_stride + axis * (m_component == 5121 ? 1 : 4);
+        if (m_component == 5121) {
+            return m_bytes[offset] / 255.0f;
         }
-        const auto word = Word(bytes, offset);
-        return component == 5126 ? std::bit_cast<float>(word) : static_cast<float>(word);
+        const auto word = Word(m_bytes, offset);
+        return m_component == 5126 ? std::bit_cast<float>(word) : static_cast<float>(word);
     }
-};
 
-Accessor ReadAccessor(const GltfModel &model, std::size_t index, std::size_t axes) {
-    const auto &accessor = model.json.at("accessors").at(index);
-    const auto &view =
-        model.json.at("bufferViews").at(accessor.at("bufferView").get<std::size_t>());
-    const int component = accessor.at("componentType");
-    if (component != 5121 && component != 5125 && component != 5126) {
-        throw std::runtime_error("Unsupported track-preview component type.");
+    std::uint32_t Index(std::size_t element) const {
+        return Word(m_bytes, element * m_stride);
     }
-    const auto size = axes * (component == 5121 ? 1u : 4u);
-    const auto stride = view.value("byteStride", size);
-    const auto count = accessor.at("count").get<std::size_t>();
-    const auto start = view.value("byteOffset", std::size_t{});
-    const auto length = view.at("byteLength").get<std::size_t>();
-    const auto offset = accessor.value("byteOffset", std::size_t{});
-    if (stride < size || start > model.buffer.size() || length > model.buffer.size() - start ||
-        offset > length ||
-        (count && (size > length - offset || count - 1 > (length - offset - size) / stride))) {
-        throw std::runtime_error("Invalid track-preview accessor bounds.");
+
+    std::size_t Count() const {
+        return m_count;
     }
-    return {
-        std::span(model.buffer).subspan(start + offset, length - offset), count, stride, component};
-}
+
+    int Component() const {
+        return m_component;
+    }
+
+private:
+    Accessor(std::span<const std::uint8_t> bytes,
+             std::size_t count,
+             std::size_t stride,
+             int component)
+        : m_bytes(bytes), m_count(count), m_stride(stride), m_component(component) {
+    }
+
+    std::span<const std::uint8_t> m_bytes;
+    std::size_t m_count;
+    std::size_t m_stride;
+    int m_component;
+};
 
 std::array<float, 3> MaterialColor(const GltfModel &track, std::size_t index) {
     const auto &material = track.json.at("materials").at(index);
@@ -278,16 +301,17 @@ std::expected<GltfModel, std::string> TrackPreviewToGltf(const GltfModel &track,
             for (const auto &primitive :
                  track.json.at("meshes").at(node.at("mesh").get<std::size_t>()).at("primitives")) {
                 const auto &attributes = primitive.at("attributes");
-                const auto positions = ReadAccessor(track, attributes.at("POSITION"), 3);
-                const auto indices = ReadAccessor(track, primitive.at("indices"), 1);
-                if (indices.component != 5125 || positions.component != 5126 || indices.count % 3) {
+                const auto positions = Accessor::Load(track, attributes.at("POSITION"), 3);
+                const auto indices = Accessor::Load(track, primitive.at("indices"), 1);
+                if (indices.Component() != 5125 || positions.Component() != 5126 ||
+                    indices.Count() % 3) {
                     return std::unexpected("Invalid track-preview triangle accessor.");
                 }
                 const auto color = MaterialColor(track, primitive.at("material"));
-                for (std::size_t i = 0; i < indices.count; i += 3) {
+                for (std::size_t i = 0; i < indices.Count(); i += 3) {
                     Triangle triangle;
                     for (std::size_t corner = 0; corner < 3; ++corner) {
-                        const auto vertex = Word(indices.bytes, (i + corner) * indices.stride);
+                        const auto vertex = indices.Index(i + corner);
                         const Point p{positions.Read(vertex, 0),
                                       positions.Read(vertex, 1),
                                       positions.Read(vertex, 2)};
@@ -303,9 +327,9 @@ std::expected<GltfModel, std::string> TrackPreviewToGltf(const GltfModel &track,
                         }
                     }
                     if (attributes.contains("COLOR_0")) {
-                        const auto colors = ReadAccessor(track, attributes.at("COLOR_0"), 4);
+                        const auto colors = Accessor::Load(track, attributes.at("COLOR_0"), 4);
                         for (std::size_t corner = 0; corner < 3; ++corner) {
-                            const auto vertex = Word(indices.bytes, (i + corner) * indices.stride);
+                            const auto vertex = indices.Index(i + corner);
                             for (std::size_t axis = 0; axis < 3; ++axis) {
                                 triangle[corner].color[axis] *= colors.Read(vertex, axis);
                                 if (!std::isfinite(triangle[corner].color[axis])) {

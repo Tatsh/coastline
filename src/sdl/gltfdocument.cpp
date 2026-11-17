@@ -71,28 +71,28 @@ std::uint32_t Little32(std::span<const std::uint8_t> bytes, std::size_t at) {
 } // namespace
 
 std::expected<GltfDocument, std::string> ReadGltfDocument(const std::filesystem::path &requested) {
-    GltfDocument result;
-    result.path = requested;
+    std::filesystem::path path = requested;
+    nlohmann::ordered_json json;
+    std::vector<std::uint8_t> joined;
     if (requested.extension() == ".gltf" || requested.extension() == ".glb") {
         auto text = requested;
         text.replace_extension(".gltf");
         std::error_code error;
-        result.path = std::filesystem::exists(text, error) ?
-                          text :
-                          std::filesystem::path(text).replace_extension(".glb");
+        path = std::filesystem::exists(text, error) ?
+                   text :
+                   std::filesystem::path(text).replace_extension(".glb");
     }
-    auto file = ReadFile(result.path);
+    auto file = ReadFile(path);
     if (!file) {
         return std::unexpected(file.error());
     }
     std::span<const std::uint8_t> jsonBytes = *file;
     std::span<const std::uint8_t> binary;
-    bool glb = result.path.extension() == ".glb";
+    bool glb = path.extension() == ".glb";
     if (glb) {
         if (file->size() < 20 || Little32(*file, 0) != 0x46546C67 || Little32(*file, 4) != 2 ||
             Little32(*file, 8) != file->size()) {
-            return std::unexpected(
-                fmt::format("{} has an invalid GLB header.", result.path.string()));
+            return std::unexpected(fmt::format("{} has an invalid GLB header.", path.string()));
         }
         bool foundJson = false;
         bool foundBinary = false;
@@ -126,16 +126,16 @@ std::expected<GltfDocument, std::string> ReadGltfDocument(const std::filesystem:
         }
     }
     try {
-        result.json = nlohmann::ordered_json::parse(jsonBytes.begin(), jsonBytes.end());
-        if (!result.json.is_object() || result.json.at("asset").at("version") != "2.0") {
+        json = nlohmann::ordered_json::parse(jsonBytes.begin(), jsonBytes.end());
+        if (!json.is_object() || json.at("asset").at("version") != "2.0") {
             return std::unexpected("The document must use glTF 2.0.");
         }
         std::vector<std::size_t> offsets;
         std::vector<std::size_t> lengths;
-        for (const auto &entry : result.json.value("buffers", nlohmann::ordered_json::array())) {
+        for (const auto &entry : json.value("buffers", nlohmann::ordered_json::array())) {
             Result bytes =
                 entry.contains("uri") ?
-                    ReadUri(result.path.parent_path(), entry.at("uri").get<std::string>()) :
+                    ReadUri(path.parent_path(), entry.at("uri").get<std::string>()) :
                     (glb && offsets.empty() ?
                          Result(Bytes(binary.begin(), binary.end())) :
                          Result(std::unexpected("A buffer requires a URI or GLB BIN chunk.")));
@@ -146,14 +146,14 @@ std::expected<GltfDocument, std::string> ReadGltfDocument(const std::filesystem:
             if (length > bytes->size()) {
                 return std::unexpected("A glTF buffer is truncated.");
             }
-            while (result.buffer.size() % 4 != 0) {
-                result.buffer.push_back(0);
+            while (joined.size() % 4 != 0) {
+                joined.push_back(0);
             }
-            offsets.push_back(result.buffer.size());
+            offsets.push_back(joined.size());
             lengths.push_back(length);
-            result.buffer.insert(result.buffer.end(), bytes->begin(), bytes->begin() + length);
+            joined.insert(joined.end(), bytes->begin(), bytes->begin() + length);
         }
-        for (auto &view : result.json["bufferViews"]) {
+        for (auto &view : json["bufferViews"]) {
             auto buffer = view.at("buffer").get<std::size_t>();
             auto offset = view.value("byteOffset", std::size_t{0});
             auto length = view.at("byteLength").get<std::size_t>();
@@ -165,29 +165,46 @@ std::expected<GltfDocument, std::string> ReadGltfDocument(const std::filesystem:
             view["byteOffset"] = offsets[buffer] + offset;
         }
         if (!offsets.empty()) {
-            result.json["buffers"] =
-                nlohmann::ordered_json::array({{{"byteLength", result.buffer.size()}}});
+            json["buffers"] = nlohmann::ordered_json::array({{{"byteLength", joined.size()}}});
         }
     } catch (const nlohmann::json::exception &error) {
         return std::unexpected(
-            fmt::format("{} is not a glTF document. {}", result.path.string(), error.what()));
+            fmt::format("{} is not a glTF document. {}", path.string(), error.what()));
     }
-    return result;
+    return GltfDocument(std::move(path), std::move(json), std::move(joined));
+}
+
+GltfDocument::GltfDocument(std::filesystem::path path,
+                           nlohmann::ordered_json json,
+                           std::vector<std::uint8_t> buffer)
+    : m_path(std::move(path)), m_json(std::move(json)), m_buffer(std::move(buffer)) {
+}
+
+const std::filesystem::path &GltfDocument::Path() const {
+    return m_path;
+}
+
+const nlohmann::ordered_json &GltfDocument::Json() const {
+    return m_json;
+}
+
+const std::vector<std::uint8_t> &GltfDocument::Buffer() const {
+    return m_buffer;
 }
 
 std::expected<std::vector<std::uint8_t>, std::string> GltfDocument::Image(std::size_t index) const {
     try {
-        const auto &image = json.at("images").at(index);
+        const auto &image = m_json.at("images").at(index);
         if (image.contains("uri")) {
-            return ReadUri(path.parent_path(), image.at("uri").get<std::string>());
+            return ReadUri(m_path.parent_path(), image.at("uri").get<std::string>());
         }
-        const auto &view = json.at("bufferViews").at(image.at("bufferView").get<std::size_t>());
+        const auto &view = m_json.at("bufferViews").at(image.at("bufferView").get<std::size_t>());
         auto offset = view.at("byteOffset").get<std::size_t>();
         auto length = view.at("byteLength").get<std::size_t>();
-        if (offset > buffer.size() || length > buffer.size() - offset) {
+        if (offset > m_buffer.size() || length > m_buffer.size() - offset) {
             return std::unexpected("The image is outside its buffer.");
         }
-        return Bytes(buffer.begin() + offset, buffer.begin() + offset + length);
+        return Bytes(m_buffer.begin() + offset, m_buffer.begin() + offset + length);
     } catch (const nlohmann::json::exception &error) {
         return std::unexpected(fmt::format("The glTF image is invalid. {}", error.what()));
     }

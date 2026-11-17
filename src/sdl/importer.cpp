@@ -1913,7 +1913,7 @@ std::optional<std::vector<std::uint8_t>> ReadPodEntry(const std::filesystem::pat
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", source.error().c_str());
         return std::nullopt;
     }
-    auto bytes = ModelFromGltf(source->json, source->buffer);
+    auto bytes = ModelFromGltf(source->Json(), source->Buffer());
     if (!bytes) {
         return std::nullopt;
     }

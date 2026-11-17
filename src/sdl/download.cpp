@@ -46,15 +46,24 @@ OnStatus(HINTERNET, DWORD_PTR context, DWORD status, LPVOID information, DWORD l
 
 // WinHTTP can call OnStatus after WinHttpCloseHandle returns, and a pending read still writes to
 // the buffer. The request is released only once its handle reports closing.
-struct Request {
-    HINTERNET handle;
-    Transfer &transfer;
+class Request {
+public:
+    Request(HINTERNET handle, const Transfer &transfer) : m_handle(handle), m_transfer(transfer) {
+    }
+
     ~Request() {
-        if (handle) {
-            WinHttpCloseHandle(handle);
-            WaitForSingleObject(transfer.closed.get(), INFINITE);
+        if (m_handle) {
+            WinHttpCloseHandle(m_handle);
+            WaitForSingleObject(m_transfer.closed.get(), INFINITE);
         }
     }
+
+    Request(const Request &) = delete;
+    Request &operator=(const Request &) = delete;
+
+private:
+    HINTERNET m_handle;
+    const Transfer &m_transfer;
 };
 
 // Returns false when the user cancels.

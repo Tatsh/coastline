@@ -1166,6 +1166,7 @@ rendertile
 renicing
 rept
 reques
+resampler
 resetglobalintmask
 resf
 respawn

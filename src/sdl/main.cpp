@@ -108,9 +108,9 @@ const char *RegionName(const std::string &region) {
     return region.c_str();
 }
 
-struct SdlSession {
-    bool ready = false;
-    explicit SdlSession(SDL_InitFlags flags) : ready(SDL_Init(flags)) {
+class SdlSession {
+public:
+    explicit SdlSession(SDL_InitFlags flags) : m_ready(SDL_Init(flags)) {
     }
     ~SdlSession() {
         coastline::ShutdownRaceMusic();
@@ -118,6 +118,14 @@ struct SdlSession {
     }
     SdlSession(const SdlSession &) = delete;
     SdlSession &operator=(const SdlSession &) = delete;
+
+    // Whether SDL_Init() succeeded.
+    bool Ready() const {
+        return m_ready;
+    }
+
+private:
+    bool m_ready = false;
 };
 
 auto RequiredArgumentValue(const char *option) {
@@ -368,12 +376,8 @@ coastline::GameConfig CommandLineOverrides(const argparse::ArgumentParser &parse
 enum class DisplayKey { None, Fullscreen, FrameRate, VSync, Unlocked };
 
 // The keys of the shortcuts held the frame before, from the keyboard and the scripted keys.
-struct DisplayKeys {
-    bool f11 = false;
-    bool f = false;
-    bool v = false;
-    bool ctrlU = false;
-
+class DisplayKeys {
+public:
     // The shortcut pressed since the frame before, F only when @p frameRate allows it, and V only
     // when @p vsync allows it.
     DisplayKey Read(bool frameRate, bool vsync) {
@@ -390,18 +394,18 @@ struct DisplayKeys {
         }
         bool f11Now = coastline::IsKeyDown(SDL_SCANCODE_F11);
         bool fNow = coastline::IsKeyDown(SDL_SCANCODE_F);
-        bool fullscreen = enter || (f11Now && !f11);
+        bool fullscreen = enter || (f11Now && !m_f11);
         bool vNow = coastline::IsKeyDown(SDL_SCANCODE_V);
         const bool ctrlUNow = (coastline::IsKeyDown(SDL_SCANCODE_LCTRL) ||
                                coastline::IsKeyDown(SDL_SCANCODE_RCTRL)) &&
                               coastline::IsKeyDown(SDL_SCANCODE_U);
-        const bool toggleUnlocked = ctrlUNow && !ctrlU;
-        ctrlU = ctrlUNow;
-        bool toggleRate = frameRate && fNow && !f;
-        bool toggleVSync = vsync && vNow && !v;
-        f11 = f11Now;
-        f = fNow;
-        v = vNow;
+        const bool toggleUnlocked = ctrlUNow && !m_ctrlU;
+        m_ctrlU = ctrlUNow;
+        bool toggleRate = frameRate && fNow && !m_f;
+        bool toggleVSync = vsync && vNow && !m_v;
+        m_f11 = f11Now;
+        m_f = fNow;
+        m_v = vNow;
         if (fullscreen) {
             return DisplayKey::Fullscreen;
         }
@@ -413,6 +417,12 @@ struct DisplayKeys {
         }
         return toggleRate ? DisplayKey::FrameRate : DisplayKey::None;
     }
+
+private:
+    bool m_f11 = false;
+    bool m_f = false;
+    bool m_v = false;
+    bool m_ctrlU = false;
 };
 
 class FrameRateOverlay {
@@ -1491,15 +1501,15 @@ int main(int argc, char *argv[]) {
         SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_MENU_VISIBILITY, "0");
 #endif
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
-        if (sdl.ready) {
+        if (sdl.Ready()) {
             SDL_HideCursor();
         }
-        coastline::GameModeSession gameMode(sdl.ready &&
+        coastline::GameModeSession gameMode(sdl.Ready() &&
                                             config.GetBoolean("Game", "GameMode", true));
-        if (sdl.ready && !SDL_InitSubSystem(SDL_INIT_AUDIO)) {
+        if (sdl.Ready() && !SDL_InitSubSystem(SDL_INIT_AUDIO)) {
             SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot start audio: %s", SDL_GetError());
         }
-        if (!sdl.ready) {
+        if (!sdl.Ready()) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Cannot start SDL: %s", SDL_GetError());
         } else if (auto window = coastline::GpuWindow::Create(
                        "Coastline", DisplayOptionsFrom(config, parser, savesFrames, showWizard));

@@ -20,7 +20,7 @@
 
 namespace coastline {
 
-struct GltfDocument;
+class GltfDocument;
 class GpuWindow;
 class SceneRenderer;
 

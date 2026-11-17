@@ -132,12 +132,28 @@ bool Run(const std::vector<std::string> &arguments, const ImportProgress &progre
     return result == 0;
 }
 
-struct TemporaryTools {
-    std::filesystem::path path;
+class TemporaryTools {
+public:
+    TemporaryTools() = default;
+    TemporaryTools(const TemporaryTools &) = delete;
+    TemporaryTools &operator=(const TemporaryTools &) = delete;
+
     ~TemporaryTools() {
         std::error_code error;
-        std::filesystem::remove_all(path, error);
+        std::filesystem::remove_all(m_path, error);
     }
+
+    bool Create(const std::filesystem::path &path, std::error_code &error) {
+        m_path = path;
+        return std::filesystem::create_directory(m_path, error) && !error;
+    }
+
+    const std::filesystem::path &Path() const {
+        return m_path;
+    }
+
+private:
+    std::filesystem::path m_path;
 };
 #endif
 
@@ -233,26 +249,25 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
         const ImportProgress toolProgress = [&](const std::string &, double) {
             return !progress || progress("Preparing temporary FFmpeg...", 0.1);
         };
-        tools.path = directory / fmt::format(".intro-tools-{}", SDL_GetTicksNS());
-        if (!std::filesystem::create_directory(tools.path, error) || error) {
+        if (!tools.Create(directory / fmt::format(".intro-tools-{}", SDL_GetTicksNS()), error)) {
             return "Cannot create temporary FFmpeg directory.";
         }
 #ifdef _WIN32
         const char *url = "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/"
                           "ffmpeg-9.0.2-essentials_build.zip";
         const char *checksum = "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba";
-        const auto program = tools.path / "ffmpeg.exe";
+        const auto program = tools.Path() / "ffmpeg.exe";
 #elif defined(__aarch64__) || defined(__arm64__)
         // The publisher replaces this archive in place with rebuilds of the same release.
         const char *url = "https://www.osxexperts.net/ffmpeg902arm.zip";
         const char *checksum = "4597f0f3a397cc0027bfd03dc4dd9c3066be15943cc788370846b4305d178bcb";
-        const auto program = tools.path / "ffmpeg";
+        const auto program = tools.Path() / "ffmpeg";
 #else
         const char *url = "https://evermeet.cx/ffmpeg/ffmpeg-9.0.2.zip";
         const char *checksum = "4acc0be580f9b2788029eb7bd4d645ff87968911b0a62aeeb3940d42d54558d5";
-        const auto program = tools.path / "ffmpeg";
+        const auto program = tools.Path() / "ffmpeg";
 #endif
-        const auto archive = tools.path / "ffmpeg.zip";
+        const auto archive = tools.Path() / "ffmpeg.zip";
         if (auto failure = DownloadFile(url, archive, toolProgress)) {
             return fmt::format(
                 "Cannot download temporary FFmpeg. {} Install FFmpeg in PATH and retry.", *failure);

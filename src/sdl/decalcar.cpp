@@ -46,8 +46,8 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", source.error().c_str());
         return std::nullopt;
     }
-    const auto &path = source->path;
-    auto bytes = ModelFromGltf(source->json, source->buffer);
+    const auto &path = source->Path();
+    auto bytes = ModelFromGltf(source->Json(), source->Buffer());
     if (!bytes) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "Invalid cartridge car %s (%s).",
@@ -56,7 +56,7 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
         return std::nullopt;
     }
     car.m_bytes = std::move(*bytes);
-    car.m_images = source->json.value("images", nlohmann::ordered_json::array());
+    car.m_images = source->Json().value("images", nlohmann::ordered_json::array());
     for (std::size_t index = 0; index < car.m_images.size(); ++index) {
         auto image = source->Image(index);
         if (!image) {
@@ -448,8 +448,7 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
 }
 
 std::optional<GltfDocument> DecalCar::ImageDocument() const {
-    GltfDocument document;
-    document.path = m_directory / "model.gltf";
+    std::vector<std::uint8_t> buffer;
     auto images = nlohmann::ordered_json::array();
     auto views = nlohmann::ordered_json::array();
     for (std::size_t index = 0; index < m_images.size(); ++index) {
@@ -458,21 +457,21 @@ std::optional<GltfDocument> DecalCar::ImageDocument() const {
             return std::nullopt;
         }
         // Each buffer view starts on a 4-byte boundary, as in a document the reader decodes.
-        document.buffer.resize((document.buffer.size() + 3) & ~std::size_t{3});
+        buffer.resize((buffer.size() + 3) & ~std::size_t{3});
         views.push_back(
-            {{"buffer", 0}, {"byteOffset", document.buffer.size()}, {"byteLength", bytes->size()}});
-        document.buffer.insert(document.buffer.end(), bytes->begin(), bytes->end());
+            {{"buffer", 0}, {"byteOffset", buffer.size()}, {"byteLength", bytes->size()}});
+        buffer.insert(buffer.end(), bytes->begin(), bytes->end());
         auto image = m_images[index];
         image.erase("uri");
         image["bufferView"] = index;
         image["mimeType"] = "image/png";
         images.push_back(std::move(image));
     }
-    document.json = {{"asset", {{"version", "2.0"}}},
-                     {"buffers", {{{"byteLength", document.buffer.size()}}}},
-                     {"bufferViews", std::move(views)},
-                     {"images", std::move(images)}};
-    return document;
+    nlohmann::ordered_json json = {{"asset", {{"version", "2.0"}}},
+                                   {"buffers", {{{"byteLength", buffer.size()}}}},
+                                   {"bufferViews", std::move(views)},
+                                   {"images", std::move(images)}};
+    return GltfDocument(m_directory / "model.gltf", std::move(json), std::move(buffer));
 }
 
 const std::filesystem::path &DecalCar::Directory() const {

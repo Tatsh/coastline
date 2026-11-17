@@ -333,14 +333,53 @@ s16 PlaySoundEffect(std::vector<s8> &sample, std::uint32_t volume);
  * The fade of the screen: a wipe whose level goes to its target at a rate, and the edges of the
  * picture it shows, in pixels of the 320 by 240 screen. The same level fades the sound effects.
  */
-struct ScreenFade {
-    float level = 0.0f;       /*!< From 0 for black to 1 for the whole picture. */
-    float target = 0.0f;      /*!< The level the fade moves to. */
-    float rate = 0.0f;        /*!< The change of the level in a second. */
-    bool autoReverse = false; /*!< Whether a fade out waits for the fade in to finish. */
-    bool skipFrame = false;   /*!< Whether the next frame leaves the level as it is. */
-    int left = 0;             /*!< The left edge of the picture. */
-    int right = 0;            /*!< The right edge of the picture. */
+class ScreenFade {
+public:
+    /** A black screen at rest. */
+    ScreenFade() = default;
+
+    /**
+     * A fade at rest at a level.
+     *
+     * @param level The level and the target, from 0 for black to 1 for the whole picture.
+     */
+    explicit ScreenFade(float level);
+
+    /**
+     * A fade at rest at a level, showing the picture between two edges.
+     *
+     * @param level The level and the target, from 0 for black to 1 for the whole picture.
+     * @param left The left edge of the picture.
+     * @param right The right edge of the picture.
+     */
+    ScreenFade(float level, int left, int right);
+
+    /**
+     * Report the level.
+     *
+     * @return From 0 for black to 1 for the whole picture.
+     */
+    float Level() const;
+
+    /**
+     * Report the left edge of the picture.
+     *
+     * @return The edge, in pixels of the 320 by 240 screen.
+     */
+    int Left() const;
+
+    /**
+     * Report the right edge of the picture.
+     *
+     * @return The edge, in pixels of the 320 by 240 screen.
+     */
+    int Right() const;
+
+    /**
+     * Stop the fade at its level and its target, with no rate, no pending automatic reverse, no
+     * skipped frame, and both edges at 0.
+     */
+    void Stop();
 
     /**
      * SetFadeTarget() of the console.
@@ -384,6 +423,15 @@ struct ScreenFade {
      * @param renderer The renderer of the frame.
      */
     void Draw(SceneRenderer &renderer) const;
+
+private:
+    float m_level = 0.0f;       // From 0 for black to 1 for the whole picture.
+    float m_target = 0.0f;      // The level the fade moves to.
+    float m_rate = 0.0f;        // The change of the level in a second.
+    bool m_autoReverse = false; // Whether a fade out waits for the fade in to finish.
+    bool m_skipFrame = false;   // Whether the next frame does not change the level.
+    int m_left = 0;             // The left edge of the picture.
+    int m_right = 0;            // The right edge of the picture.
 };
 
 } // namespace coastline

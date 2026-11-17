@@ -18,8 +18,8 @@ void AssertImageDocument(const coastline::DecalCar &car, const std::filesystem::
     const auto written = coastline::ReadGltfDocument(directory / "model.gltf");
     const auto memory = car.ImageDocument();
     assert(written && memory);
-    assert(written->json["images"].size() == memory->json["images"].size());
-    for (std::size_t index = 0; index < memory->json["images"].size(); ++index) {
+    assert(written->Json()["images"].size() == memory->Json()["images"].size());
+    for (std::size_t index = 0; index < memory->Json()["images"].size(); ++index) {
         const auto file = written->Image(index);
         const auto bytes = memory->Image(index);
         assert(file && bytes && *file == *bytes);

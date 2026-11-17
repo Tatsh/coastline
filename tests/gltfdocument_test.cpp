@@ -73,11 +73,11 @@ int main() {
     const auto valid = Container(document, binary);
     Write(path, valid);
     auto read = coastline::ReadGltfDocument(root / "model.gltf");
-    Check(read && read->path == path && read->buffer == binary,
+    Check(read && read->Path() == path && read->Buffer() == binary,
           "a missing glTF selects GLB and excludes BIN padding");
     Check(read && read->Image(0) == image, "embedded image bytes come from their buffer view");
-    Check(read && read->json["extras"] == document["extras"] &&
-              read->json["images"][0]["extras"] == document["images"][0]["extras"],
+    Check(read && read->Json()["extras"] == document["extras"] &&
+              read->Json()["images"][0]["extras"] == document["images"][0]["extras"],
           "model and paint metadata remain intact");
     Check(read && !read->Image(1), "an invalid image index reports an error");
 
@@ -90,7 +90,7 @@ int main() {
     auto text = separate.dump();
     Write(root / "model.gltf", {reinterpret_cast<const std::uint8_t *>(text.data()), text.size()});
     read = coastline::ReadGltfDocument(path);
-    Check(read && read->path.extension() == ".gltf" && read->buffer == binary &&
+    Check(read && read->Path().extension() == ".gltf" && read->Buffer() == binary &&
               read->Image(0) == image,
           "glTF takes precedence even through a GLB reference and reads external resources");
     Write(root / "model.gltf", {});
@@ -105,9 +105,9 @@ int main() {
     multiple["images"].push_back({{"uri", "data:image/png;base64,cG5n"}});
     Write(path, Container(multiple, binary));
     read = coastline::ReadGltfDocument(path);
-    Check(read && read->buffer == Bytes({1, 2, 3, 4, 'p', 'n', 'g', 0, 5, 6, 7}) &&
-              read->json["bufferViews"][1]["buffer"] == 0 &&
-              read->json["bufferViews"][1]["byteOffset"] == 8 &&
+    Check(read && read->Buffer() == Bytes({1, 2, 3, 4, 'p', 'n', 'g', 0, 5, 6, 7}) &&
+              read->Json()["bufferViews"][1]["buffer"] == 0 &&
+              read->Json()["bufferViews"][1]["byteOffset"] == 8 &&
               read->Image(0) == Bytes({5, 6, 7}) && read->Image(1) == image,
           "multiple buffers are aligned and joined with embedded and data-URI images");
 

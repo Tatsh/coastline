@@ -7,16 +7,25 @@
 
 namespace coastline {
 namespace {
-struct TemporaryDisc {
-    std::filesystem::path directory;
-
-    explicit TemporaryDisc(std::filesystem::path path) : directory(std::move(path)) {
+class TemporaryDisc {
+public:
+    explicit TemporaryDisc(std::filesystem::path path) : m_directory(std::move(path)) {
     }
 
     ~TemporaryDisc() {
         std::error_code error;
-        std::filesystem::remove_all(directory, error);
+        std::filesystem::remove_all(m_directory, error);
     }
+
+    TemporaryDisc(const TemporaryDisc &) = delete;
+    TemporaryDisc &operator=(const TemporaryDisc &) = delete;
+
+    const std::filesystem::path &Directory() const {
+        return m_directory;
+    }
+
+private:
+    std::filesystem::path m_directory;
 };
 } // namespace
 
@@ -45,7 +54,7 @@ std::expected<DecodedDisc, std::string> CreateDecodedDisc(bool raw, std::uint64_
     if (!storage || error) {
         return std::unexpected(std::string("Cannot create temporary disc storage."));
     }
-    return DecodedDisc{storage->directory / (raw ? "disc.bin" : "disc.iso"), storage, {}};
+    return DecodedDisc{storage->Directory() / (raw ? "disc.bin" : "disc.iso"), storage, {}};
 }
 
 } // namespace coastline

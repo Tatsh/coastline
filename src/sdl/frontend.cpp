@@ -300,70 +300,97 @@ s16 PlaySoundEffect(std::vector<s8> &sample, std::uint32_t volume) {
     return channel;
 }
 
+ScreenFade::ScreenFade(float level) : m_level(level), m_target(level) {
+}
+
+ScreenFade::ScreenFade(float level, int left, int right)
+    : m_level(level), m_target(level), m_left(left), m_right(right) {
+}
+
+float ScreenFade::Level() const {
+    return m_level;
+}
+
+int ScreenFade::Left() const {
+    return m_left;
+}
+
+int ScreenFade::Right() const {
+    return m_right;
+}
+
+void ScreenFade::Stop() {
+    m_rate = 0.0f;
+    m_autoReverse = false;
+    m_skipFrame = false;
+    m_left = 0;
+    m_right = 0;
+}
+
 void ScreenFade::SetTarget(float to, float seconds) {
-    skipFrame = true;
-    if (to < level || to == 0.0f) {
-        if (level == 1.0f || rate <= 0.0f) {
-            rate = -1.0f / seconds;
-            target = to;
+    m_skipFrame = true;
+    if (to < m_level || to == 0.0f) {
+        if (m_level == 1.0f || m_rate <= 0.0f) {
+            m_rate = -1.0f / seconds;
+            m_target = to;
         } else {
             // Still fading in: fade out once the picture is whole.
-            autoReverse = true;
+            m_autoReverse = true;
         }
         return;
     }
-    target = to;
-    rate = 1.0f / seconds;
+    m_target = to;
+    m_rate = 1.0f / seconds;
 }
 
 bool ScreenFade::FadingIn() const {
-    return rate > 0.0f && !autoReverse;
+    return m_rate > 0.0f && !m_autoReverse;
 }
 
 bool ScreenFade::FadingOut() const {
-    return rate < 0.0f || autoReverse;
+    return m_rate < 0.0f || m_autoReverse;
 }
 
 bool ScreenFade::Complete() const {
-    return target == level && !autoReverse;
+    return m_target == m_level && !m_autoReverse;
 }
 
 void ScreenFade::Update(float seconds) {
-    if (!skipFrame) {
-        if (level != target) {
-            level += rate * seconds;
-            if (rate < 0.0f) {
-                level = std::max(level, target);
-            } else if (target <= level) {
-                level = target;
-                if (autoReverse) {
-                    target = 0.0f;
-                    rate = -rate;
-                    autoReverse = false;
+    if (!m_skipFrame) {
+        if (m_level != m_target) {
+            m_level += m_rate * seconds;
+            if (m_rate < 0.0f) {
+                m_level = std::max(m_level, m_target);
+            } else if (m_target <= m_level) {
+                m_level = m_target;
+                if (m_autoReverse) {
+                    m_target = 0.0f;
+                    m_rate = -m_rate;
+                    m_autoReverse = false;
                 }
             }
         }
     } else {
-        skipFrame = false;
+        m_skipFrame = false;
     }
     constexpr int WIDTH = static_cast<int>(SCREEN_WIDTH);
-    if (rate > 0.0f) {
+    if (m_rate > 0.0f) {
         // Fading in, the picture grows from the left.
-        left = 0;
-        right = (static_cast<int>(WIDTH * level) + 3) & ~3;
-    } else if (rate < 0.0f) {
+        m_left = 0;
+        m_right = (static_cast<int>(WIDTH * m_level) + 3) & ~3;
+    } else if (m_rate < 0.0f) {
         // Fading out, black comes in from the left.
-        int move = (WIDTH - static_cast<int>(WIDTH * level) - left + 3) & ~3;
-        left += move;
-        right = std::min(right + move, WIDTH);
+        int move = (WIDTH - static_cast<int>(WIDTH * m_level) - m_left + 3) & ~3;
+        m_left += move;
+        m_right = std::min(m_right + move, WIDTH);
     } else {
-        left = 0;
-        right = WIDTH;
+        m_left = 0;
+        m_right = WIDTH;
     }
 }
 
 void ScreenFade::Draw(SceneRenderer &renderer) const {
-    if (level == 1.0f) {
+    if (m_level == 1.0f) {
         return;
     }
     Matrix4 whole{2.0f, 0, 0, 0, 0, -2.0f, 0, 0, 0, 0, 1, 0, -1.0f, 1.0f, 0, 1};
@@ -379,8 +406,8 @@ void ScreenFade::Draw(SceneRenderer &renderer) const {
                       {to, 1.0f, 0.0f, 0.0f, color},
                       {from, 1.0f, 0.0f, 0.0f, color}});
     };
-    cover(0.0f, static_cast<float>(left) / SCREEN_WIDTH);
-    cover(static_cast<float>(right) / SCREEN_WIDTH, 1.0f);
+    cover(0.0f, static_cast<float>(m_left) / SCREEN_WIDTH);
+    cover(static_cast<float>(m_right) / SCREEN_WIDTH, 1.0f);
     if (!black.empty()) {
         renderer.DrawQuads(black, FlatMaterial{}, whole);
     }

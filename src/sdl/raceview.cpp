@@ -275,7 +275,8 @@ constexpr const char *HUD_DRAWING_PROPERTY = "coastline.hud-drawing";
 // The HUD being drawn: the renderer, the fonts DrawText() draws with while it hands its text to the
 // SDL game, the textures and the canvas of the commands the HUD writes, the first command not drawn
 // yet, and the texture entry and the vertices the commands drawn have loaded.
-struct HudDrawing {
+class HudDrawing {
+public:
     HudDrawing(SceneRenderer &scene,
                const MenuText &font,
                HudTextures &images,
@@ -290,17 +291,23 @@ struct HudDrawing {
             SDL_GetPointerProperty(SDL_GetGlobalProperties(), HUD_DRAWING_PROPERTY, nullptr));
     }
 
-    SceneRenderer *renderer = nullptr;
-    const MenuText *text = nullptr;
-    HudTextures *textures = nullptr;
-    const HudCanvas *hud = nullptr;
-    const GbiCommand *drawn = nullptr;
-    unsigned entry = 0;
-    const ConvertedModelVertex *vertices = nullptr;
-    unsigned firstVertex = 0;
-    unsigned vertexCount = 0;
+    void DrawCommands(const GbiCommand *end);
+
+    void
+    DrawText(const char *text, s32 x, s32 y, const TextStyle &style, const Matrix4 &projection) {
+        m_text->Draw(*m_renderer, text, x, y, style, projection);
+    }
 
 private:
+    SceneRenderer *m_renderer;
+    const MenuText *m_text;
+    HudTextures *m_textures;
+    const HudCanvas *m_hud;
+    const GbiCommand *m_drawn;
+    unsigned m_entry = 0;
+    const ConvertedModelVertex *m_vertices = nullptr;
+    unsigned m_firstVertex = 0;
+    unsigned m_vertexCount = 0;
     HudDrawing *m_previous;
     decltype(g_pfnTextSink) m_previousSink;
     GbiCommand *m_previousList;
@@ -312,12 +319,12 @@ private:
 // as BRD3D draws them on the canvas of the HUD: the face and the gear of the dashboard as
 // rectangles of their textures, a texel of an alpha below a half drawing nothing, and the needle of
 // the tachometer in the colour of its corners, its places counted up from the bottom of the canvas.
-void DrawHudCommands(HudDrawing &drawing, const GbiCommand *end) {
-    SceneRenderer &renderer = *drawing.renderer;
-    HudTextures &textures = *drawing.textures;
-    const HudCanvas &hud = *drawing.hud;
-    std::span<const GbiCommand> commands{drawing.drawn, end};
-    drawing.drawn = end;
+void HudDrawing::DrawCommands(const GbiCommand *end) {
+    SceneRenderer &renderer = *m_renderer;
+    HudTextures &textures = *m_textures;
+    const HudCanvas &hud = *m_hud;
+    std::span<const GbiCommand> commands{m_drawn, end};
+    m_drawn = end;
     auto texture = [&](unsigned entry) -> const RenderTexture * {
         const EngineTexture *source = FindEngineTexture(entry);
         if (source == nullptr || source->rgba.empty()) {
@@ -332,10 +339,10 @@ void DrawHudCommands(HudDrawing &drawing, const GbiCommand *end) {
         }
         return cached.second.get();
     };
-    unsigned &entry = drawing.entry;
-    const ConvertedModelVertex *&vertices = drawing.vertices;
-    unsigned &firstVertex = drawing.firstVertex;
-    unsigned &vertexCount = drawing.vertexCount;
+    unsigned &entry = m_entry;
+    const ConvertedModelVertex *&vertices = m_vertices;
+    unsigned &firstVertex = m_firstVertex;
+    unsigned &vertexCount = m_vertexCount;
     for (const GbiCommand &command : commands) {
         unsigned opcode = command.w0 >> 24;
         if (opcode == GBI_OP_SET_TEXTURE_ENTRY) {
@@ -406,7 +413,7 @@ void DrawHudText(const char *text, s32 x, s32 y) {
     if (drawing == nullptr) {
         return;
     }
-    DrawHudCommands(*drawing, gDisplayListPtr);
+    drawing->DrawCommands(gDisplayListPtr);
     TextStyle style;
     style.size = g_nFontSize;
     style.align = g_nTextAlignment == TEXT_ALIGN_RIGHT  ? TextStyle::Align::Right :
@@ -423,12 +430,8 @@ void DrawHudText(const char *text, s32 x, s32 y) {
                                           g_dwTextCustomColor2G,
                                           g_dwTextCustomColor2B};
     }
-    drawing->text->Draw(*drawing->renderer,
-                        text,
-                        x,
-                        y,
-                        style,
-                        CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
+    drawing->DrawText(
+        text, x, y, style, CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
 }
 
 HudDrawing::HudDrawing(SceneRenderer &scene,
@@ -436,7 +439,7 @@ HudDrawing::HudDrawing(SceneRenderer &scene,
                        HudTextures &images,
                        const HudCanvas &canvas,
                        GbiCommand *scratch)
-    : renderer(&scene), text(&font), textures(&images), hud(&canvas), drawn(scratch),
+    : m_renderer(&scene), m_text(&font), m_textures(&images), m_hud(&canvas), m_drawn(scratch),
       m_previous(Active()), m_previousSink(g_pfnTextSink), m_previousList(gDisplayListPtr),
       m_framebufferWidth(g_dwConfigFramebufferWidth),
       m_framebufferHeight(g_dwConfigFramebufferHeight) {
@@ -501,7 +504,7 @@ void DrawRaceHud(SceneRenderer &renderer,
         DrawPauseMenu(views.data(), g_aRacerSlots, g_aVehicles);
     }
 
-    DrawHudCommands(drawing, gDisplayListPtr);
+    drawing.DrawCommands(gDisplayListPtr);
 }
 
 // The glTF of a model of the console stands it up from z up to y up, and this turns it back to the
@@ -2293,11 +2296,10 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
 
     // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
     if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {
-        ScreenFade wipe;
-        wipe.level = g_fFadeLevel;
-        wipe.left = g_dwFadeRectLeft * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
-        wipe.right = g_dwFadeRectRight * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
-        wipe.Draw(renderer);
+        ScreenFade(g_fFadeLevel,
+                   g_dwFadeRectLeft * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth,
+                   g_dwFadeRectRight * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth)
+            .Draw(renderer);
     }
 }
 

@@ -104,7 +104,7 @@ struct Intro::State {
     float time = 0.0f;
     ScreenFade fade;
     // The volume of the sound effects. It fades out with the screen.
-    ScreenFade sfxFade{.level = 1.0f, .target = 1.0f};
+    ScreenFade sfxFade{1.0f};
     bool skipped = false;
     bool fadingOut = false;
     bool buildDate = false;
@@ -317,7 +317,7 @@ void Intro::Restart() {
     }
     s.fade = {};
     s.fade.SetTarget(1.0f, FADE_TIME);
-    s.sfxFade = {.level = 1.0f, .target = 1.0f};
+    s.sfxFade = ScreenFade(1.0f);
     g_bSfxVolume = MAX_SFX_VOLUME;
     s.time = 0.0f;
     s.skipped = false;
@@ -349,7 +349,7 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     s.buildDate = buttons.buildDate;
     s.fade.Update(seconds);
     s.sfxFade.Update(seconds);
-    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.level * MAX_SFX_VOLUME));
+    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.Level() * MAX_SFX_VOLUME));
     if (!s.fade.FadingIn() || s.fade.Complete()) {
         s.time += seconds;
     }
@@ -480,8 +480,8 @@ void Intro::Draw(SceneRenderer &renderer) const {
         // Once the flag rests it is cut to a band of the screen, inside the edges of the fade.
         std::optional<SDL_Rect> band;
         if (titleTime > TITLE_A_END) {
-            int left = std::max(FLAG_BAND_X, s.fade.left);
-            int right = std::min(FLAG_BAND_X + FLAG_BAND_WIDTH, s.fade.right);
+            int left = std::max(FLAG_BAND_X, s.fade.Left());
+            int right = std::min(FLAG_BAND_X + FLAG_BAND_WIDTH, s.fade.Right());
             band = FrameRect(window.FrameWidth(),
                              window.FrameHeight(),
                              left,
