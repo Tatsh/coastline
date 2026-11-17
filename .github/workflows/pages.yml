@@ -1,5 +1,8 @@
 jobs:
   documentation:
+    # A release tag is pushed after its commit, and the push of the commit already publishes the
+    # pages. A second deployment of the commit competes for the github-pages artifact.
+    if: ${{ !startsWith(github.ref, 'refs/tags/') }}
     name: Documentation
     permissions:
       contents: read
