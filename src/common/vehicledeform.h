@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_DEFORM_H
 #define COASTLINE_VEHICLE_DEFORM_H
 
+/**
+ * @file
+ * The denting of a vehicle mesh by impacts.
+ */
+
 #include "common/vecmath.h"
 #include "common/vehiclefwd.h"
 

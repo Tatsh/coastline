@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The PNG encoding and decoding of 4-bit colour-indexed and 8-bit RGBA images.
+ */
+
 #include <cstdint>
 #include <filesystem>
 #include <optional>

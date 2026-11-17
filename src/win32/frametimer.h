@@ -12,22 +12,18 @@
 /** The clock of the frames, from the performance counter or in milliseconds without one. */
 class FrameTimer {
 private:
-    LARGE_INTEGER liFrameInterval; /*!< The counts of the performance counter in a frame. */
-    LARGE_INTEGER liCurrentCount;  /*!< The count read last. */
-    LARGE_INTEGER liNextInterval;  /*!< Set to liFrameInterval when the clock is read. */
-    DWORD dwFrameIntervalMs;       /*!< The milliseconds of a frame without the counter, 33. */
-    DWORD dwCurrentTimeMs;         /*!< The time read last without the counter. */
-    DWORD dwNextIntervalMs;        /*!< Set to dwFrameIntervalMs when the clock is read. */
+    LARGE_INTEGER liFrameInterval; // The counts of the performance counter in a frame.
+    LARGE_INTEGER liCurrentCount;  // The count read last.
+    LARGE_INTEGER liNextInterval;  // Set to liFrameInterval when the clock is read.
+    DWORD dwFrameIntervalMs;       // The milliseconds of a frame without the counter, 33.
+    DWORD dwCurrentTimeMs;         // The time read last without the counter.
+    DWORD dwNextIntervalMs;        // Set to dwFrameIntervalMs when the clock is read.
 
-    /**
-     * Read the frequency of the performance counter once, set the interval of a frame to a
-     * thirtieth of a second, or 33 milliseconds with a finer resolution of the system time
-     * without the counter, and read the clock.
-     *
-     * @return The timer.
-     * @ghidraAddress BRD3D: 0x100751d0
-     * @ghidraAddress BRGlide: 0x1006e430
-     */
+    // Read the frequency of the performance counter once, set the interval of a frame to a
+    // thirtieth of a second, or 33 milliseconds with a finer resolution of the system time
+    // without the counter, and read the clock. Returns this timer.
+    // @ghidraAddress BRD3D: 0x100751d0
+    // @ghidraAddress BRGlide: 0x1006e430
     FrameTimer *InitializeFrameTimer();
 
 public:

@@ -22,6 +22,8 @@ inline constexpr int GRID_WIDTH = GRID_COLUMNS * CELL_WIDTH;
 inline constexpr int GRID_HEIGHT = GRID_ROWS * CELL_HEIGHT;
 
 /**
+ * Build the orthographic matrix that draws the 640 by 400 text grid into clip space.
+ *
  * @param aspect The width of the frame over its height.
  * @return The matrix from the pixels of the grid to the frame, the grid fitted in the middle of
  * the frame with bars at the sides or at the top and bottom.
@@ -65,8 +67,11 @@ public:
               std::optional<std::array<int, 2>> pointer) const;
 
 private:
+    // Create() uploads both textures.
     TextFont() = default;
+    // The 16 by 16 atlas of white glyphs with coverage in alpha, created by Create().
     std::unique_ptr<RenderTexture> m_glyphs;
+    // The 16 by 16 pixel black and white pointer arrow, created by Create().
     std::unique_ptr<RenderTexture> m_pointer;
 };
 

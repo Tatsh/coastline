@@ -13,6 +13,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * The next free byte of the interface heap.
  *
@@ -24,6 +25,7 @@ extern "C" {
  * @ghidraAddress BRGlide: 0x106eecc8
  */
 extern u8 *g_pHeapCurrent;
+/** @endcond */
 
 /**
  * Empty the heap.

@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_CONFIGURATION_H
 #define COASTLINE_EAR_CONFIGURATION_H
 
+/**
+ * @file
+ * The global and title configuration of the EAR library, the validation of its numeric codes, and
+ * the validation of the audio components.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus

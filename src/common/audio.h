@@ -394,6 +394,7 @@ extern OSThread g_AudioThread;
 /** The stack of the mixing thread, in doublewords. */
 #define AUDIO_THREAD_STACK_WORDS 0x80
 
+/** @cond */
 /**
  * Stack storage for the audio mixing thread, in 64-bit words.
  *
@@ -403,6 +404,7 @@ extern OSThread g_AudioThread;
  * @ghidraAddress JPN: 0x8037a2d8
  */
 extern u64 g_aAudioThreadStack[AUDIO_THREAD_STACK_WORDS];
+/** @endcond */
 
 /**
  * The 32.32 step of each note of each octave.
@@ -651,6 +653,8 @@ typedef struct {
 } SdlMusicState;
 
 /**
+ * Return the XM music player, sample, and volume storage of the active SDL audio context.
+ *
  * @pre An N64MixerContext is active.
  * @return The XM playback storage, valid until the context is destroyed.
  */

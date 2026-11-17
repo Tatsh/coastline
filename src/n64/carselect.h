@@ -47,6 +47,7 @@ enum {
     DECALS_CUSTOM,  /*!< The decals painted in the paint shop. */
 };
 
+/** @cond */
 /**
  * Whether the screen shows the results of a race instead of choosing a car.
  *
@@ -86,16 +87,20 @@ extern s32 g_dwCarSelectStartTime;
  * @ghidraAddress JPN: 0x80316b70
  */
 extern s32 g_adwCarSelectModelSlots[2];
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_JP
+/** @cond */
 /**
  * Whether the model in the slot of each player waits to be painted.
  *
  * @ghidraAddress JPN: 0x80316b60
  */
 extern s32 g_adwCarSelectPaintPending[2];
+/** @endcond */
 #endif
 
+/** @cond */
 /**
  * How far the cars of each player slide on their stage, from 1 or -1 to 0 at rest.
  *
@@ -185,6 +190,7 @@ extern s32 g_bCarSelectDone;
  * @ghidraAddress JPN: 0x80316bb4
  */
 extern s8 *g_pScrollSoundBuf;
+/** @endcond */
 
 /** @cond */
 /**
@@ -212,6 +218,7 @@ extern s8 *g_pSelectSoundBuf;
 extern u32 g_dwSelectSoundSize;
 /** @endcond */
 
+/** @cond */
 /**
  * The frames the title is still drawn once the screen has faded in. It is set to 2 each frame.
  *
@@ -242,6 +249,7 @@ extern s32 g_adwCarSelectState[2];
  * @ghidraAddress JPN: 0x80316bd0
  */
 extern s32 g_dwPakDialogActive;
+/** @endcond */
 
 /** @cond */
 /**
@@ -269,6 +277,7 @@ extern s32 g_dwPakDialogResult;
 extern u8 g_bPakDialogDone;
 /** @endcond */
 
+/** @cond */
 /**
  * The championship as the results show it: its season, round and flags, the track and the weather
  * of the race.
@@ -279,6 +288,7 @@ extern u8 g_bPakDialogDone;
  * @ghidraAddress JPN: 0x80316c14
  */
 extern s32 g_dwResultsSeason;
+/** @endcond */
 
 /** @cond */
 /**
@@ -314,6 +324,7 @@ extern s32 g_dwResultsTrack;
 extern s32 g_dwCarSelectWeather;
 /** @endcond */
 
+/** @cond */
 /**
  * Whether the season results were processed on this screen.
  *
@@ -353,6 +364,7 @@ extern char g_szResultsBuf[0x58];
  * @ghidraAddress JPN: 0x80273b40
  */
 extern MenuItem *g_apHandlingOptions[];
+/** @endcond */
 
 /** @cond */
 /**
@@ -412,6 +424,7 @@ extern MenuItem *g_apSuspensionOptions[];
 extern s32 g_dwSuspensionOptionCount;
 /** @endcond */
 
+/** @cond */
 /**
  * The decals, by the DECALS_ values.
  *
@@ -421,6 +434,7 @@ extern s32 g_dwSuspensionOptionCount;
  * @ghidraAddress JPN: 0x80273c68
  */
 extern MenuItem *g_apDecalOptions[];
+/** @endcond */
 
 /** @cond */
 /**
@@ -432,6 +446,7 @@ extern MenuItem *g_apDecalOptions[];
 extern s32 g_dwDecalListCount;
 /** @endcond */
 
+/** @cond */
 /**
  * The names of the layouts of the engines and of the driven wheels.
  *
@@ -461,6 +476,7 @@ extern const char *g_apszDriveTypes[];
  * @ghidraAddress JPN: 0x80273c80
  */
 extern Ambient g_CameraViewAmbientLight;
+/** @endcond */
 
 /** @cond */
 /**

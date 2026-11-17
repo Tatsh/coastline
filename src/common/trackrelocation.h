@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The loading, relocation, and byte swapping of track data and texture maps.
+ */
+
 #include "common/fileio.h"
 #include "common/track.h"
 

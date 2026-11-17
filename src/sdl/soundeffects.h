@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The selection of PC or Nintendo 64 race sound samples and the loading of menu sounds.
+ */
+
 #include <filesystem>
 #include <memory>
 
@@ -29,7 +34,11 @@ public:
     ~SoundEffects();
     /** Prevent copying the registered sound selection context. */
     SoundEffects(const SoundEffects &) = delete;
-    /** Prevent assignment of the registered sound selection context. */
+    /**
+     * Prevent assignment of the registered sound selection context.
+     *
+     * @return This context; the operator is deleted and never called.
+     */
     SoundEffects &operator=(const SoundEffects &) = delete;
 
     /**
@@ -62,6 +71,7 @@ public:
 
 private:
     struct State;
+    // The asset directory, source, audibility, and cache of converted samples.
     std::unique_ptr<State> m_state;
 };
 

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_CLIP_PLANE_H
 #define COASTLINE_CLIP_PLANE_H
 
+/**
+ * @file
+ * The clipping of a circular linked polygon against a plane, generic over its vertex callbacks.
+ */
+
 #include <concepts>
 #include <type_traits>
 

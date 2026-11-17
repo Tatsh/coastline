@@ -1,6 +1,11 @@
 #ifndef COASTLINE_SDL_SYNCPRINTF_H
 #define COASTLINE_SDL_SYNCPRINTF_H
 
+/**
+ * @file
+ * The SDL replacement of the debug output routine of libultra.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

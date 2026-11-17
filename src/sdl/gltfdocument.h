@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The reader of glTF and GLB model documents.
+ */
+
 #include <cstdint>
 #include <expected>
 #include <filesystem>
@@ -18,6 +23,9 @@ struct GltfDocument {
     std::vector<std::uint8_t> buffer;
 
     /**
+     * Read the encoded bytes of an image, from the file of its URI relative to the document or
+     * from its buffer view.
+     *
      * @param index The zero-based entry in the document's images array.
      * @return The encoded image from a URI or buffer view, or an error.
      */

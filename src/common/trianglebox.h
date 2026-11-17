@@ -1,13 +1,25 @@
 #ifndef COASTLINE_TRIANGLEBOX_H
 #define COASTLINE_TRIANGLEBOX_H
 
+/**
+ * @file
+ * The transformation of a track triangle into the unit cube of a box.
+ */
+
 #include "common/physics.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** Move @p t into the unit cube of @p box and calculate its normal there. */
+/**
+ * Move @p t into the unit cube of @p box and calculate its normal there.
+ *
+ * @param corners Receives the three transformed vertices of the triangle.
+ * @param normal Receives the unnormalised cross product of the two edges from the first corner.
+ * @param box The matrix that maps track space into the unit cube of the box.
+ * @param t The track triangle.
+ */
 static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4], TrackTriangle *t) {
     Vec3f e1, e2;
 #if TGR_BOSS_RALLY

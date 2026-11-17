@@ -35,7 +35,11 @@ extern "C" {
 #define CONT_CMD_NOP 0xFF /*!< A byte that skips to the next. */
 #define CONT_CMD_END 0xFE /*!< The end of the commands. */
 
-/** The error bits of a channel, the top two bits of its receive size, as 0x0 to 0xC. */
+/**
+ * The error bits of a channel, the top two bits of its receive size, as 0x0 to 0xC.
+ *
+ * @param format The command block of the channel, read for its `rxsize` member.
+ */
 #define CHNL_ERR(format) (((format).rxsize & 0xC0) >> 4)
 
 /* The layout of the Controller Pak, read and written in blocks of 32 bytes. */
@@ -61,7 +65,11 @@ extern "C" {
 /** The address the motor of a Rumble Pak listens at. */
 #define MOTOR_ADDRESS 0x600
 
-/** Return the result of a call unless it is 0. */
+/**
+ * Return the result of a call unless it is 0. The enclosing routine must declare `ret`.
+ *
+ * @param fn The call, whose result is stored in `ret`.
+ */
 #define ERRCK(fn)                                                                                  \
     ret = (fn);                                                                                    \
     if (ret != 0) {                                                                                \

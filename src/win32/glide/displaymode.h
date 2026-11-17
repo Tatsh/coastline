@@ -57,6 +57,7 @@ struct GlideResolution {
 /** The number of entries of g_aGlideResolutions. */
 #define GLIDE_RESOLUTION_COUNT 7
 
+/** @cond */
 /**
  * The resolutions the Glide library offers.
  *
@@ -77,6 +78,7 @@ extern GlideDisplayModeNode *g_pGlideDisplayModeList;
  * @ghidraAddress BRGlide: 0x10ac5dcc
  */
 extern int g_dwGlideDisplayModeCount;
+/** @endcond */
 
 /**
  * Build g_pGlideDisplayModeList from the resolutions whose two 16-bit buffers and depth buffer fit

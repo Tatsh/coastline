@@ -17,6 +17,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * Whether GetHighResolutionTime() has not run yet.
  *
@@ -49,6 +50,7 @@ extern int g_bHasPerfCounter;
  * @ghidraAddress BRGlide: 0x118ee248
  */
 extern DWORD g_dwPerfCounterBaseMs;
+/** @endcond */
 
 #ifdef __cplusplus
 }

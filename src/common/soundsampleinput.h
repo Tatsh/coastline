@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The loading of a race sound sample into a sound buffer node.
+ */
+
 #include "common/soundbuffer.h"
 
 /**

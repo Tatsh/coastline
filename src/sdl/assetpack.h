@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The curation of branded images between the default pack and boss, and the reading of the
+ * pack.json settings of a pack.
+ */
+
 #include <filesystem>
 #include <optional>
 #include <string>

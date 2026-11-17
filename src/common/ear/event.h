@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_EVENT_H
 #define COASTLINE_EAR_EVENT_H
 
+/**
+ * @file
+ * The event exports of the EAR library, to mix, move, start, stop, and query a sound event.
+ */
+
 #include <stdint.h>
 
 #include "eventparameters.h"
@@ -18,6 +23,8 @@ extern "C" {
 uint16_t GenerateEarObjectHandle(void);
 
 /**
+ * Forward the mixing of an event to EAR_DLL_MixEvent().
+ *
  * @param params The parameters of the event.
  * @return The handle of the event, or 0.
  * @ghidraAddress EAR: 0x1000cc20
@@ -35,6 +42,8 @@ uint32_t __stdcall EarMixEventExportWrapper(const EarEventParams *params);
 uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params);
 
 /**
+ * Forward the update of an event to EAR_DLL_MoveEvent().
+ *
  * @param params The parameters of the event.
  * @return The handle of the event, or 0.
  * @ghidraAddress EAR: 0x1000d950
@@ -52,6 +61,8 @@ uint32_t __stdcall EarMoveEventExportWrapper(const EarEventParams *params);
 uint32_t __stdcall EAR_DLL_MoveEvent(const EarEventParams *params);
 
 /**
+ * Forward the start of an event to EAR_DLL_StartEvent().
+ *
  * @param params The parameters of the event.
  * @return The handle of the event, or 0.
  * @ghidraAddress EAR: 0x1000f950
@@ -68,6 +79,8 @@ uint32_t __stdcall EarStartEventExportWrapper(const EarEventParams *params);
 uint32_t __stdcall EAR_DLL_StartEvent(const EarEventParams *params);
 
 /**
+ * Forward the stop of an event to EAR_DLL_ShutDownEvent().
+ *
  * @param target The parameters of the event, or its handle when the high word of the control is
  * 1.
  * @param control The stop control in the low word, and the kind of the target in the high word.
@@ -89,6 +102,8 @@ uint32_t __stdcall EarShutDownEventExportWrapper(uintptr_t target, uint32_t cont
 uint32_t __stdcall EAR_DLL_ShutDownEvent(uintptr_t target, uint32_t control);
 
 /**
+ * Forward the status query of an event to EAR_DLL_GetEventStatus().
+ *
  * @param channel The channel.
  * @param event The event, 0 for the most recent of a sequential channel.
  * @return The status of the event.

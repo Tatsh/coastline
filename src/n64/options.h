@@ -64,6 +64,7 @@ typedef struct {
 } SaveLoadMenuItem;
 #endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
+/** @cond */
 /**
  * The items of the options menu, by the OPTIONS_ITEM_ values.
  *
@@ -83,6 +84,7 @@ extern MenuItem g_aOptionsMenuItems[OPTIONS_ITEMS];
  * @ghidraAddress JPN: 0x80273ed0
  */
 extern MenuItem *g_apOptionsMenuItems[];
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
 /**
@@ -95,6 +97,7 @@ extern MenuItem *g_apOptionsMenuItems[];
 extern s32 g_dwOptionsChangedNeedsSave;
 #endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
+/** @cond */
 /**
  * Whether the save and load menu, or the screen of the Controller Pak data, is set up.
  *
@@ -181,8 +184,10 @@ extern const char *g_apszSaveLoadChoices[SAVE_LOAD_CHOICES];
  * @ghidraAddress Asia: 0x802720A0
  */
 extern u8 g_bSaveLoadChoice;
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/** @cond */
 /**
  * The rows of the save and load menu opened from the main menu, for the Game Pak and the
  * Controller Pak.
@@ -215,8 +220,10 @@ extern SaveLoadMenuItem g_aSaveGhostMenuItems[];
  * @ghidraAddress JPN: 0x80274068
  */
 extern u8 g_bSaveLoadMenuCursor;
+/** @endcond */
 #endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
+/** @cond */
 /**
  * The step of the save and load menu.
  *
@@ -307,6 +314,7 @@ extern char g_szBgmVolumeTextBuf[0x18];
  * @ghidraAddress JPN: 0x80316cd8
  */
 extern char g_szSfxVolumeTextBuf[0x18];
+/** @endcond */
 
 /**
  * Whether g_aabSavePakIds holds the identity of the Pak of each of the first two players.
@@ -318,6 +326,7 @@ extern char g_szSfxVolumeTextBuf[0x18];
  */
 extern u8 g_abSavePakIdKnown[2];
 
+/** @cond */
 /**
  * Whether the save and load menu loaded a season or a ghost car.
  *
@@ -327,8 +336,10 @@ extern u8 g_abSavePakIdKnown[2];
  * @ghidraAddress JPN: 0x80316d32
  */
 extern u8 g_bSaveLoadDataWasLoaded;
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+/** @cond */
 /**
  * Whether the next EEPROM step of the save and load menu writes without probing and reading the
  * EEPROM again, once the player confirmed the overwrite.
@@ -337,8 +348,10 @@ extern u8 g_bSaveLoadDataWasLoaded;
  * @ghidraAddress JPN: 0x80316d38
  */
 extern u8 g_bSaveLoadSkipEepromProbe;
+/** @endcond */
 #endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
+/** @cond */
 /**
  * Whether the save and load menu takes the input of its choices.
  *
@@ -398,6 +411,7 @@ extern u8 g_bPakDataStep;
  * @ghidraAddress JPN: 0x80316d41
  */
 extern u8 g_bPakDataWaitFrames;
+/** @endcond */
 
 /**
  * Draw the hint of the volume items, and run the screen that loads or saves the configuration

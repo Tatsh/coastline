@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLEMODEL_H
 #define COASTLINE_VEHICLEMODEL_H
 
+/**
+ * @file
+ * The vehicle model, its loaded slots, and the routines that load and colour it.
+ */
+
 #include "common/carphysics.h"
 #include "common/displaylistops.h"
 #include "common/ptr32.h"

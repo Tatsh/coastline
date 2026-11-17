@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The buttons and the port state of a Nintendo 64 controller, and the number of ports.
+ */
+
 #include <cstddef>
 #include <cstdint>
 

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_LAP_TIME_H
 #define COASTLINE_LAP_TIME_H
 
+/**
+ * @file
+ * The formatting of a lap time as text.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

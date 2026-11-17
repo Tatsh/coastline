@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The reader of ZIP archives searched for cartridge images.
+ */
+
 #include <cstdint>
 #include <filesystem>
 #include <functional>

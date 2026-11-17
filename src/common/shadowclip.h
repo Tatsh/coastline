@@ -1,6 +1,11 @@
 #ifndef COASTLINE_SHADOW_CLIP_H
 #define COASTLINE_SHADOW_CLIP_H
 
+/**
+ * @file
+ * The clipping of shadow polygons to texture boundaries in Boss Rally.
+ */
+
 #include "common/convertedvertex.h"
 
 /** A clipping link with a pointer to its attributes and inline vertex storage. */

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_COMBINE_H
 #define COASTLINE_COMBINE_H
 
+/**
+ * @file
+ * The encoding of colour combiner inputs and the packing of combine-mode commands.
+ */
+
 #include "common/gbicommand.h"
 
 #ifdef __cplusplus

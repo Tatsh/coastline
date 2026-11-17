@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_EVENTPARAMETERS_H
 #define COASTLINE_EAR_EVENTPARAMETERS_H
 
+/**
+ * @file
+ * The parameter block that a caller passes to the EAR library to start, mix, or move an event.
+ */
+
 #include <stdint.h>
 
 /** The number of distance bands of an event. */

@@ -17,6 +17,9 @@ inline constexpr int MAX_VOLUME_LEVEL = 10;
 inline constexpr int MAX_RACE_VOLUME_LEVEL = 9;
 
 /**
+ * Rescale a volume level from the 0-10 range of the options menu to the 0-9 range of the race
+ * engine, rounding to nearest.
+ *
  * @param level A level of the options menu.
  * @return The nearest level of the race engine. The loudest level of each is the same.
  */

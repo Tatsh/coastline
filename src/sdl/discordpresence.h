@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The optional Discord Rich Presence of the game.
+ */
+
 #include <memory>
 #include <string_view>
 
@@ -20,7 +25,11 @@ public:
     ~DiscordPresence();
     /** Prevent duplicate ownership of an IPC session. */
     DiscordPresence(const DiscordPresence &) = delete;
-    /** Prevent replacement of an active IPC session. */
+    /**
+     * Prevent replacement of an active IPC session.
+     *
+     * @return This presence.
+     */
     DiscordPresence &operator=(const DiscordPresence &) = delete;
 
     /**
@@ -34,6 +43,7 @@ public:
 
 private:
     struct Worker;
+    // The IPC thread and its pending activity, or null when presence is disabled.
     std::unique_ptr<Worker> m_worker;
 };
 

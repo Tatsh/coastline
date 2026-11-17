@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TRACKSKIDMARKS_H
 #define COASTLINE_TRACKSKIDMARKS_H
 
+/**
+ * @file
+ * The skid trails and the deferred drawing of vehicle shadows and skid marks.
+ */
+
 #include "common/vecmath.h"
 #include "common/vehiclefwd.h"
 
@@ -18,7 +23,11 @@ typedef struct SdlSkidMarkState {
     int tails[SKID_MARK_TRACK_COUNT]; /*!< The last mark of each skid trail. */
 } SdlSkidMarkState;
 
-/** @return Skid trail endpoints for the active engine runtime. */
+/**
+ * Get the skid trail endpoints of the active engine runtime. An engine must be active.
+ *
+ * @return Skid trail endpoints for the active engine runtime.
+ */
 SdlSkidMarkState *GetSdlSkidMarkState(void);
 /** @cond */
 #define g_anSkidMarkHead (GetSdlSkidMarkState()->heads)
@@ -42,7 +51,13 @@ extern int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
 extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
-/** Append vehicle shadows and skid trails to the deferred display list. */
+/**
+ * Append vehicle shadows and skid trails to the deferred display list. A shadow is drawn only while
+ * g_bDisableCarShadow is non-zero and for a vehicle whose four shadow corners are valid. Skid
+ * trails are drawn only when skid marks are chosen.
+ *
+ * @param vehicles The vehicles, of which the first g_dwNumActiveVehicles are drawn.
+ */
 void DrawTrackShadows(Vehicle *vehicles);
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
@@ -50,8 +65,8 @@ void DrawTrackShadows(Vehicle *vehicles);
 #define SKID_MARK_SEGMENT_COUNT 500
 
 /**
- * Lay the skid marks of the wheels of the vehicles of a drawn frame, as DrawTrackShadows() lays
- * them when skid marks are chosen.
+ * Place the skid marks of the wheels of the vehicles of a drawn frame, as DrawTrackShadows()
+ * places them when skid marks are chosen.
  *
  * @param vehicles The vehicles the frame draws.
  */

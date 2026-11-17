@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The fatal error screen that ends the application.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

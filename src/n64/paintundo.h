@@ -1,6 +1,11 @@
 #ifndef COASTLINE_N64_PAINTUNDO_H
 #define COASTLINE_N64_PAINTUNDO_H
 
+/**
+ * @file
+ * The undo and redo history of decal and palette edits in the paint shop.
+ */
+
 #include "common/vehiclemodel.h"
 
 #define PAINT_UNDO_SLOT 0    /*!< A saved edit to one decal slot. */

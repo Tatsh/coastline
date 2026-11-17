@@ -195,6 +195,7 @@ extern s32 g_nDeferredInstanceLastIdx;
 #endif /* !TGR_BOSS_RALLY */
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The TRACK_INSTANCE_ flags of the placed models not drawn.
  *
@@ -204,6 +205,7 @@ extern s32 g_nDeferredInstanceLastIdx;
  * @ghidraAddress JPN: 0x8035e690
  */
 extern u32 g_dwInstanceHideFlags;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**
@@ -303,6 +305,7 @@ extern f32 g_afNearbyVehicleDot[MAX_VEHICLES];
 extern Vec3f g_vVehicleVisibilityDelta;
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The largest absolute value of the first three rows of g_afViewProjMatrix.
  *
@@ -312,6 +315,7 @@ extern Vec3f g_vVehicleVisibilityDelta;
  * @ghidraAddress JPN: 0x8035e68c
  */
 extern f32 g_fViewMatrixMaxAbs;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**

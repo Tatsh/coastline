@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RENDERINIT_H
 #define COASTLINE_RENDERINIT_H
 
+/**
+ * @file
+ * The mutex that serialises the renderer of the PC release during a race.
+ */
+
 #include <windows.h>
 
 #ifdef __cplusplus

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_MUSICDEVICE_H
 #define COASTLINE_EAR_MUSICDEVICE_H
 
+/**
+ * @file
+ * The CD audio and MIDI music devices of the EAR library, their tracks, and their mixer lines.
+ */
+
 #include <stdint.h>
 
 #include <windows.h>
@@ -79,6 +84,8 @@ void CloseCdAudioDevice(void);
 void CloseMidiMusicDevice(void);
 
 /**
+ * Read the track count stored by LoadCdTrackPositions(), cleared when the CD device closes.
+ *
  * @return The number of tracks of the CD.
  * @ghidraAddress EAR: 0x10004832
  */
@@ -92,6 +99,8 @@ DWORD GetCdTrackCount(void);
  */
 int LoadCdTrackPositions(void);
 /**
+ * Query the CD audio device for media. The result of the status command is not checked.
+ *
  * @return Whether the CD audio device has a CD.
  * @ghidraAddress EAR: 0x100063c3
  */

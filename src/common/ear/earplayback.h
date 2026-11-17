@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_EARPLAYBACK_H
 #define COASTLINE_EAR_EARPLAYBACK_H
 
+/**
+ * @file
+ * The common playback state of an EAR event, with the device buffer, smoothing, and notification
+ * controls every media implementation shares.
+ */
+
 #include <cstdint>
 
 #include "ear/directionalmatrix.h"
@@ -30,11 +36,15 @@ public:
     void SetEarPlaybackFlags(std::uint16_t flags);
 
     /**
+     * Read the pause status that PauseEarPlayback() sets and starts and resumes clear.
+     *
      * @return The stored pause status, with zero for unpaused playback and nonzero for paused.
      * @ghidraAddress EAR: 0x1000ab77
      */
     int GetStatus();
     /**
+     * Read whether a device start has succeeded for the playback.
+     *
      * @return The stored active marker; pausing does not clear the marker.
      * @ghidraAddress EAR: 0x1000ad34
      */
@@ -45,11 +55,15 @@ public:
      */
     void MarkComplete();
     /**
+     * Read the mute marker that SetEarPlaybackMute() stores.
+     *
      * @return The stored mute marker, with nonzero indicating mute.
      * @ghidraAddress EAR: 0x1000ab88
      */
     int GetEarPlaybackMute();
     /**
+     * Read whether the media refills the device buffer in halves while playing.
+     *
      * @return The stored streaming marker, with nonzero indicating buffered streaming.
      * @ghidraAddress EAR: 0x1000ab99
      */
@@ -70,9 +84,13 @@ public:
     void ClearPlaybackCompletion();
 
 private:
-    /** @ghidraAddress EAR: 0x10012570 */
+    // Clear the device buffer reference and both cursors, then set the play cursor to one.
+    // The constructor calls this hook.
+    // @ghidraAddress EAR: 0x10012570
     virtual void InitializeDirectSoundPlaybackState();
-    /** @ghidraAddress EAR: 0x10012596 */
+    // Finalise the device state from the destructor. The base implementation does nothing and
+    // does not release the buffer.
+    // @ghidraAddress EAR: 0x10012596
     virtual void FinalizeDirectSoundPlaybackState();
 
 public:
@@ -105,7 +123,10 @@ public:
     SetEarPlaybackDirectionalGain(std::uint16_t direction, double gain, std::uint16_t matrix);
 
 private:
-    /** @ghidraAddress EAR: 0x1001273a */
+    // Interpolate gain and pan between the previous and target values by the weight of the current
+    // smoothing pass and apply them to the device buffer of registered playback.
+    // Gain includes master attenuation and the directional matrix gain, and is zero while muted.
+    // @ghidraAddress EAR: 0x1001273a
     virtual void UpdateDirectSoundPlaybackGainAndPan();
 
 public:
@@ -117,7 +138,8 @@ public:
     virtual void ProcessEarPlaybackSmoothing();
 
 private:
-    /** @ghidraAddress EAR: 0x1000aee1 */
+    // Restart the smoothing transition at pass one.
+    // @ghidraAddress EAR: 0x1000aee1
     virtual void ResetEarPlaybackSmoothingPass();
 
 public:
@@ -158,9 +180,13 @@ public:
     virtual int InitializeEarPlayback(const void *source, int streaming, int looping);
 
 private:
-    /** @ghidraAddress EAR: 0x10012715 */
+    // Return the value of g_wEarObjectHandleCounter before advancing the counter.
+    // @ghidraAddress EAR: 0x10012715
     virtual std::uint16_t AllocateEarEventId();
-    /** @ghidraAddress EAR: 0x100125fd */
+    // Interpolate the frequency between the previous and target values by the weight of the
+    // current smoothing pass, clamp it to DSBFREQUENCY_MIN..100000 Hz, and apply it to the device
+    // buffer. Missing buffers are ignored.
+    // @ghidraAddress EAR: 0x100125fd
     virtual void UpdateDirectSoundPlaybackFrequency();
 
 public:
@@ -174,7 +200,10 @@ public:
     virtual int StartEarPlayback();
 
 private:
-    /** @ghidraAddress EAR: 0x10012860 */
+    // Play the device buffer, looping while looping or streaming is requested. Enabled suppression
+    // with role one reports success without playing. Returns one on success, or zero with EAR
+    // error 19 for a missing buffer or 20 for a device error.
+    // @ghidraAddress EAR: 0x10012860
     virtual int PlayDirectSoundEventBuffer();
 
 public:
@@ -186,7 +215,9 @@ public:
     virtual int PauseEarPlayback();
 
 private:
-    /** @ghidraAddress EAR: 0x100128f8 */
+    // Stop the device buffer of active playback. Inactive playback with a buffer reports success.
+    // Returns one on success, or zero for a missing buffer or for a device error with EAR error 37.
+    // @ghidraAddress EAR: 0x100128f8
     virtual int StopDirectSoundEventBuffer();
 
 public:
@@ -207,11 +238,15 @@ protected:
     virtual void CloseRegisteredEarPlayback();
 
 private:
-    /** @ghidraAddress EAR: 0x1001294f */
+    // Stop and release the device buffer, then clear the reference. Missing buffers are ignored.
+    // @ghidraAddress EAR: 0x1001294f
     virtual void ReleaseDirectSoundEventBuffer();
-    /** @ghidraAddress EAR: 0x1000a880 */
+    // Decode the next stream half into the device buffer. The base implementation does nothing.
+    // IsBufferedEarPlaybackComplete() calls this hook once the play cursor enters the half.
+    // @ghidraAddress EAR: 0x1000a880
     virtual void RefillEarPlaybackStream();
-    /** @ghidraAddress EAR: 0x100125a1 */
+    // Copy decoded samples into the device buffer. The base implementation does nothing.
+    // @ghidraAddress EAR: 0x100125a1
     virtual void CopyEarPlaybackSamplesToOutput();
 
 public:
@@ -222,7 +257,9 @@ public:
     virtual void CompleteEarPlayback();
 
 private:
-    /** @ghidraAddress EAR: 0x100129a3 */
+    // Test whether a looping stream has finished. The base implementation returns nonzero when the
+    // device buffer is not playing.
+    // @ghidraAddress EAR: 0x100129a3
     virtual int CheckEarPlaybackLoopCompletion();
 
 public:
@@ -244,6 +281,8 @@ protected:
 
 public:
     /**
+     * Report the length of the media of the implementation.
+     *
      * @return Zero in the base implementation; media length in backend-specific units otherwise.
      * @ghidraAddress EAR: 0x100094e0
      */
@@ -284,7 +323,8 @@ public:
     virtual void SetCachedBackendPlaybackParameter(double value);
 
 private:
-    /** @ghidraAddress EAR: 0x10012e2b */
+    // Respond to a changed cached backend parameter. The base implementation does nothing.
+    // @ghidraAddress EAR: 0x10012e2b
     virtual void OnBackendPlaybackParameterChanged();
 
 public:
@@ -345,11 +385,17 @@ protected:
     void DisablePlaybackStreaming() {
         streaming = 0;
     }
-    /** @return The stored wave-stream start offset in milliseconds, or zero when disabled. */
+    /**
+     * Read the offset that SetEarPlaybackStartMilliseconds() stores.
+     * @return The stored wave-stream start offset in milliseconds, or zero when disabled.
+     */
     std::uint16_t GetPlaybackStartMilliseconds() const {
         return startMilliseconds;
     }
-    /** @return Whether a backend-specific start position is specified. */
+    /**
+     * Test the start-position marker.
+     * @return Whether a backend-specific start position is specified.
+     */
     bool HasPlaybackStartPosition() const {
         return startPositionSpecified != 0;
     }
@@ -366,7 +412,10 @@ protected:
         streaming = isStreaming;
         looping = isLooping;
     }
-    /** @return The dimensionless initial frequency multiplier. */
+    /**
+     * Read the multiplier that SetEarPlaybackBaseFrequencyScale() stores.
+     * @return The dimensionless initial frequency multiplier.
+     */
     double GetPlaybackBaseFrequencyScale() const {
         return baseFrequencyScale;
     }
@@ -384,7 +433,10 @@ protected:
     void SetPlaybackHandle(std::uint32_t handle) {
         playbackHandle = handle;
     }
-    /** @return The stored playback handle, or zero for unregistered playback. */
+    /**
+     * Read the playback registry key.
+     * @return The stored playback handle, or zero for unregistered playback.
+     */
     std::uint32_t GetPlaybackHandle() const {
         return playbackHandle;
     }
@@ -410,15 +462,24 @@ protected:
     void ResetPlaybackBufferFrequency() {
         frequency = baseFrequency;
     }
-    /** @return The stored decoded sample-buffer capacity in bytes. */
+    /**
+     * Read the capacity that SetPlaybackBufferBytes() stores.
+     * @return The stored decoded sample-buffer capacity in bytes.
+     */
     std::uint32_t GetPlaybackBufferBytes() const {
         return bufferBytes;
     }
-    /** @return Whether a start position is specified and streaming is disabled. */
+    /**
+     * Test for a start position that applies to non-streaming media.
+     * @return Whether a start position is specified and streaming is disabled.
+     */
     bool HasNonStreamingStartPosition() const {
         return startPositionSpecified && !streaming;
     }
-    /** @return The backend-specific start position, meaningful when marked specified. */
+    /**
+     * Read the stored start position.
+     * @return The backend-specific start position, meaningful when marked specified.
+     */
     double GetPlaybackStartPosition() const {
         return startPosition;
     }
@@ -427,11 +488,17 @@ protected:
         startPositionSpecified = 0;
         startPosition = 0;
     }
-    /** @return The borrowed buffer, or null; releasing the buffer invalidates the pointer. */
+    /**
+     * Read the device buffer reference.
+     * @return The borrowed buffer, or null; releasing the buffer invalidates the pointer.
+     */
     EarDirectSoundPlaybackState::Buffer *GetDirectSoundBuffer() const {
         return directSound.GetBuffer();
     }
-    /** @return The incremented stream-drain counter, wrapping at 32 bits. */
+    /**
+     * Count one more refill while a non-looping stream drains.
+     * @return The incremented stream-drain counter, wrapping at 32 bits.
+     */
     std::uint32_t IncrementLoopDrainCount() {
         return ++loopDrainCount;
     }
@@ -440,15 +507,24 @@ protected:
         looping = 0;
         streaming = 0;
     }
-    /** @return The stored source flags; derived construction must initialise the value first. */
+    /**
+     * Read the flags that SetEarPlaybackFlags() stores.
+     * @return The stored source flags; derived construction must initialise the value first.
+     */
     std::uint16_t GetPlaybackSourceFlags() const {
         return flags;
     }
-    /** @return Whether the stored looping marker is nonzero. */
+    /**
+     * Test the looping marker.
+     * @return Whether the stored looping marker is nonzero.
+     */
     bool IsPlaybackLooping() const {
         return looping != 0;
     }
-    /** @return Whether a nonzero playback handle is stored. */
+    /**
+     * Test whether the playback is registered.
+     * @return Whether a nonzero playback handle is stored.
+     */
     bool HasPlaybackHandle() const {
         return playbackHandle != 0;
     }
@@ -456,11 +532,17 @@ protected:
     void DisablePlaybackLooping() {
         looping = 0;
     }
-    /** @return The next refill-half index, zero or one under normal streaming progression. */
+    /**
+     * Read the index of the stream half the next refill writes.
+     * @return The next refill-half index, zero or one under normal streaming progression.
+     */
     std::uint32_t GetStreamHalfIndex() const {
         return streamHalfIndex;
     }
-    /** @return The stored decoded byte count in each streaming half. */
+    /**
+     * Read the size that SetStreamHalfBytes() stores.
+     * @return The stored decoded byte count in each streaming half.
+     */
     std::uint32_t GetStreamHalfBytes() const {
         return streamHalfBytes;
     }
@@ -470,12 +552,17 @@ protected:
     }
 
 private:
-    /** @ghidraAddress EAR: 0x1000abc0 */
+    // Read the marker that SetBackendPlaybackOverrideEnabled() stores.
+    // @ghidraAddress EAR: 0x1000abc0
     int GetBackendPlaybackOverrideEnabled();
-    /** @ghidraAddress EAR: 0x1000ad5a */
+    // Read the marker that SetEarPlaybackLooping() stores.
+    // @ghidraAddress EAR: 0x1000ad5a
     int GetEarPlaybackLooping();
 
-    /** @ghidraAddress EAR: 0x100125ac */
+    // Refresh the cached cursors from the device for registered playback without a completion
+    // request, then return the play cursor in bytes. The cached value is returned when no
+    // refresh occurred.
+    // @ghidraAddress EAR: 0x100125ac
     DWORD GetDirectSoundPlaybackCursor();
 
 protected:

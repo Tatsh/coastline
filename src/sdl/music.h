@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The XM music player and sample mixers of the Nintendo 64 release, streamed to an SDL playback
+ * device, with the context and lock that guard them against the audio thread.
+ */
+
 #include <cstdint>
 #include <expected>
 #include <filesystem>
@@ -27,11 +33,15 @@ public:
     ~N64MixerContext();
     /** Prevent copying the registered mixer and its synchronisation resources. */
     N64MixerContext(const N64MixerContext &) = delete;
-    /** Prevent assignment of the registered mixer and its synchronisation resources. */
+    /**
+     * Prevent assignment of the registered mixer and its synchronisation resources.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     N64MixerContext &operator=(const N64MixerContext &) = delete;
 
 private:
-    std::unique_ptr<N64Mixer> m_mixer;
+    std::unique_ptr<N64Mixer> m_mixer; // The registered mixer state, with its mutex.
 };
 
 /** The sample rate of the imported music, in stereo frames per second. */
@@ -49,7 +59,11 @@ public:
     ~N64Audio();
     /** Prevent copying the playback stream and module storage. */
     N64Audio(const N64Audio &) = delete;
-    /** Prevent assignment of the playback stream and module storage. */
+    /**
+     * Prevent assignment of the playback stream and module storage.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     N64Audio &operator=(const N64Audio &) = delete;
 
     /**
@@ -69,10 +83,18 @@ public:
     /** Stop the module and silence its channels. */
     void Stop();
 
-    /** @return Whether the device paused, and true without a device. */
+    /**
+     * Mark playback paused and pause the device through UpdateVolumeProcessing().
+     *
+     * @return Whether the device paused, and true without a device.
+     */
     bool Pause();
 
-    /** @return Whether the device resumed, and true without a device. */
+    /**
+     * Clear the pause and resume the device unless both audio categories are silent.
+     *
+     * @return Whether the device resumed, and true without a device.
+     */
     bool Resume();
     /**
      * Suspend the device while paused or while both enabled audio categories are silent.
@@ -105,30 +127,42 @@ public:
     std::vector<std::int16_t> Render(std::size_t frames);
 
 private:
+    // Render exactly the requested stereo frames with the mixer lock already taken, silent while
+    // both categories are off. Samples rendered past the request are retained for the next call.
+    // When both categories become silent, the ring, the pending samples, and the lookahead are
+    // reset.
     std::vector<std::int16_t> RenderLocked(std::size_t frames);
+    // Advance the mixers by one 10-millisecond tick of the timer of the console, appending an even
+    // number of stereo frames to the output. The music player advances on every second tick. The
+    // first tick after a reset also mixes the lookahead.
     void Tick(std::vector<std::int16_t> &output);
+    // Supply an SDL playback stream with rendered samples under the mixer lock. The user data is
+    // the N64Audio that opened the stream. Nothing is rendered when the additional byte count is
+    // not positive, and the total is unused.
     static void SDLCALL StreamCallback(void *userData,
                                        SDL_AudioStream *stream,
                                        int additional,
                                        int total);
 
-    N64Mixer &m_mixer;
-    SDL_AudioStream *m_stream = nullptr;
-    std::vector<std::uint8_t> m_module;
-    std::uint32_t m_outputReadOffset = 0;
+    N64Mixer &m_mixer;                    // The mixer of the active N64MixerContext.
+    SDL_AudioStream *m_stream = nullptr;  // The playback stream, or nullptr without a device.
+    std::vector<std::uint8_t> m_module;   // The copy of the module the player reads in place.
+    std::uint32_t m_outputReadOffset = 0; // The byte offset of the next output in the ring.
+    // The remainder of frames per tick, in hundredths of a frame, retained for the next tick.
     std::uint64_t m_frameRemainder = 0;
-    bool m_primed = false;
+    bool m_primed = false; // Whether the lookahead has been mixed since the last reset.
+    // The byte offset in the ring where the sound effects mix next.
     std::uint32_t m_soundEffectMixOffset = 0;
+    // Toggled by each tick that mixes music. The player advances when it is true.
     bool m_musicTick = false;
-    std::vector<std::int16_t> m_pending;
-    bool m_musicProcessing = true;
-    bool m_sfxProcessing = true;
-    bool m_paused = false;
+    std::vector<std::int16_t> m_pending; // Samples rendered past the last request.
+    bool m_musicProcessing = true;       // Whether the last render mixed music.
+    bool m_sfxProcessing = true;         // Whether the last render mixed sound effects.
+    bool m_paused = false;               // Whether Pause() was called without a later Resume().
     bool m_devicePaused = true;
-    bool m_musicEnabled = true;
-    bool m_sfxEnabled = true;
-    // The music gain in 8.8 fixed point.
-    std::uint32_t m_musicGain = 256;
+    bool m_musicEnabled = true;      // Whether SetProcessingEnabled() enabled music.
+    bool m_sfxEnabled = true;        // Whether SetProcessingEnabled() enabled sound effects.
+    std::uint32_t m_musicGain = 256; // The music gain in 8.8 fixed point.
 };
 
 /**
@@ -145,11 +179,15 @@ public:
     ~N64MixerLock();
     /** Prevent copying a mutex acquisition. */
     N64MixerLock(const N64MixerLock &) = delete;
-    /** Prevent assignment of a mutex acquisition. */
+    /**
+     * Prevent assignment of a mutex acquisition.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     N64MixerLock &operator=(const N64MixerLock &) = delete;
 
 private:
-    SDL_Mutex *m_mutex;
+    SDL_Mutex *m_mutex; // The recursive mutex of the mixer context, locked by this object.
 };
 
 /**

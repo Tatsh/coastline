@@ -109,6 +109,7 @@ extern GhostRecordingInfo g_GhostRecordingInfo;
  */
 extern unsigned g_dwGhostRecordingSize;
 
+/** @cond */
 /**
  * The encoded frames of all ghost recordings.
  *
@@ -116,6 +117,7 @@ extern unsigned g_dwGhostRecordingSize;
  * @ghidraAddress BRGlide: 0x10b73668
  */
 extern u8 g_aGhostKeyframes[GHOST_RECORDING_COUNT][GHOST_MAX_FRAMES * GHOST_FRAME_SIZE];
+/** @endcond */
 
 /**
  * The best race time of the ghost, in seconds.
@@ -141,6 +143,7 @@ extern float g_fGhostBestLapTime;
  */
 extern int g_dwLoadedGhostLapCount;
 
+/** @cond */
 /**
  * The four-byte signature of a ghost file.
  *
@@ -155,6 +158,7 @@ extern const char g_szGhostSaveMagic[4];
  * @ghidraAddress BRD3D: 0x1008fc1c
  */
 extern const unsigned g_dwGhostFileHeader;
+/** @endcond */
 
 /**
  * Get the encoded frames of the first recording.
@@ -240,6 +244,7 @@ bool SaveGhostFile(void);
  */
 extern unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
 
+/** @cond */
 /**
  * Whether a recording of a ghost car is being made.
  *
@@ -247,6 +252,7 @@ extern unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
  * @ghidraAddress BRGlide: 0x11773668
  */
 extern int g_bGhostRecordingActive;
+/** @endcond */
 
 /**
  * Set the number of frames of the second recording from its size.
@@ -367,6 +373,7 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
 /**
  * Sample @p vehicle and send its keyframe as a local network state update.
  *
+ * @param vehicle The local vehicle to sample.
  * @ghidraAddress BRD3D: 0x100609e0
  * @ghidraAddress BRGlide: 0x10059a50
  */
@@ -375,6 +382,8 @@ void RecordVehicleKeyframe(Vehicle *vehicle);
 /**
  * Apply an interpolated network keyframe to a remote vehicle unless the race is paused.
  *
+ * @param vehicle The vehicle that receives the keyframe and has its wheel transforms updated.
+ * @param slotIndex The network player slot of the vehicle. The local player's slot is skipped.
  * @return Zero if interpolation has no frame, or one when applied or skipped.
  * @ghidraAddress BRD3D: 0x10060cc0
  * @ghidraAddress BRGlide: 0x10059d30

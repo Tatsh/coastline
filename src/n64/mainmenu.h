@@ -15,6 +15,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * The items of the main menu, ending with NULL.
  *
@@ -24,6 +25,7 @@ extern "C" {
  * @ghidraAddress JPN: 0x80273df0
  */
 extern MenuItem *g_apMainMenuItems[];
+/** @endcond */
 
 /**
  * The picture of the title of the main menu.
@@ -34,6 +36,7 @@ extern MenuItem *g_apMainMenuItems[];
  */
 extern Texture g_MainMenuTitleTextureDesc;
 
+/** @cond */
 /**
  * The start that led back to the main menu: 1 for a championship, 2 for a time attack, and 0
  * otherwise. The main menu selects the matching item and clears it.
@@ -54,6 +57,7 @@ extern s32 g_dwMainMenuEntrySource;
  * @ghidraAddress JPN: 0x80316c90
  */
 extern s32 g_dwMainMenuItemCount;
+/** @endcond */
 
 /**
  * Whether the track selection leads to the paint shop.

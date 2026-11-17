@@ -71,6 +71,7 @@ extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
 extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The blocks the current frame has allocated.
  *
@@ -82,9 +83,11 @@ extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
  * @ghidraAddress BRGlide: 0x10b24fa0
  */
 extern s32 g_dwDisplayListBlockCount;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The highlight blocks allocated in the current frame.
  *
@@ -96,9 +99,11 @@ extern s32 g_dwDisplayListBlockCount;
  * @ghidraAddress BRGlide: 0x10b24fa8
  */
 extern s32 g_dwHiliteBlockCount;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The light blocks allocated in the current frame.
  *
@@ -110,6 +115,7 @@ extern s32 g_dwHiliteBlockCount;
  * @ghidraAddress BRGlide: 0x10b24fa4
  */
 extern s32 g_dwLightBlockCount;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**

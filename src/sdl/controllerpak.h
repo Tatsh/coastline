@@ -70,15 +70,26 @@ public:
     bool WriteNote(const std::string &name, std::span<const std::uint8_t> bytes) const;
 
     /**
+     * Remove a note file under its save lock.
+     *
      * @param name An ASCII note filename without path separators or reserved metadata names.
      * @return Whether the note was deleted.
      */
     bool DeleteNote(const std::string &name) const;
 
-    /** @return The notes of the pak, in the order of their names. */
+    /**
+     * List the notes with a valid name and integrity header, including the settings note when
+     * it is stored in another directory. Lock and temporary files are skipped.
+     *
+     * @return The notes of the pak, in the order of their names.
+     */
     std::vector<PakNote> Notes() const;
 
-    /** @return The bytes of the pages no note takes, as osPfsFreeBlocks() counts them. */
+    /**
+     * Count the free room of the pak, rounding each note up to whole pages of PAK_PAGES.
+     *
+     * @return The bytes of the pages without a note, as osPfsFreeBlocks() counts them.
+     */
     std::size_t FreeBytes() const;
 
     /**
@@ -90,10 +101,11 @@ public:
     ControllerPak Subdirectory(const std::filesystem::path &directory) const;
 
 private:
-    // The directory a note of the name is stored in.
+    // Return the settings directory for PAK_SETTINGS_NOTE, otherwise the directory of the notes.
     const std::filesystem::path &DirectoryOf(const std::string &name) const;
 
-    std::filesystem::path m_directory;
+    std::filesystem::path m_directory; // The directory of the notes.
+    // The directory of PAK_SETTINGS_NOTE, the directory of the notes when none was given.
     std::filesystem::path m_settingsDirectory;
 };
 

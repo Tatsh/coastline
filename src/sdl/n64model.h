@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * Conversion of the car, track, and front-end models of the console to glTF, and of a glTF
+ * document back to the original model file.
+ */
+
 #include <array>
 #include <cstddef>
 #include <cstdint>

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The conversion of ghost recordings of the PC release to and from JSON.
+ */
+
 #include <cstdint>
 #include <cstdio>
 #include <optional>

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The free camera the user flies through every screen of the game.
+ */
+
 #include <array>
 
 namespace coastline {
@@ -17,13 +22,17 @@ public:
      */
     void
     Move(float seconds, const std::array<float, 3> &movement, const std::array<float, 2> &rotation);
-    /** @return The column-major eye-space view transform, identity after Reset(). */
+    /**
+     * Build the view transform of the camera from its position, yaw, and pitch.
+     *
+     * @return The column-major eye-space view transform, identity after Reset().
+     */
     std::array<float, 16> View() const;
 
 private:
-    std::array<float, 3> m_position{};
-    float m_yaw = 0.0f;
-    float m_pitch = 0.0f;
+    std::array<float, 3> m_position{}; // In eye-space scene units.
+    float m_yaw = 0.0f;                // The turn about the vertical axis in radians.
+    float m_pitch = 0.0f;              // In radians, clamped to plus or minus 1.55.
 };
 
 } // namespace coastline

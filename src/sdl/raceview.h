@@ -52,7 +52,11 @@ public:
     ~RaceView();
     /** Prevent copying renderer-bound race resources. */
     RaceView(const RaceView &) = delete;
-    /** Prevent assignment of renderer-bound race resources. */
+    /**
+     * Prevent assignment of renderer-bound race resources.
+     *
+     * @return This view; the operator is deleted and never called.
+     */
     RaceView &operator=(const RaceView &) = delete;
 
     /**
@@ -71,7 +75,11 @@ public:
      * Enabling requires an active camera in the first viewport.
      */
     void ToggleFreeCamera();
-    /** @return Whether the free camera replaces the first viewport and hides the HUD. */
+    /**
+     * Report whether ToggleFreeCamera() last enabled the free camera.
+     *
+     * @return Whether the free camera replaces the first viewport and hides the HUD.
+     */
     bool FreeCameraEnabled() const;
     /**
      * Move the free camera independently of simulation time, including while paused.
@@ -85,18 +93,28 @@ public:
                         const std::array<float, 2> &rotation);
 
     /**
-     * @return The colour the frame clears to: the fog of the race in a single view, and black
-     * around the views of a split screen.
+     * Choose the colour the renderer clears the frame to before the views are drawn.
+     *
+     * @return The red, green, blue, and alpha of the clear colour, from 0 to 1. The colour is the
+     * fog of the race in a single view, and black around the views of a split screen.
      */
     std::array<float, 4> ClearColor() const;
 
 private:
     struct State;
+    // Take ownership of the models, textures, and settings Load() prepared. Load() is the only
+    // caller.
     explicit RaceView(std::unique_ptr<State> state);
     struct CarInView;
+    // Draw the track, the cars, the particles, and the start lights of one view of the race, or of
+    // its rear-view mirror, from the active camera of its vehicle, between Begin() and End(). A
+    // null snapshot draws the live vehicles. The index is an index of g_aViewportRects, and the
+    // mirror flag selects the rear-view mirror of a single bumper view.
     void DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int index, bool mirror) const;
+    // Draw the model of one car in a view, as RenderVehicleModel() of the PC release draws it,
+    // between Begin() and End().
     void DrawCar(SceneRenderer &renderer, const CarInView &view) const;
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The models, textures, and drawing state of the race.
 };
 
 /**

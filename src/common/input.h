@@ -308,6 +308,7 @@ void UpdateStickRepeat(PlayerInputState *state);
 extern s32 g_dwContReadPending;
 #endif /* !TGR_BOSS_RALLY */
 
+/** @cond */
 /**
  * Whether InitControllersAndPaks() has mounted the Controller Pak of the first controller.
  *
@@ -317,6 +318,7 @@ extern s32 g_dwContReadPending;
  * @ghidraAddress JPN: 0x8028cad0
  */
 extern u8 g_bPakPort0Initialized;
+/** @endcond */
 
 /**
  * Start a read of the controllers, unless one is already pending.

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_WIN32_EAR_MUSICDEVICE_H
 #define COASTLINE_WIN32_EAR_MUSICDEVICE_H
 
+/**
+ * @file
+ * The MCI CD audio device, the MIDI device, and their mixers of the Windows EAR library.
+ */
+
 #include <stdint.h>
 
 #include <windows.h>
@@ -180,6 +185,8 @@ void RestoreMusicMixerControls(void);
 uint16_t __stdcall FindCdTrackAtPosition(DWORD position);
 
 /**
+ * Look up where a track starts on the disc.
+ *
  * @param track The one-based track number in a loaded table. Zero is not a valid index.
  * @return The absolute track start in milliseconds, or zero past the last audio track.
  * @ghidraAddress EAR: 0x100047cf
@@ -187,6 +194,8 @@ uint16_t __stdcall FindCdTrackAtPosition(DWORD position);
 DWORD __stdcall GetCdTrackStartPosition(uint16_t track);
 
 /**
+ * Look up the last millisecond of a track on the disc.
+ *
  * @param track The one-based track number in a loaded table. Zero is not a valid index.
  * @return The absolute start plus duration minus one in milliseconds, or zero past the last
  * audio track.
@@ -265,12 +274,16 @@ int InitializeMusicMixers(void);
 int OpenCdAudioDevice(void);
 
 /**
+ * Query the status of the CD audio device.
+ *
  * @return The mode of the CD audio device, an MCI_MODE value.
  * @ghidraAddress EAR: 0x10006409
  */
 DWORD GetCdAudioDeviceMode(void);
 
 /**
+ * Check a track number against the audio tracks found when the device opened.
+ *
  * @param track The track number to compare with the cached first and last audio-track numbers.
  * @return Whether the number falls within the inclusive cached range, without querying track type.
  * @ghidraAddress EAR: 0x100064bd

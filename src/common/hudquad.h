@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The routine that emits a textured HUD rectangle from an indexed texture.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

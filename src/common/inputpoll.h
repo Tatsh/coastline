@@ -1,6 +1,11 @@
 #ifndef COASTLINE_PLATFORM_WIN_INPUTPOLL_H
 #define COASTLINE_PLATFORM_WIN_INPUTPOLL_H
 
+/**
+ * @file
+ * The polling of race input devices, the race action mask, and force feedback.
+ */
+
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * Most recent race or replay action mask.
@@ -136,7 +141,11 @@ typedef struct {
     int respawnRequested; /*!< Whether the player requested a respawn. */
 } SdlRaceInputState;
 
-/** @return Action storage for the active SDL input configuration. */
+/**
+ * Get the race action and pause requests of the race input singleton.
+ *
+ * @return Action storage for the active SDL input configuration.
+ */
 SdlRaceInputState *GetSdlRaceInputState(void);
 
 /** @cond */

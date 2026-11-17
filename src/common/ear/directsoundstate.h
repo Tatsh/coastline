@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_DIRECTSOUNDSTATE_H
 #define COASTLINE_EAR_DIRECTSOUNDSTATE_H
 
+/**
+ * @file
+ * The device buffer and cached cursors of an EAR playback.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 
@@ -34,7 +39,11 @@ public:
      */
     void Initialize();
 
-    /** @return The borrowed device buffer, or null; releasing the buffer invalidates pointers. */
+    /**
+     * Return the device buffer of the playback.
+     *
+     * @return The borrowed device buffer, or null; releasing the buffer invalidates pointers.
+     */
     Buffer *GetBuffer() const {
         return buffer;
     }
@@ -42,7 +51,11 @@ public:
     void ClearBuffer() {
         buffer = nullptr;
     }
-    /** @return The cached playback position in buffer bytes, without querying the device. */
+    /**
+     * Return the play cursor stored by the last UpdateCursors() or SetPlayCursor().
+     *
+     * @return The cached playback position in buffer bytes, without querying the device.
+     */
     DWORD GetPlayCursor() const {
         return playCursor;
     }
@@ -79,9 +92,9 @@ public:
     void UpdateCursors();
 
 private:
-    Buffer *buffer;
-    DWORD writeCursor;
-    DWORD playCursor;
+    Buffer *buffer;    // Borrowed, or null.
+    DWORD writeCursor; // In buffer bytes; SDL copies the play cursor.
+    DWORD playCursor;  // In buffer bytes from the last query or set.
 };
 
 #endif /* COASTLINE_EAR_DIRECTSOUNDSTATE_H */

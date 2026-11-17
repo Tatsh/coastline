@@ -13,6 +13,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * The mode of grCullMode() last set.
  *
@@ -75,6 +76,7 @@ extern GrFog_t g_aGlideFogTable[GR_FOG_TABLE_SIZE];
  * @ghidraAddress BRGlide: 0x105ce310
  */
 extern int g_nGbiVertexSnap;
+/** @endcond */
 
 /**
  * Take a vertex inside the view to the screen with a colour, as TransformVertexToScreen() does, and

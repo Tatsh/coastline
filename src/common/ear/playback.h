@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_PLAYBACK_H
 #define COASTLINE_EAR_PLAYBACK_H
 
+/**
+ * @file
+ * The periodic update of the EAR playback engine.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_FRAMESTATISTICS_H
 #define COASTLINE_FRAMESTATISTICS_H
 
+/**
+ * @file
+ * The frame-time samples the frame-rate counter averages.
+ */
+
 #include "common/frameclock.h"
 
 #ifdef __cplusplus

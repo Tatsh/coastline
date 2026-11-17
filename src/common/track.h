@@ -61,6 +61,7 @@ typedef struct TrackSection {
 
 /** A model placed on the track. Its fields join this structure as they are reconstructed. */
 typedef struct {
+    /** The placement matrix, read as a whole or as four rows. */
     union {
         f32 matrix[4][4]; /*!< Where and how the model is placed. */
         struct {
@@ -191,6 +192,7 @@ typedef struct {
     s32 headerSize;   /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
     s32 surfaceCount; /*!< The number of triangle surfaces. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64
+    /** The triangle surfaces, read as records or as their serialised bytes. */
     union {
         TrackSurface *surfaces; /*!< What each triangle belongs to, by its index. */
         u8 *surfaceBytes;       /*!< The serialized eight-byte triangle records. */
@@ -200,6 +202,7 @@ typedef struct {
 #endif
     s32 vertexCount; /*!< The number of triangle corners. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64
+    /** The triangle corners, read as vectors or as rows of three coordinates. */
     union {
         Vec3f *vertices;      /*!< The corners of the triangles. */
         f32 (*vertexRows)[3]; /*!< The coordinates of each corner. */
@@ -550,11 +553,13 @@ extern s32 g_dwStreamDmaPrevSegment;
  */
 extern s32 g_dwStreamedSnowMode;
 
+/** @cond */
 /**
  * Two words of the loaded track, 0x3960 and 0x3968 bytes into it, that the loading prints. The
  * link script places them.
  */
 extern u16 g_awTrackDebugWords[5];
+/** @endcond */
 
 /**
  * The triangles of a cell of the grid of the track by its column and row.

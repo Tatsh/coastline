@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLEPHYSICS_H
 #define COASTLINE_VEHICLEPHYSICS_H
 
+/**
+ * @file
+ * The physics, engine, gearbox, and drawing transforms of a vehicle for each frame.
+ */
+
 #include "common/vehicle.h"
 
 #if TGR_BOSS_RALLY
@@ -20,16 +25,33 @@
 extern "C" {
 #endif
 
-/** Advance the player-controlled vehicle for one frame. */
+/**
+ * Advance the player-controlled vehicle for one frame.
+ *
+ * @param vehicle The vehicle, passed to ProcessVehicleInputAndPhysics().
+ */
 void UpdatePhysicsStep(Vehicle *vehicle);
 
-/** Advance spring, tyre, damping, and collision calculations for a vehicle. */
+/**
+ * Advance spring, tyre, damping, and collision calculations for a vehicle.
+ *
+ * @param vehicle The vehicle to simulate.
+ */
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
 
-/** Drive or fly a vehicle for a frame, then update its drawing transforms and cameras. */
+/**
+ * Drive or fly a vehicle for a frame, then update its drawing transforms and cameras.
+ *
+ * @param vehicle The vehicle to update.
+ */
 void UpdateVehiclePhysicsFrame(Vehicle *vehicle);
 
-/** Update steering, engine torque, and gearbox selection. */
+/**
+ * Update steering, engine torque, and gearbox selection.
+ *
+ * @param vehicle The vehicle, whose input supplies the steering, the throttle, and the gear
+ * buttons.
+ */
 void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
 
 /**
@@ -41,7 +63,11 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
  */
 void UpdateVehicleWheelTransforms(Vehicle *vehicle);
 
-/** Transform the body and wheel matrices for drawing. */
+/**
+ * Transform the body and wheel matrices for drawing.
+ *
+ * @param vehicle The vehicle whose body and wheel matrices are rebuilt.
+ */
 void TransformAllWheelMatrices(Vehicle *vehicle);
 
 #if TGR_BOSS_RALLY

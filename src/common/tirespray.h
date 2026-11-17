@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TIRE_SPRAY_H
 #define COASTLINE_TIRE_SPRAY_H
 
+/**
+ * @file
+ * The movement of the tyre spray of every racer.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

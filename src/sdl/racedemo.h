@@ -34,22 +34,43 @@ public:
     ~AttractDemo();
     /** Prevent copying the registered demo controller. */
     AttractDemo(const AttractDemo &) = delete;
-    /** Prevent assignment of the registered demo controller. */
+    /**
+     * Prevent assignment of the registered demo controller.
+     *
+     * @return This controller; the operator is deleted and never called.
+     */
     AttractDemo &operator=(const AttractDemo &) = delete;
 
-    /** @return The active demo controller, or null outside its lifetime. */
+    /**
+     * Find the registered controller, for the race engine's callbacks.
+     *
+     * @return The active demo controller, or null outside its lifetime.
+     */
     static AttractDemo *Active();
 
-    /** @return Credits displayed over the demo controller's race. */
+    /**
+     * Give mutable access to the credits of the demo race.
+     *
+     * @return Credits displayed over the demo controller's race.
+     */
     ConsoleCredits &Credits() {
         return m_credits;
     }
-    /** @return Credits displayed over the demo controller's race. */
+    /**
+     * Give read-only access to the credits of the demo race.
+     *
+     * @return Credits displayed over the demo controller's race.
+     */
     const ConsoleCredits &Credits() const {
         return m_credits;
     }
 
-    /** @return The next recording path, valid until the next selection or destruction. */
+    /**
+     * Select the next recording in rotation. The rotation lists the two PC demos, then the
+     * cartridge demo of the release directory's region when its `attract.json` exists.
+     *
+     * @return The next recording path, valid until the next selection or destruction.
+     */
     const char *NextRecording();
 
     /**
@@ -80,33 +101,49 @@ public:
      */
     bool Step(bool leave);
 
-    /** @return Whether a button ended the last demo before its time expired. */
+    /**
+     * Report whether the demo ended early, read from `g_bDemoInterrupted`.
+     *
+     * @return Whether a button ended the last demo before its time expired.
+     */
     bool Interrupted() const;
 
-    /** @return The track of the demo, an index of g_apszTrackFilenames, once its race has loaded.
+    /**
+     * Report the track of the demo race, read from `g_dwSelectedTrackId`.
+     *
+     * @return The track of the demo, an index of g_apszTrackFilenames, once its race has loaded.
      */
     int Track() const;
 
-    /** @return The car of the demo, an index of g_apszCarModelPrefixes, once its race has loaded.
+    /**
+     * Report the car of the demo recording, read from `g_GhostRecordingInfo`.
+     *
+     * @return The car of the demo, an index of g_apszCarModelPrefixes, once its race has loaded.
      */
     int Car() const;
 
-    /** @return The red, green, and blue of the colour of the car of the demo, once its race has
+    /**
+     * Report the body colour of the first vehicle of the demo race.
+     *
+     * @return The red, green, and blue of the colour of the car of the demo, once its race has
      * loaded.
      */
     std::array<std::uint8_t, 3> Color() const;
 
     /**
+     * Report whether NextRecording() last selected a cartridge demo.
+     *
      * @return Whether the demo is the one of a cartridge, recorded at its import. The console plays
      * it in fog with no help on the screen and ends it with its recording.
      */
     bool FromConsole() const;
 
 private:
-    std::size_t m_nextDemo = 0;
-    std::string m_demoPath;
+    std::size_t m_nextDemo = 0; // The rotation index of the recording selected next.
+    std::string m_demoPath;     // The path NextRecording() returned last.
+    // The index of the selected cartridge demo, absent for a PC demo.
     std::optional<std::size_t> m_consoleDemo;
-    ConsoleCredits m_credits;
+    ConsoleCredits m_credits; // The captions or scrolling credits of the credits race.
 };
 
 } // namespace coastline

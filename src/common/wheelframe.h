@@ -1,6 +1,11 @@
 #ifndef COASTLINE_WHEEL_FRAME_H
 #define COASTLINE_WHEEL_FRAME_H
 
+/**
+ * @file
+ * The axes and position of a wheel.
+ */
+
 #include "common/vecmath.h"
 
 #ifdef __cplusplus

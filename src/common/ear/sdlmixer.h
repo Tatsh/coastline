@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_SDLMIXER_H
 #define COASTLINE_EAR_SDLMIXER_H
 
+/**
+ * @file
+ * The SDL mixer that plays the buffers of the EAR library in place of DirectSound.
+ */
+
 #include <cstdint>
 
 #include "ear/wavechunks.h"
@@ -48,10 +53,19 @@ public:
     /** Stop the buffer, leaving its play cursor where it is. */
     void Stop();
 
-    /** @return Whether the buffer is playing. */
+    /**
+     * Report whether Play() started the buffer and neither Stop() nor the end of a buffer that
+     * does not loop stopped it.
+     *
+     * @return Whether the buffer is playing.
+     */
     bool IsPlaying() const;
 
-    /** @return The offset of the frame that plays next, in bytes. */
+    /**
+     * Report the position of the buffer, as the play cursor of DirectSound reports it.
+     *
+     * @return The offset of the frame that plays next, in bytes.
+     */
     std::uint32_t GetPlayCursor() const;
 
     /**
@@ -95,22 +109,27 @@ public:
     void MixInto(float *mix, int frames);
 
 private:
+    // Create() allocates every buffer.
     EarSdlVoice() = default;
+    // Read one sample of a frame (frame less than frames), scaling an 8-bit sample to the range of
+    // a 16-bit sample. The result is from -32768 to 32767.
     float ReadSample(std::uint32_t frame, int channel) const;
+    // Recompute the amplitude of each side from the volume and the pan. A negative pan attenuates
+    // the right side, and a positive pan the left side.
     void UpdateGains();
 
-    EarWaveFormat format = {};       /*!< The format of the samples. */
-    std::uint8_t *samples = nullptr; /*!< The samples. */
-    std::uint32_t bytes = 0;         /*!< The bytes of `samples`. */
-    std::uint32_t frames = 0;        /*!< The whole frames of `samples`. */
-    std::uint64_t position = 0;      /*!< The frame that plays next, in 32.32 fixed point. */
-    std::uint32_t frequency = 0;     /*!< The frames a second the buffer plays at. */
-    LONG volume = 0;                 /*!< The attenuation of both sides. */
-    LONG pan = 0;                    /*!< The attenuation of one side. */
-    float leftGain = 1;              /*!< The amplitude of the left side. */
-    float rightGain = 1;             /*!< The amplitude of the right side. */
-    bool playing = false;            /*!< Whether the buffer is playing. */
-    bool looping = false;            /*!< Whether the buffer starts again at its end. */
+    EarWaveFormat format = {};
+    std::uint8_t *samples = nullptr;
+    std::uint32_t bytes = 0;     // Bytes of samples.
+    std::uint32_t frames = 0;    // Whole frames of samples.
+    std::uint64_t position = 0;  // The frame that plays next, in 32.32 fixed point.
+    std::uint32_t frequency = 0; // Frames a second.
+    LONG volume = 0;             // Attenuation of both sides.
+    LONG pan = 0;                // Attenuation of one side.
+    float leftGain = 1;
+    float rightGain = 1;
+    bool playing = false;
+    bool looping = false; // Whether the buffer starts again at its end.
 };
 
 /**
@@ -136,7 +155,11 @@ void EarCloseSdlMixer();
  * @param enabled Whether mixing should advance; a live output stream is resumed or paused too.
  */
 void EarSetSdlMixerEnabled(bool enabled);
-/** @return Whether sound-effect mixing and playback updates are enabled. */
+/**
+ * Report the choice of the last EarSetSdlMixerEnabled().
+ *
+ * @return Whether sound-effect mixing and playback updates are enabled.
+ */
 bool EarSdlMixerEnabled();
 
 /**

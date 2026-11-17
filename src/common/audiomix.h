@@ -22,6 +22,7 @@ extern "C" {
  */
 typedef struct {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
+    /** The next sample, read either as a pointer or as the whole part of the position. */
     union {
         s8 *sample;                  /*!< The next signed 8-bit sample. */
         unsigned long sampleAddress; /*!< The whole part of the 32.32 position. */
@@ -52,6 +53,8 @@ typedef struct {
 } SdlMixerState;
 
 /**
+ * Return the mixer channels and ring-buffer write position of the active SDL audio context.
+ *
  * @pre An N64MixerContext is active.
  * @return The mixer storage, valid until the context is destroyed.
  */

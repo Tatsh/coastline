@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_PAINT_H
 #define COASTLINE_VEHICLE_PAINT_H
 
+/**
+ * @file
+ * The paint colour of a vehicle read from its model.
+ */
+
 #include "common/vehiclefwd.h"
 #include "common/vehiclemodel.h"
 
@@ -9,8 +14,11 @@ extern "C" {
 #endif
 
 /**
- * Set vehicle paint from the first CI4 paint-palette colour.
+ * Set vehicle paint from the first CI4 paint-palette colour. Each 5-bit component widens to 8
+ * bits. A paint texture without a CI4 palette does not change the paint.
  *
+ * @param vehicle The vehicle whose paint colour is set.
+ * @param model The vehicle model whose paint material is read.
  * @ghidraAddress USA: 0x8021d2a0
  * @ghidraAddress Asia: 0x8021CDF0
  * @ghidraAddress EUR: 0x8021e4a0

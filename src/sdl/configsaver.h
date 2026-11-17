@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The background writer of the configuration file.
+ */
+
 #include <condition_variable>
 #include <filesystem>
 #include <mutex>
@@ -17,12 +22,17 @@ namespace coastline {
  */
 class ConfigSaver {
 public:
+    /** Start the writing thread. */
     ConfigSaver();
     /** Write the copy that waits, if any, and stop the thread. */
     ~ConfigSaver();
     /** Prevent copying the writing thread. */
     ConfigSaver(const ConfigSaver &) = delete;
-    /** Prevent assignment of the writing thread. */
+    /**
+     * Prevent assignment of the writing thread.
+     *
+     * @return This saver.
+     */
     ConfigSaver &operator=(const ConfigSaver &) = delete;
 
     /**
@@ -40,20 +50,27 @@ public:
      */
     bool Flush();
 
-    /** @return Whether the last finished write failed, without waiting. */
+    /**
+     * Report the result of the last finished write without waiting for queued copies.
+     *
+     * @return Whether the last finished write failed.
+     */
     bool Failed();
 
 private:
+    // Write each queued copy outside the lock and log a failure, until the saver stops with no
+    // copy queued.
     void Run();
 
-    std::mutex m_mutex;
-    std::condition_variable m_wake;
-    std::condition_variable m_idle;
+    std::mutex m_mutex;             // Guards the queued copy and the flags.
+    std::condition_variable m_wake; // Signalled when a copy is queued or the saver stops.
+    std::condition_variable m_idle; // Signalled after each write finishes.
+    // The copy and the INI file waiting for the thread, replaced by each Save.
     std::optional<std::pair<GameConfig, std::filesystem::path>> m_pending;
     bool m_writing = false;
-    bool m_failed = false;
-    bool m_stop = false;
-    std::thread m_thread;
+    bool m_failed = false; // Whether the last finished write failed.
+    bool m_stop = false;   // Set by the destructor to end the thread.
+    std::thread m_thread;  // Runs Run.
 };
 
 } // namespace coastline

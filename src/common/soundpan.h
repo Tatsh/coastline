@@ -1,6 +1,11 @@
 #ifndef COASTLINE_SOUND_PAN_H
 #define COASTLINE_SOUND_PAN_H
 
+/**
+ * @file
+ * The stereo panning and distance volume of a sound relative to a camera.
+ */
+
 #include "common/render.h"
 
 #ifdef __cplusplus

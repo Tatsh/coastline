@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The conversion of the intro movie and splash image of the disc during import.
+ */
+
 #include <filesystem>
 #include <optional>
 #include <string>

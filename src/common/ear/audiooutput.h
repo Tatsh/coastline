@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_AUDIOOUTPUT_H
 #define COASTLINE_EAR_AUDIOOUTPUT_H
 
+/**
+ * @file
+ * The shared DirectSound output device of the EAR library on Windows.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <cstdint>
 
@@ -24,16 +29,20 @@ public:
      */
     ~EarDirectSoundOutput();
     /**
+     * Return the DirectSound device that event buffers are created on.
+     *
      * @return The borrowed DirectSound interface, valid until destruction, or null after failure.
      * @ghidraAddress EAR: 0x10010630
      */
     IDirectSound *GetDirectSoundInterface();
 
 private:
+    // Record an EAR error, release and clear the device, and uninitialise COM. The primary buffer
+    // is not released here.
     void FailInitialization(std::uint32_t error);
 
-    IDirectSound *device;
-    IDirectSoundBuffer *primaryBuffer;
+    IDirectSound *device;              // Null after failure.
+    IDirectSoundBuffer *primaryBuffer; // The looping primary buffer, or null.
 };
 
 /**

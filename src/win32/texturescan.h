@@ -31,6 +31,7 @@ enum TexScanLoadState {
 /** The size of g_abTmemShadowTlut. */
 #define TMEM_SHADOW_TLUT_SIZE 0xf800
 
+/** @cond */
 /**
  * The state of the scan of the load of a texture.
  *
@@ -46,6 +47,7 @@ extern int g_dwTexScanLoadState;
  * @ghidraAddress BRGlide: 0x106b7a9c
  */
 extern GbiCommand *g_pTexScanCmdBlockStart;
+/** @endcond */
 
 /**
  * The tile the last texture command chose.
@@ -63,6 +65,7 @@ extern int g_dwTexScanTileIndex;
  */
 extern int g_dwTexScanMipLevels;
 
+/** @cond */
 /**
  * The size of the texels of the texture image set last.
  *
@@ -78,6 +81,7 @@ extern int g_dwTexScanImageSiz;
  * @ghidraAddress BRGlide: 0x105e180c
  */
 extern const void *g_pTexScanImageAddress;
+/** @endcond */
 
 /**
  * The texels of the palette loaded last, `nullptr` after a texture image without one.
@@ -87,6 +91,7 @@ extern const void *g_pTexScanImageAddress;
  */
 extern const void *g_pTexScanTlutAddress;
 
+/** @cond */
 /**
  * The command that set the texture image when the scan was idle.
  *
@@ -110,6 +115,7 @@ extern unsigned char g_abTmemShadow[TMEM_SHADOW_SIZE];
  * @ghidraAddress BRGlide: 0x105d1ff8
  */
 extern unsigned char g_abTmemShadowTlut[TMEM_SHADOW_TLUT_SIZE];
+/** @endcond */
 
 /**
  * Where ScanGbiLoadTlut() copies a palette.
@@ -127,6 +133,7 @@ extern unsigned char *g_pTlutLoadList;
  */
 extern const void *g_pTexScanLoadBlockSource;
 
+/** @cond */
 /**
  * The bytes of the last block loaded.
  *
@@ -134,6 +141,7 @@ extern const void *g_pTexScanLoadBlockSource;
  * @ghidraAddress BRGlide: 0x10697a54
  */
 extern int g_dwTexScanLoadBlockSize;
+/** @endcond */
 
 /**
  * The tiles the scan records.
@@ -244,6 +252,7 @@ void ScanGbiSetTileSize(GbiCommand *pCommand);
  */
 void ScanGbiSetOtherModeL(GbiCommand *pCommand);
 
+/** @cond */
 /**
  * The format of the palettes the textures use, 0 for RGBA and 3 for IA.
  *
@@ -251,6 +260,7 @@ void ScanGbiSetOtherModeL(GbiCommand *pCommand);
  * @ghidraAddress BRGlide: 0x10697a44
  */
 extern int g_dwTexScanTlutMode;
+/** @endcond */
 
 /**
  * Whether the detail of the textures is the mode of detail textures.

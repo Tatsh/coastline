@@ -10,9 +10,18 @@ extern "C" {
  * Registers of the RCP, the RDRAM interface, and the peripheral interfaces.
  */
 
-/** Read the 32-bit register at physical address addr through the uncached segment. */
+/**
+ * Read the 32-bit register at physical address addr through the uncached segment.
+ *
+ * @param addr The physical address of the register.
+ */
 #define IO_READ(addr) (*(vu32 *)PHYS_TO_K1(addr))
-/** Write data to the 32-bit register at physical address addr through the uncached segment. */
+/**
+ * Write data to the 32-bit register at physical address addr through the uncached segment.
+ *
+ * @param addr The physical address of the register.
+ * @param data The value to write, converted to `u32`.
+ */
 #define IO_WRITE(addr, data) (*(vu32 *)PHYS_TO_K1(addr) = (u32)(data))
 
 /* RDRAM and the RSP memories. */

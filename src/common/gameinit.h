@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The volumes and other values the game records when a game session starts.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The temporary storage of a disc image decoded from a container format.
+ */
+
 #include "importer.h"
 
 namespace coastline {

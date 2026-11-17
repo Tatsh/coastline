@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The conversion versions and file inventory an import records, and the checks of them at
+ * startup.
+ */
+
 #include <filesystem>
 #include <span>
 #include <string>
@@ -70,6 +76,8 @@ bool DefaultPackUsable(const std::filesystem::path &defaults);
 bool RecordImportFiles(const std::filesystem::path &defaults);
 
 /**
+ * Compose the message that reports which images must be imported again.
+ *
  * @param sources The sources to import again, at least one.
  * @return A sentence that requests the sources be imported again, such as
  * "Import the disc and the USA cartridge again."

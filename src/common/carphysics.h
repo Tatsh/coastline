@@ -1,6 +1,11 @@
 #ifndef COASTLINE_CARPHYSICS_H
 #define COASTLINE_CARPHYSICS_H
 
+/**
+ * @file
+ * The gearbox, engine, and collision box specification of a car.
+ */
+
 #include "common/vecmath.h"
 
 #ifdef __cplusplus

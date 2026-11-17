@@ -244,6 +244,8 @@ struct WizardControl {
 };
 
 /**
+ * Find the keyboard accelerator of a control label at its first ampersand.
+ *
  * @param label A label with & before the letter of its accelerator.
  * @return The letter in lowercase, or 0 when the label has none.
  */
@@ -263,7 +265,11 @@ public:
     ~SetupWizard();
     /** Prevent copying active search and import threads. */
     SetupWizard(const SetupWizard &) = delete;
-    /** Prevent assignment of active search and import threads. */
+    /**
+     * Prevent assignment of active search and import threads.
+     *
+     * @return This wizard.
+     */
     SetupWizard &operator=(const SetupWizard &) = delete;
 
     /**
@@ -284,161 +290,299 @@ public:
      */
     void Draw(TextGrid &grid, double seconds) const;
 
-    /** @return The screen that shows. */
+    /**
+     * Report the current screen.
+     *
+     * @return The screen that shows.
+     */
     WizardScreen Screen() const;
 
-    /** @return Whether a check of a disc or ROM path runs on a thread, with Update() applying it.
+    /**
+     * Report whether path checks are pending.
+     *
+     * @return Whether a check of a disc or ROM path runs on a thread, with Update() applying it.
      */
     bool Checking() const;
 
-    /** @return How the wizard ended, or WizardEnd::Running. */
+    /**
+     * Report how the wizard ended.
+     *
+     * @return How the wizard ended, or WizardEnd::Running.
+     */
     WizardEnd End() const;
 
-    /** @return Whether the import targets portable storage. */
+    /**
+     * Report the portable-installation choice of the source selection screen.
+     *
+     * @return Whether the import targets portable storage.
+     */
     bool Portable() const;
 
-    /** @return The controls of the dialog on top: the message, the browser, or the screen. */
+    /**
+     * List the controls of the topmost dialog for drawing and hit testing.
+     *
+     * @return The controls of the dialog on top: the message, the browser, or the screen.
+     */
     std::vector<WizardControl> Controls() const;
 
-    /** @return The control with the focus in the dialog on top, or nothing. */
+    /**
+     * Report the focused control of the topmost dialog.
+     *
+     * @return The control with the focus in the dialog on top, or nothing.
+     */
     std::optional<WizardControlId> Focus() const;
 
-    /** @return Whether the file browser shows. */
+    /**
+     * Report whether the file browser dialog is open.
+     *
+     * @return Whether the file browser shows.
+     */
     bool BrowserOpen() const;
 
-    /** @return The entries the file browser lists. */
+    /**
+     * List the entries of the directory the file browser displays.
+     *
+     * @return The entries the file browser lists, or an empty list when the browser is closed.
+     */
     const std::vector<BrowserEntry> &BrowserEntries() const;
 
-    /** @return The entry of the browser chosen, from 0. */
+    /**
+     * Report the selected entry of the file browser.
+     *
+     * @return The index of the selected entry, from 0, or -1 when the browser is closed.
+     */
     int BrowserSelection() const;
 
-    /** @return The lines of the message that shows, or none. */
+    /**
+     * List the wrapped lines of the open message, at most 15.
+     *
+     * @return The lines of the message that shows, or none.
+     */
     std::vector<std::string> MessageLines() const;
 
     /**
+     * Read the path entered in a text box.
+     *
      * @param id A text box.
      * @return The text of the text box in UTF-8.
      */
     std::string Text(WizardControlId id) const;
 
     /**
+     * Read the check failure of a text box.
+     *
      * @param id A text box.
      * @return Why the path of the text box failed its check, or empty when it passed or is empty.
      */
     std::string Reason(WizardControlId id) const;
 
-    /** @return The selection of the focused text field, in UTF-8. */
+    /**
+     * Read the selected text of the focused text box for copying.
+     *
+     * @return The selection of the focused text field in UTF-8, or empty when no text box has the
+     * focus or no text is selected.
+     */
     std::string SelectedText() const;
 
-    /** @return The images discovered during the directory search. */
+    /**
+     * Report the images of the latest directory search.
+     *
+     * @return The images discovered during the directory search.
+     */
     const WizardSearchResult &SearchResult() const;
 
-    /** @return The directory last browsed, or empty. */
+    /**
+     * Report the directory last listed by the file browser, for saving in the configuration.
+     *
+     * @return The directory last browsed, or empty.
+     */
     const std::filesystem::path &LastDirectory() const;
 
 private:
+    // Drawn as a link near the bottom of every screen.
     static constexpr std::string_view REPOSITORY_URL = "https://github.com/Tatsh/coastline";
     bool m_repositoryHovered = false;
-    bool m_repositoryPressed = false;
-    /** The editable path and validation cache of one wizard text box. */
+    bool m_repositoryPressed = false; // Whether the left button went down on the link.
+    // Editable path and validation cache of one wizard text box.
     struct TextField {
-        std::u32string text;                    /*!< The path entered by the user. */
-        std::size_t caret = 0;                  /*!< The insertion position. */
-        std::size_t scroll = 0;                 /*!< The first visible character. */
-        std::optional<std::size_t> anchor;      /*!< The selection anchor, if present. */
-        bool valid = false;                     /*!< Whether the current path passed validation. */
-        std::optional<WizardCartridge> release; /*!< The detected ROM release. */
-        std::string reason;                     /*!< The validation failure text. */
-        std::u32string checked;                 /*!< The path at the last validation. */
-        std::uintmax_t size = 0;                /*!< The file size at the last validation. */
-        std::filesystem::file_time_type time{}; /*!< The file time at the last validation. */
-        bool checkedOnce = false;               /*!< Whether a validation has run. */
+        std::u32string text;
+        std::size_t caret = 0;                  // Insertion position.
+        std::size_t scroll = 0;                 // First visible character.
+        std::optional<std::size_t> anchor;      // Selection anchor.
+        bool valid = false;                     // Whether the current path passed validation.
+        std::optional<WizardCartridge> release; // Detected ROM release.
+        std::string reason;                     // Validation failure text.
+        std::u32string checked;                 // Path at the last validation.
+        std::uintmax_t size = 0;                // File size at the last validation.
+        std::filesystem::file_time_type time{}; // File time at the last validation.
+        bool checkedOnce = false;
     };
-    /** The folder picker and its current selection. */
+    // Folder picker and its current selection.
     struct Browser {
-        WizardControlId target = WizardControlId::DiscText; /*!< The field being edited. */
-        std::filesystem::path directory;                    /*!< The directory displayed. */
-        std::vector<BrowserEntry> entries;                  /*!< The directory entries displayed. */
-        int selected = 0;                                   /*!< The selected entry index. */
-        int top = 0;                                        /*!< The first visible entry index. */
-        bool allFiles = false;       /*!< Whether file-type filtering is disabled. */
-        std::string typed;           /*!< The incremental search text. */
-        std::uint64_t typedAt = 0;   /*!< The time of the last search character. */
-        std::uint64_t clickedAt = 0; /*!< The time of the last pointer click. */
-        int clicked = -1;            /*!< The entry selected by the last click. */
-        bool dragging = false;       /*!< Whether the scrollbar is being dragged. */
+        WizardControlId target = WizardControlId::DiscText; // Field being edited.
+        std::filesystem::path directory;
+        std::vector<BrowserEntry> entries;
+        int selected = 0;
+        int top = 0;                 // First visible entry index.
+        bool allFiles = false;       // Whether file-type filtering is disabled.
+        std::string typed;           // Incremental search text.
+        std::uint64_t typedAt = 0;   // Time of the last search character.
+        std::uint64_t clickedAt = 0; // Time of the last pointer click.
+        int clicked = -1;            // Entry selected by the last click.
+        bool dragging = false;       // Whether the scroll bar is being dragged.
     };
-    /** A wizard alert with an optional choice. */
+    // Wizard alert with an optional choice.
     struct Message {
-        std::vector<std::string> lines; /*!< The lines displayed in the alert. */
-        bool question = false;          /*!< Whether the alert requests a choice. */
+        std::vector<std::string> lines;
+        bool question = false; // Whether the alert requests a choice.
     };
     struct ImportState;
-    /** The result of a check of a disc or ROM path. */
+    // Result of a check of a disc or ROM path.
     struct CheckResult {
-        bool valid = false;                     /*!< Whether the path passed the check. */
-        std::optional<WizardCartridge> release; /*!< The detected ROM release. */
-        std::string reason;                     /*!< The failure text. */
+        bool valid = false;
+        std::optional<WizardCartridge> release; // Detected ROM release.
+        std::string reason;                     // Failure text.
     };
 
+    // Position the controls of the current screen, with their enabled and checked flags.
     std::vector<WizardControl> ScreenControls() const;
+
+    // Position the controls of the file browser (the list, the file type choice for files, and
+    // the buttons). The browser must be open.
     std::vector<WizardControl> BrowserControls() const;
+
+    // Position the buttons of the open message, Yes and No for a question or OK otherwise. A
+    // message must be open.
     std::vector<WizardControl> MessageControls() const;
+
+    // Writable focus of the topmost dialog (the message, the browser, or the screen).
     std::optional<WizardControlId> &FocusSlot();
+
+    // Give the focus to the first enabled control of the topmost dialog, or clear it.
     void FocusFirst();
+
+    // Move the focus to the next or previous enabled control, wrapping at either end.
     void MoveFocus(bool backward);
+
+    // Move the focus to the nearest enabled control on another row, preferring the nearest column.
+    // When every enabled control is on the current row, move the focus in order instead.
     void MoveFocusRow(bool upward);
+
+    // Perform the action of a control as if it were pressed.
     void Activate(WizardControlId id);
+
+    // Perform the action of Enter for the topmost dialog or the current screen.
     void PressDefault();
+
+    // Perform the action of Escape. Close a message or the browser, cancel running work, request
+    // confirmation to quit, or go back a screen.
     void Escape();
+
+    // Show a screen, recheck its paths, and focus its first control. The import screen starts the
+    // import.
     void SetScreen(WizardScreen screen);
+
+    // Open the file browser for the text box the chosen path is written to, starting in the
+    // directory of its path, the directory last browsed, or the home directory.
     void OpenBrowser(WizardControlId target);
+
+    // List a directory in the browser, filtered by the kind of image of the target. Show a message
+    // when the directory cannot be read.
     void ChangeDirectory(const std::filesystem::path &directory);
+
+    // Enter the selected directory, or write the selected file to the target and close.
     void OpenSelected();
+
+    // Write the directory of the browser to the target text box and close the browser.
     void ChooseDirectory();
+
+    // Open a message dialog, wrapping its lines to the dialog and truncating them to 15. A
+    // question offers Yes and No in place of OK.
     void ShowMessage(std::vector<std::string> lines, bool question);
+
+    // Start the import of the checked disc and the first valid ROM of each release on m_thread.
     void StartImport();
+
+    // Clear the paths and search the directory of the search text box on m_thread.
     void StartSearch();
+
+    // Write the images of the search to the text boxes, abbreviating paths under the home
+    // directory with ~, and show the files screen.
     void ApplySearchResult();
+
+    // Replace the text of a text box, put the caret at its end, and check the path.
     void SetText(WizardControlId id, const std::filesystem::path &path);
+
+    // Empty a text box and focus it.
     void ClearText(WizardControlId id);
+
+    // Check the path of a text box. A directory is checked at once, and a disc or ROM image is
+    // checked on a thread. An unchanged path, size, and time skips the check unless forced.
     void Validate(WizardControlId id, bool force);
+
+    // Move the running check of a text box to m_retiredChecks, discarding its result.
     void RetireCheck(WizardControlId id);
+
+    // Apply the results of finished checks and discard finished retired checks.
     void ApplyChecks();
+
+    // Apply a key or typed text to a text box: caret movement, selection, deletion, and insertion.
     void EditText(TextField &field, const WizardEvent &event, WizardControlId id);
+
+    // Move the selection of the browser list by an arrow, page, Home, or End key. Other keys are
+    // ignored.
     void HandleListKey(WizardKey key);
+
+    // Select the first browser entry whose name starts with the letters typed, ignoring case and
+    // spaces. Letters typed within the typing interval extend the prefix.
     void HandleListText(const std::string &text, std::uint64_t milliseconds);
+
+    // Act on a mouse event: the repository link, text selection by dragging, the scroll bar and
+    // the wheel of the browser list, and clicks on controls.
     void HandleMouse(const WizardEvent &event);
+
+    // Select a browser entry, clamped to the list, and scroll the list to show it.
     void SetSelection(int selected);
+
+    // Whether Next may be pressed. The files screen requires a valid disc, a base release, and no
+    // invalid ROM path, and the search directory screen requires an existing directory.
     bool NextEnabled() const;
+
+    // Text box of a control. A control that is not the search text box or a ROM text box selects
+    // the disc text box.
     TextField &Field(WizardControlId id);
     const TextField &Field(WizardControlId id) const;
+
+    // Whether each ROM release was detected by a passed check, in the order of WizardCartridge.
     std::array<bool, WIZARD_CARTRIDGES> Detected() const;
 
-    WizardServices m_services;
+    WizardServices m_services; // Checks, import, and saved paths.
     WizardScreen m_screen = WizardScreen::SourceSelection;
     WizardEnd m_end = WizardEnd::Running;
     TextField m_disc;
     std::array<TextField, WIZARD_CARTRIDGES> m_cartridges;
-    TextField m_directory;
-    WizardSearchResult m_searchResult;
+    TextField m_directory;             // Directory to search.
+    WizardSearchResult m_searchResult; // Images of the latest directory search.
     bool m_searchComplete = false;
-    std::optional<Browser> m_browser;
-    std::optional<Message> m_message;
+    std::optional<Browser> m_browser; // Present while the file browser is open.
+    std::optional<Message> m_message; // Present while the message is open.
     std::optional<WizardControlId> m_screenFocus;
     std::optional<WizardControlId> m_browserFocus;
     std::optional<WizardControlId> m_messageFocus;
-    std::filesystem::path m_lastDirectory;
+    std::filesystem::path m_lastDirectory; // Directory last browsed, or empty.
+    // Progress shared with the search or import thread, or empty when neither runs.
     std::shared_ptr<ImportState> m_import;
-    std::thread m_thread;
+    std::thread m_thread; // Running search or import.
     // A check reads a whole image, and a disc check decodes an ISZ or PDI image. The checks run
     // on threads. A check replaced by a newer path waits in m_retiredChecks until it finishes,
     // as the destruction of its future waits for it.
     std::map<WizardControlId, std::future<CheckResult>> m_checks;
+    // Replaced checks still running, discarded by ApplyChecks() as they finish.
     std::vector<std::future<CheckResult>> m_retiredChecks;
-    std::string m_importStep;
-    double m_importFraction = 0.0;
-    std::optional<std::string> m_importFailure;
+    std::string m_importStep;                   // Step the search or import last reported.
+    double m_importFraction = 0.0;              // Share of the search or import done, from 0 to 1.
+    std::optional<std::string> m_importFailure; // Why the import failed.
+    // Text box whose text a drag of the mouse selects.
     std::optional<WizardControlId> m_selecting;
 };
 

@@ -91,6 +91,7 @@ extern int g_dwGbiMatrixStackDepth;
  */
 extern int g_dwGbiDisplayListStackDepth;
 
+/** @cond */
 /**
  * The commands that follow the calls of display lists, to return to.
  *
@@ -98,6 +99,7 @@ extern int g_dwGbiDisplayListStackDepth;
  * @ghidraAddress BRGlide: 0x105ce2e8
  */
 extern GbiCommand *g_apGbiDisplayListReturnStack[GBI_DISPLAY_LIST_STACK_SIZE];
+/** @endcond */
 
 #ifdef __cplusplus
 extern "C" {
@@ -345,6 +347,7 @@ extern float g_fGbiEnvColorG;
  */
 extern float g_fGbiEnvColorB;
 
+/** @cond */
 /**
  * The alpha of the environment colour, from 0 to 1.
  *
@@ -352,6 +355,7 @@ extern float g_fGbiEnvColorB;
  * @ghidraAddress BRGlide: 0x105ccc74
  */
 extern float g_fGbiEnvColorA;
+/** @endcond */
 
 /**
  * The red of the primitive colour, from 0 to 1.
@@ -492,6 +496,7 @@ extern "C" {
 /**
  * Convert the packed indices of a single-triangle command from doubled byte offsets to vertices.
  *
+ * @param pCommand The command, whose second word is rewritten in place.
  * @ghidraAddress BRD3D: 0x1002c190
  * @ghidraAddress BRGlide: 0x10019250
  */
@@ -500,6 +505,7 @@ void HalveGbiTriangleVertexIndices(GbiCommand *pCommand);
 /**
  * Convert both packed triangle index triples from doubled byte offsets to vertices.
  *
+ * @param pCommand The command, whose two words are rewritten in place.
  * @ghidraAddress BRD3D: 0x1002c1b0
  * @ghidraAddress BRGlide: 0x10019270
  */
@@ -554,6 +560,7 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
  */
 extern float g_GbiMvpMatrix[4][4];
 
+/** @cond */
 /**
  * The current projection matrix of the display-list interpreter.
  *
@@ -561,6 +568,7 @@ extern float g_GbiMvpMatrix[4][4];
  * @ghidraAddress BRGlide: 0x105ccd00
  */
 extern float g_GbiProjectionMatrix[4][4];
+/** @endcond */
 
 /**
  * The stack of model-view matrices used by display-list matrix commands.
@@ -793,6 +801,8 @@ extern "C" {
 /**
  * Light a vertex normal with the first directional light and the ambient colour.
  *
+ * @param pVertex The loaded vertex with its normal.
+ * @param pDest The vertex whose red, green, and blue receive the lit colour.
  * @ghidraAddress BRD3D: 0x10022350
  * @ghidraAddress BRGlide: 0x10022ac0
  */
@@ -816,6 +826,7 @@ extern float g_fDepthOffset;
 /**
  * Mark every homogeneous clip plane outside @p pVertex, including unordered coordinates.
  *
+ * @param pVertex The vertex in homogeneous clip coordinates.
  * @return A bit mask of the failed plane tests, or zero for a vertex inside the view.
  * @ghidraAddress BRD3D: 0x10022dc0
  * @ghidraAddress BRGlide: 0x10022120
@@ -874,8 +885,13 @@ extern GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 extern GbiVertexSource *g_pVertexFreeList;
 
 /**
- * Take a clipping vertex from the free list and interpolate its attributes.
+ * Take a clipping vertex from the free list and interpolate its position, texture coordinates,
+ * W, and colour. The routine writes through a NULL pointer when the pool is empty.
  *
+ * @param pFirst The vertex at a fraction of 0.
+ * @param pSecond The vertex at a fraction of 1.
+ * @param fFraction The position between the two vertices.
+ * @return The interpolated vertex, removed from #g_pVertexFreeList.
  * @ghidraAddress BRD3D: 0x1001d940
  * @ghidraAddress BRGlide: 0x1001f200
  */
@@ -891,6 +907,7 @@ struct GbiClipPolygon {
 /**
  * Clip a polygon to vertices with nonnegative homogeneous W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001d810
  * @ghidraAddress BRGlide: 0x1001f0d0
  */
@@ -898,6 +915,7 @@ void ClipPolygonPositiveWPlane(GbiClipPolygon *pPolygon);
 /**
  * Clip a polygon against the left plane, where X is at least negative W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001d9f0
  * @ghidraAddress BRGlide: 0x1001f2b0
  */
@@ -905,6 +923,7 @@ void ClipPolygonLeftPlane(GbiClipPolygon *pPolygon);
 /**
  * Clip a polygon against the right plane, where X is at most W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001db30
  * @ghidraAddress BRGlide: 0x1001f3f0
  */
@@ -912,6 +931,7 @@ void ClipPolygonRightPlane(GbiClipPolygon *pPolygon);
 /**
  * Clip a polygon against the bottom plane, where Y is at least negative W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001dc70
  * @ghidraAddress BRGlide: 0x1001f530
  */
@@ -919,6 +939,7 @@ void ClipPolygonBottomPlane(GbiClipPolygon *pPolygon);
 /**
  * Clip a polygon against the top plane, where Y is at most W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001ddb0
  * @ghidraAddress BRGlide: 0x1001f670
  */
@@ -926,6 +947,7 @@ void ClipPolygonTopPlane(GbiClipPolygon *pPolygon);
 /**
  * Clip a polygon against the near plane, where Z is at least negative W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001def0
  * @ghidraAddress BRGlide: 0x1001f7b0
  */
@@ -933,6 +955,7 @@ void ClipPolygonNearZPlane(GbiClipPolygon *pPolygon);
 /**
  * Clip a polygon against the far plane, where Z is at most W.
  *
+ * @param pPolygon The polygon, replaced in place by its clipped vertices.
  * @ghidraAddress BRD3D: 0x1001e030
  * @ghidraAddress BRGlide: 0x1001f8f0
  */

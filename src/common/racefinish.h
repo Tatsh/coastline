@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RACE_FINISH_H
 #define COASTLINE_RACE_FINISH_H
 
+/**
+ * @file
+ * The end of a race once its screen has faded out.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

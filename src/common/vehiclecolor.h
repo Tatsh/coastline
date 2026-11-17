@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLECOLOR_H
 #define COASTLINE_VEHICLECOLOR_H
 
+/**
+ * @file
+ * The paint and light palettes of the materials of a vehicle model.
+ */
+
 #include "common/vehiclemodel.h"
 
 #ifdef __cplusplus
@@ -34,7 +39,12 @@ static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
 }
 #endif /* TGR_BOSS_RALLY */
 
-/** @return @p color in the byte order used by the selected renderer. */
+/**
+ * Convert a palette colour to the byte order of the renderer. Boss Rally swaps the two bytes.
+ *
+ * @param color The RGBA5551 colour, in native order.
+ * @return @p color in the byte order used by the selected renderer.
+ */
 static inline u16 PackMaterialPaletteColor(u16 color) {
 #if TGR_BOSS_RALLY
     return (color >> 8) | (color << 8);
@@ -43,7 +53,12 @@ static inline u16 PackMaterialPaletteColor(u16 color) {
 #endif
 }
 
-/** @return The indexed or direct format of @p texture. */
+/**
+ * Get the format of a texture. Boss Rally reads bits 24 to 27 of its texture flags.
+ *
+ * @param texture The texture.
+ * @return The indexed or direct format of @p texture.
+ */
 static inline s32 GetMaterialTextureFormat(const ModelTexture *texture) {
 #if TGR_BOSS_RALLY
     return (texture->textureFlags >> 24) & 0xf;
@@ -52,7 +67,15 @@ static inline s32 GetMaterialTextureFormat(const ModelTexture *texture) {
 #endif
 }
 
-/** Set the material palettes of @p model to the requested red, green, and blue colour. */
+/**
+ * Set the material palettes of @p model to the requested red, green, and blue colour. The first
+ * entry of each CI4 material palette receives the colour, and the second a darker shade.
+ *
+ * @param model The vehicle model.
+ * @param red The red component, from 0 to 31.
+ * @param green The green component, from 0 to 31.
+ * @param blue The blue component, from 0 to 31.
+ */
 static inline void SetMaterialPaletteColors(VehicleModel *model, s32 red, s32 green, s32 blue) {
     ModelTexture *texture;
     u16 *palette;

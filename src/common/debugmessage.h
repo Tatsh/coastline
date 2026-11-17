@@ -1,6 +1,11 @@
 #ifndef COASTLINE_DEBUGMESSAGE_H
 #define COASTLINE_DEBUGMESSAGE_H
 
+/**
+ * @file
+ * The message of the debug display and its fatal error screen on Windows.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

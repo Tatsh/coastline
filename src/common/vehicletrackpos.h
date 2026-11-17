@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_TRACK_POSITION_H
 #define COASTLINE_VEHICLE_TRACK_POSITION_H
 
+/**
+ * @file
+ * The position of a vehicle along the track.
+ */
+
 #include "common/types.h"
 #include "common/vehiclefwd.h"
 

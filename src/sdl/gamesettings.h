@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The settings of the options menu, graphics presets, and the rules that resolve speed units
+ * and the volume of sound effects.
+ */
+
 #include <array>
 #include <filesystem>
 #include <optional>
@@ -61,7 +67,11 @@ public:
                  std::span<const std::filesystem::path> dataRoots = {},
                  std::span<const std::array<int, 2>> displayResolutions = {});
 
-    /** @return The number of options available in this settings model. */
+    /**
+     * Count the options of the menu.
+     *
+     * @return The number of options available in this settings model.
+     */
     std::size_t Count() const {
         return m_options.size();
     }
@@ -73,16 +83,22 @@ public:
      */
     void SetOverrides(GameConfig overrides);
     /**
+     * Report whether the user may change an option.
+     *
      * @param index The zero-based option index.
      * @return Whether the option is valid and is not controlled by a command-line override.
      */
     bool IsEnabled(std::size_t index) const;
     /**
+     * Format the menu text of an option from its saved or overridden value.
+     *
      * @param index The zero-based option index.
      * @return The option label and its selected value, or empty text for an invalid index.
      */
     std::string Label(std::size_t index) const;
     /**
+     * Report whether applying an option restarts the game at the logos.
+     *
      * @param index The zero-based option index.
      * @return Whether the option requires rebuilding the game session, or false for an invalid
      * index. For graphics presets, the result reflects the most recent preset adjustment.
@@ -101,29 +117,37 @@ public:
     void FinishPresetSelection();
 
 private:
-    /** A stored value and its label in an options menu. */
+    // A stored value and its label in an options menu.
     struct Choice {
-        std::string value; /*!< The value written to the INI file. */
-        std::string label; /*!< The label displayed in the menu. */
-        int height = 0;    /*!< The menu row height override. */
+        std::string value; // Written to the INI file.
+        std::string label; // Displayed in the menu.
+        int height = 0;    // The menu row height override.
     };
-    /** An option backed by a configuration key and a list of choices. */
+    // An option backed by a configuration key and a list of choices.
     struct Option {
-        std::string label;           /*!< The option label. */
-        std::string section;         /*!< The INI section. */
-        std::string key;             /*!< The INI key. */
-        std::vector<Choice> choices; /*!< The available values. */
-        std::size_t fallback = 0;    /*!< The choice used for invalid values. */
-        bool numeric = false;        /*!< Whether the value is an integer. */
-        bool boolean = false;        /*!< Whether the value is a boolean. */
-        bool restart = true;         /*!< Whether applying the option restarts the session. */
+        std::string label;
+        std::string section; // INI section.
+        std::string key;     // INI key.
+        std::vector<Choice> choices;
+        std::size_t fallback = 0; // The choice used for invalid values.
+        bool numeric = false;     // Whether the value is an integer.
+        bool boolean = false;
+        bool restart = true; // Whether applying the option restarts the session.
     };
+    // Return the index of the choice that matches the current value of an option, or
+    // Option::fallback when the value is absent or matches none. Numeric values compare within
+    // 0.00001, and the internal resolution compares both its width and its height.
     std::size_t Selected(const Option &option) const;
+    // Return m_overrides when it sets the key of the option, otherwise m_config.
     const GameConfig &ConfigFor(const Option &option) const;
-    GameConfig &m_config;
-    GameConfig m_overrides;
+    GameConfig &m_config;   // The saved configuration that Step() changes.
+    GameConfig m_overrides; // The command-line values that lock their options.
+    // The configuration before the first preset step since FinishPresetSelection(). Each
+    // preset step applies to a copy of the baseline.
     std::optional<GameConfig> m_presetBaseline;
-    std::vector<Option> m_options;
+    std::vector<Option> m_options; // In menu order.
+    // Whether the last preset step changed a setting that restarts the game, or the frame
+    // pacing or GPU preference.
     bool m_presetRestart = true;
 };
 

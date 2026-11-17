@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLEFORCES_H
 #define COASTLINE_VEHICLEFORCES_H
 
+/**
+ * @file
+ * The indices of the forces on the bodies of a vehicle.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

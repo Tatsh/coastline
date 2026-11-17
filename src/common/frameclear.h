@@ -1,6 +1,11 @@
 #ifndef COASTLINE_FRAMECLEAR_H
 #define COASTLINE_FRAMECLEAR_H
 
+/**
+ * @file
+ * The list of variables cleared at the start of each frame, and the routine that clears them.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_MEMORY_BUDGET_H
 #define COASTLINE_EAR_MEMORY_BUDGET_H
 
+/**
+ * @file
+ * The accounting of the memory the EAR library reserves for wave samples against a budget.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -16,12 +21,16 @@ extern "C" {
 int InitializeSampleMemoryBudget(void);
 
 /**
+ * Read the budget set by InitializeSampleMemoryBudget().
+ *
  * @return The configured sample-memory limit in bytes.
  * @ghidraAddress EAR: 0x10008ca2
  */
 uint32_t GetSampleMemoryLimit(void);
 
 /**
+ * Read the total of the reservations not yet released.
+ *
  * @return The tracked reserved sample-memory byte count.
  * @ghidraAddress EAR: 0x10008cac
  */

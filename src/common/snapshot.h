@@ -17,17 +17,24 @@ enum { FRAME_SNAPSHOT_COUNT = 5 /*!< Five slots for captured and currently rende
 /** Captured race geometry, cameras, and particles for interpolation between simulation steps. */
 class FrameSnapshot {
 private:
-    unsigned sequence;
-    RacerSlot racers[RACER_SLOTS];
+    unsigned sequence;             // Assigned by SetSequence().
+    RacerSlot racers[RACER_SLOTS]; // Vehicle pointers point into vehicles.
+    // Bytes not yet reconstructed, not read or written by the reconstructed routines.
     [[maybe_unused]] unsigned char unreconstructedA04[4]; /* +0xa04 */
     Vehicle vehicles[MAX_VEHICLES];
-    ViewportRect viewport;
+    ViewportRect viewport; // The first viewport rectangle at capture.
+    // A word not yet reconstructed, copied from the earlier frame by InterpolateFrom().
     unsigned unreconstructed2c0e0; /* +0x2c0e0 */
     ParticleSnapshot particles;
+    // Bytes not yet reconstructed, not read or written by the reconstructed routines.
     [[maybe_unused]] unsigned char unreconstructed2e0ec[4]; /* +0x2e0ec */
 
 public:
-    /** @return The monotonically assigned capture sequence for this pool slot. */
+    /**
+     * Get the capture sequence of the pool slot.
+     *
+     * @return The monotonically assigned capture sequence for this pool slot.
+     */
     unsigned GetSequence() const {
         return sequence;
     }
@@ -39,25 +46,38 @@ public:
     void SetSequence(unsigned value) {
         sequence = value;
     }
-    /** @return The captured first vehicle's active camera; its camera pointer must be valid. */
+    /**
+     * Get the active camera of the first captured vehicle.
+     *
+     * @return The captured first vehicle's active camera; its camera pointer must be valid.
+     */
     const CameraFrame &GetPrimaryCamera() const {
         return *vehicles[0].GetActiveCamera();
     }
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
     /**
+     * Get a captured vehicle.
+     *
      * @param index The vehicle index, from 0 through MAX_VEHICLES - 1.
      * @return The captured vehicle, valid for this snapshot's lifetime and replaced by capture.
      */
     const Vehicle &GetVehicle(int index) const {
         return vehicles[index];
     }
-    /** @return Mutable storage for MAX_VEHICLES captured vehicles, valid for this snapshot's
+    /**
+     * Get the storage of the captured vehicles.
+     *
+     * @return Mutable storage for MAX_VEHICLES captured vehicles, valid for this snapshot's
      * lifetime.
      */
     Vehicle *GetVehicles() {
         return vehicles;
     }
-    /** @return Captured particles, valid for this snapshot's lifetime and replaced by capture. */
+    /**
+     * Get the captured particles.
+     *
+     * @return Captured particles, valid for this snapshot's lifetime and replaced by capture.
+     */
     const ParticleSnapshot &GetParticles() const {
         return particles;
     }
@@ -97,7 +117,10 @@ extern FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
 extern FrameSnapshot g_InterpolatedFrameSnapshot;
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-/** @return The active engine's slot-use flags, one per snapshot slot.
+/**
+ * Get the slot-use flags of the snapshot pool of the active SDL engine. An engine must be active.
+ *
+ * @return The active engine's slot-use flags, one per snapshot slot.
  * @ghidraAddress BRD3D: 0x1039b728
  */
 int (*GetSdlSnapshotUsage(void))[FRAME_SNAPSHOT_COUNT];
@@ -164,6 +187,7 @@ int AcquireNextFrameSnapshotSlot(void);
 FrameSnapshot *InterpolateFrameSnapshots(float share);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
+/** @cond */
 /**
  * Whether the snapshots of frames are set up.
  *
@@ -171,6 +195,7 @@ FrameSnapshot *InterpolateFrameSnapshots(float share);
  * @ghidraAddress BRGlide: 0x104ab504
  */
 extern int g_bFrameSnapshotsInitialized;
+/** @endcond */
 
 /**
  * Mark the snapshots of frames as not set up.

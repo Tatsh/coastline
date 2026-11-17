@@ -31,17 +31,33 @@ public:
     ~EngineTextures();
     /** Copying is disabled because texture hooks address the active collection. */
     EngineTextures(const EngineTextures &) = delete;
-    /** Assignment is disabled because the active collection has a stable address. */
+    /**
+     * Assignment is disabled because the active collection has a stable address.
+     *
+     * @return This collection.
+     */
     EngineTextures &operator=(const EngineTextures &) = delete;
 
-    /** @return The active texture collection, or null outside its lifetime. */
+    /**
+     * Look up the collection registered by the constructor.
+     *
+     * @return The active texture collection, or null outside its lifetime.
+     */
     static EngineTextures *Active();
 
-    /** @return Renderer settings and texture hooks for the race engine. */
+    /**
+     * Access the renderer state of the collection.
+     *
+     * @return Renderer settings and texture hooks for the race engine.
+     */
     SdlRenderBackendState &Backend() {
         return m_backend;
     }
-    /** @return Sky images and reflection descriptors for the race engine. */
+    /**
+     * Access the reflection state of the collection.
+     *
+     * @return Sky images and reflection descriptors for the race engine.
+     */
     SdlVehicleReflections &Reflections() {
         return m_reflections;
     }
@@ -60,7 +76,7 @@ public:
     void Clear();
 
 private:
-    std::vector<EngineTexture> m_textures;
+    std::vector<EngineTexture> m_textures; // Entry N at index N - 1.
     SdlRenderBackendState m_backend{};
     SdlVehicleReflections m_reflections{};
 };
@@ -108,6 +124,8 @@ int DecodeEngineTexture(void *destination,
 void LoadEngineTexture(unsigned entry, const unsigned char *colors);
 
 /**
+ * Look up a texture of the active collection.
+ *
  * @param entry The entry of a texture.
  * @return The texture, or null for an invalid entry or without an active collection.
  * The pointer remains valid until another texture is created or the collection is cleared.

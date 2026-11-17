@@ -20,15 +20,27 @@
 /** The settings saved in BossRally.cfg. */
 class RallyConfig {
 public:
-    /** @return The configured player name. */
+    /**
+     * Get the name of the player.
+     *
+     * @return The configured player name, stored in szPlayerName.
+     */
     const char *GetPlayerName() const {
         return szPlayerName;
     }
-    /** @return The sound-effects volume. */
+    /**
+     * Get the volume of the sound effects.
+     *
+     * @return The sound-effects volume, from dwSfxVolume.
+     */
     int GetSfxVolume() const {
         return dwSfxVolume;
     }
-    /** @return The music volume. */
+    /**
+     * Get the volume of the music.
+     *
+     * @return The music volume, from dwMusicVolume.
+     */
     int GetMusicVolume() const {
         return dwMusicVolume;
     }

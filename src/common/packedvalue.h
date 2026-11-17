@@ -1,6 +1,11 @@
 #ifndef COASTLINE_PLATFORM_WIN_PACKEDVALUE_H
 #define COASTLINE_PLATFORM_WIN_PACKEDVALUE_H
 
+/**
+ * @file
+ * Conversions between floating-point values and the packed integer fields of the PC release.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

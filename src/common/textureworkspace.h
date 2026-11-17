@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TEXTUREWORKSPACE_H
 #define COASTLINE_TEXTUREWORKSPACE_H
 
+/**
+ * @file
+ * The shared workspace of texture decoding.
+ */
+
 /** The size of the shared texture-decoding workspace, in bytes. */
 #define TEXTURE_DECODE_WORKSPACE_BYTES 0x80000
 /** The most pixels an image file of RGBA5551 has, 256 by 256. */

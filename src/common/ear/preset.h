@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_PRESET_H
 #define COASTLINE_EAR_PRESET_H
 
+/**
+ * @file
+ * The preset exports of the EAR library, to register and shut down wave samples.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -8,6 +13,8 @@ extern "C" {
 #endif
 
 /**
+ * Forward a preset registration to EAR_DLL_RegisterPreset().
+ *
  * @param source The path of the wave file, or the wave file in memory.
  * @param control The handle of the preset in the low word, 0 for a new one, and the kind of the
  * source in the high word.
@@ -28,6 +35,8 @@ uint32_t __stdcall EarRegisterPresetExportWrapper(const void *source, uint32_t c
 uint32_t __stdcall EAR_DLL_RegisterPreset(const void *source, uint32_t control);
 
 /**
+ * Forward a preset shutdown to EAR_DLL_ShutDownPreset().
+ *
  * @param preset The preset, or 0 for every preset.
  * @return Whether the preset was shut down.
  * @ghidraAddress EAR: 0x1000f710

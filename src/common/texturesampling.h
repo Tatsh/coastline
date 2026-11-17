@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TEXTURE_SAMPLING_H
 #define COASTLINE_TEXTURE_SAMPLING_H
 
+/**
+ * @file
+ * The bilinear sampling of decoded texture pixels.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,6 +52,14 @@ void BilinearInterpolate8bpp(unsigned char *destination,
 
 /**
  * Bilinearly sample four packed ARGB1555 pixels, rounding and clamping each channel.
+ *
+ * @param destination Receives the sampled pixel.
+ * @param topLeft The top-left pixel.
+ * @param topRight The top-right pixel.
+ * @param bottomLeft The bottom-left pixel.
+ * @param bottomRight The bottom-right pixel.
+ * @param x The horizontal interpolation fraction.
+ * @param y The vertical interpolation fraction.
  * @ghidraAddress BRGlide: 0x10024750
  */
 void BilinearInterpolateArgb1555(unsigned char *destination,
@@ -59,6 +72,14 @@ void BilinearInterpolateArgb1555(unsigned char *destination,
 
 /**
  * Bilinearly sample four packed ARGB4444 pixels, rounding and clamping each channel.
+ *
+ * @param destination Receives the sampled pixel.
+ * @param topLeft The top-left pixel.
+ * @param topRight The top-right pixel.
+ * @param bottomLeft The bottom-left pixel.
+ * @param bottomRight The bottom-right pixel.
+ * @param x The horizontal interpolation fraction.
+ * @param y The vertical interpolation fraction.
  * @ghidraAddress BRGlide: 0x10024aa0
  */
 void BilinearInterpolateArgb4444(unsigned char *destination,

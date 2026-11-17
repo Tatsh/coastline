@@ -109,6 +109,7 @@ int GetCdAudioCurrentTrack(void);
  */
 int GetEarMusicCurrentTrack(void);
 
+/** @cond */
 /**
  * The volume of the music the CD audio last had. Only whether it is 0 matters, and the music of the
  * CD is paused at 0.
@@ -117,6 +118,7 @@ int GetEarMusicCurrentTrack(void);
  * @ghidraAddress BRGlide: 0x1021c80c
  */
 extern unsigned char g_bCdMusicVolume;
+/** @endcond */
 
 /**
  * Play the current track of the music again when the music is active.
@@ -160,6 +162,7 @@ bool SetScaledAudioVolume(unsigned char bVolume);
  */
 MCIERROR MciPlayCdTracks(HWND hWnd, unsigned char nTrack);
 
+/** @cond */
 /**
  * The track of music that plays.
  *
@@ -199,6 +202,7 @@ extern HWND g_hMusicNotifyWnd;
  * @ghidraAddress BRGlide: 0x1021c808
  */
 extern int g_bCdAudioPlaying;
+/** @endcond */
 
 /**
  * Play the next track of music, from the first again after the last.
@@ -256,6 +260,7 @@ bool PlayCdAudioFromCurrentTrack(void);
  */
 bool RouteMusicInitByFlag(HWND hWnd);
 
+/** @cond */
 /**
  * The channel of the EAR library the music plays on, 100.
  *
@@ -288,6 +293,7 @@ extern int g_bMusicActive;
  * @ghidraAddress BRGlide: 0x1021c778
  */
 extern int g_bEarOutputInitialized;
+/** @endcond */
 
 /**
  * Open the CD audio through MCI for the first user of the device of the music, with the time in

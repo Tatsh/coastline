@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_WINDOW_H
 #define COASTLINE_EAR_WINDOW_H
 
+/**
+ * @file
+ * The window that receives EAR notifications and parents its message dialogues.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 #else

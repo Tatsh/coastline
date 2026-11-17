@@ -14,6 +14,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * The items of the screen, ending with NULL.
  *
@@ -43,6 +44,7 @@ extern s32 g_dwPlayerCountMenuItemCount;
  * @ghidraAddress JPN: 0x80316ca4
  */
 extern s32 g_dwPlayerCountMenuSelection;
+/** @endcond */
 
 /**
  * Explain below the menu that two players need two controllers, while that item is selected and

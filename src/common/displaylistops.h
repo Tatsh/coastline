@@ -1,6 +1,12 @@
 #ifndef COASTLINE_DISPLAYLISTOPS_H
 #define COASTLINE_DISPLAYLISTOPS_H
 
+/**
+ * @file
+ * The patching of display-list render modes and colour combines for the weather, and the tables
+ * of replacements it reads.
+ */
+
 #include "common/track.h"
 #include "common/types.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
@@ -108,6 +114,7 @@ extern DisplayListCommand g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
 extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
  *
@@ -119,6 +126,7 @@ extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
  * @ghidraAddress BRGlide: 0x106ed6fc
  */
 extern s32 g_bDisplayListSnowTint;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY && TGR_PLATFORM != TGR_PLATFORM_SDL

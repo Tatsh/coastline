@@ -42,6 +42,8 @@ constexpr std::uint64_t SFX_STEP_ONE = 1ull << 32;
 constexpr u8 MAX_SFX_VOLUME = 0xFF;
 
 /**
+ * Pack the stereo levels of a sound effect channel into one word.
+ *
  * @param right The level of the right side, from 0 to 32.
  * @param left The level of the left side, from 0 to 32.
  * @return The levels of a sound effect channel, the right in the upper half and the left in the
@@ -115,6 +117,8 @@ constexpr std::array<std::uint32_t, 2> CombineLerp(std::uint32_t a0,
 }
 
 /**
+ * Build a matrix that moves a point by a displacement.
+ *
  * @param x The horizontal displacement in model units.
  * @param y The vertical displacement in model units.
  * @param z The depth displacement in model units.
@@ -123,18 +127,24 @@ constexpr std::array<std::uint32_t, 2> CombineLerp(std::uint32_t a0,
 Matrix4 Translation(float x, float y, float z);
 
 /**
+ * Build a matrix that scales a point about the origin.
+ *
  * @param s The scale multiplier applied equally to all three axes.
  * @return The uniform scaling matrix.
  */
 Matrix4 Scale(float s);
 
 /**
+ * Build a matrix that turns a point about the x axis.
+ *
  * @param angle The rotation in radians about the x axis, following guRotateF().
  * @return The rotation matrix.
  */
 Matrix4 RotationX(float angle);
 
 /**
+ * Build a matrix that turns a point about the z axis.
+ *
  * @param angle The rotation in radians about the z axis, following guRotateF().
  * @return The rotation matrix.
  */
@@ -166,6 +176,8 @@ Matrix4 MenuProjection(float aspect,
                        const std::optional<Matrix4> &camera = std::nullopt);
 
 /**
+ * Build the orthographic matrix of flat menu draws such as backgrounds and text.
+ *
  * @param aspect The width of the frame over its height.
  * @return The flat draws of the 640 by 480 screen, centred in the frame at 4:3 with y down.
  */
@@ -278,6 +290,8 @@ void AddTriangle(std::vector<FlatVertex> &quads,
                  const StageVertex &c);
 
 /**
+ * Convert a rectangle of the menu screen to the pixels of the frame.
+ *
  * @param frameWidth The width of the frame, in pixels.
  * @param frameHeight The height of the frame, in pixels.
  * @param x The left of a rectangle of the 320 by 240 screen.
@@ -289,12 +303,17 @@ void AddTriangle(std::vector<FlatVertex> &quads,
 SDL_Rect FrameRect(Uint32 frameWidth, Uint32 frameHeight, int x, int y, int width, int height);
 
 /**
+ * Read the lights of a screen, normalising the direction and scaling the colours from 0-255 to
+ * 0-1. A missing direction, ambient, or directional key throws nlohmann::json::out_of_range.
+ *
  * @param light The lights of a screen in lights.json.
  * @return The lights, in the space of the console.
  */
 Lighting ReadLighting(const nlohmann::json &light);
 
 /**
+ * Load a menu sound for the sound effect channels.
+ *
  * @param path A sound of the import, an unsigned 8-bit WAV file.
  * @return The signed 8-bit samples of the sound, then SOUND_PADDING of silence, or nothing with the
  * reason logged.
@@ -331,13 +350,25 @@ struct ScreenFade {
      */
     void SetTarget(float to, float seconds);
 
-    /** @return Whether the fade moves towards the whole picture. */
+    /**
+     * Report a fade in. A positive rate without an automatic reverse counts.
+     *
+     * @return Whether the fade moves towards the whole picture.
+     */
     bool FadingIn() const;
 
-    /** @return Whether the fade moves towards black. */
+    /**
+     * Report a fade out. A negative rate or a pending automatic reverse counts.
+     *
+     * @return Whether the fade moves towards black.
+     */
     bool FadingOut() const;
 
-    /** @return Whether the level has arrived at its target. */
+    /**
+     * Report the end of a fade. A pending automatic reverse is not complete.
+     *
+     * @return Whether the level has arrived at its target.
+     */
     bool Complete() const;
 
     /**

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_VIEW_H
 #define COASTLINE_VEHICLE_VIEW_H
 
+/**
+ * @file
+ * The sky reflection textures of vehicles and the view mode of the vehicle camera.
+ */
+
 #include <PR/ultratypes.h>
 
 #ifdef __cplusplus
@@ -78,7 +83,11 @@ typedef struct {
     s8 selection[3][2];                   /*!< The selected reflections by view and sky. */
 } SdlVehicleReflections;
 
-/** @return Reflection storage for the active SDL texture collection. */
+/**
+ * Get the reflection storage of the active SDL texture collection. A collection must be active.
+ *
+ * @return Reflection storage for the active SDL texture collection.
+ */
 SdlVehicleReflections *GetSdlVehicleReflections(void);
 
 /** @cond */

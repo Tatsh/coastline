@@ -1,6 +1,11 @@
 #ifndef COASTLINE_SHADOWBUFFERS_H
 #define COASTLINE_SHADOWBUFFERS_H
 
+/**
+ * @file
+ * The double-buffered display lists and vertices of vehicle shadows.
+ */
+
 #include "common/displaylistops.h"
 
 #if TGR_BOSS_RALLY

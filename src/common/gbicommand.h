@@ -1,6 +1,11 @@
 #ifndef COASTLINE_GBICOMMAND_H
 #define COASTLINE_GBICOMMAND_H
 
+/**
+ * @file
+ * The layout of a command of a game display list and the opcodes with dedicated handlers.
+ */
+
 #include <PR/gbi.h>
 
 #include "common/ptr32.h"
@@ -28,6 +33,7 @@ typedef union ModelVertexData {
 
 /** A command of a display list of the game. */
 struct GbiCommand {
+    /** The command as an opcode word and a typed second word, or as two raw words. */
     union {
         struct {
             unsigned w0; /*!< The first word, the opcode in its high byte. */

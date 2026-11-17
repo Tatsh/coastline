@@ -56,6 +56,7 @@ typedef struct GlideTmuMemory {
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * The texture memory of each texture mapping unit not yet taken.
  *
@@ -76,6 +77,7 @@ extern GlideTextureSlot g_aGlideTextureSlots[GLIDE_TEXTURE_SLOT_COUNT];
  * @ghidraAddress BRGlide: 0x105d17ec
  */
 extern unsigned g_dwGlideTextureSlotCount;
+/** @endcond */
 
 /**
  * The texture mapping unit the texture combine was set for last, or -1 for none.

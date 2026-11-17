@@ -13,14 +13,27 @@ extern "C" {
 #endif
 
 #ifndef MIN
-/** The lesser of a and b, each evaluated twice. */
+/**
+ * The lesser of a and b, each evaluated twice.
+ *
+ * @param a The first value.
+ * @param b The second value.
+ */
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-/** Clamp a direction component to a signed byte, where 1.0 is 128. */
+/**
+ * Clamp a direction component to a signed byte, where 1.0 is 128.
+ *
+ * @param x The component, at most 1.0, evaluated twice.
+ */
 #define FTOFRAC8(x) ((int)MIN(((x) * (128.0)), 127.0) & 0xff)
 
-/** Round d half away from zero to an int. */
+/**
+ * Round d half away from zero to an int.
+ *
+ * @param d The value to round, evaluated up to twice.
+ */
 #define ROUND(d) (int)(((d) >= 0.0) ? ((d) + 0.5) : ((d) - 0.5))
 
 /** @cond */

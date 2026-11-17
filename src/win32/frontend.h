@@ -56,6 +56,7 @@ public:
     virtual int ScanSaveFiles(const char *pszPattern);
 
     /**
+     * Read one stored name.
      * @param index The slot index, 0..99, without bounds checking.
      * @return The borrowed terminated name, valid until the slot changes or the list is destroyed.
      */
@@ -82,57 +83,36 @@ public:
     }
 
 private:
-    char aszNames[SAVE_FILE_NAME_COUNT][SAVE_FILE_NAME_SIZE]; /*!< The names, empty at the start. */
+    char aszNames[SAVE_FILE_NAME_COUNT][SAVE_FILE_NAME_SIZE]; // Empty at the start.
 
-    /**
-     * Count matches after the first, stopping after 100 files.
-     *
-     * @param pszPattern The file search pattern.
-     * @return Minus one when the first search fails, otherwise the count after the first match.
-     * @ghidraAddress BRD3D: 0x1005d0a0
-     * @ghidraAddress BRGlide: 0x10055ed0
-     */
+    // Count matches after the first, stopping after 100 files. Returns minus one when the first
+    // search fails, otherwise the count after the first match.
+    // @ghidraAddress BRD3D: 0x1005d0a0
+    // @ghidraAddress BRGlide: 0x10055ed0
     virtual int CountMatchingFiles(const char *pszPattern);
 
-    /**
-     * Replace pattern markers with zeroes and derive a filename from matching list entries.
-     *
-     * @param pszPattern The mutable pattern, with X or x marking the numeric suffix.
-     * @param ppszName The destination filename buffer.
-     * @ghidraAddress BRD3D: 0x1005d110
-     * @ghidraAddress BRGlide: 0x10055f40
-     */
+    // Replace pattern markers (X or x, marking the numeric suffix) with zeroes and derive a
+    // filename from matching list entries.
+    // @ghidraAddress BRD3D: 0x1005d110
+    // @ghidraAddress BRGlide: 0x10055f40
     virtual void GenerateNextSaveFileName(char *pszPattern, char **ppszName);
 
-    /**
-     * Write 100-byte records from the active screen's first file list.
-     *
-     * @param nUnused Not read.
-     * @return One, including after reported file errors.
-     * @ghidraAddress BRD3D: 0x1005cc20
-     * @ghidraAddress BRGlide: 0x10055a40
-     */
+    // Write 100-byte records from the active screen's first file list. The argument is not read.
+    // Returns one, including after reported file errors.
+    // @ghidraAddress BRD3D: 0x1005cc20
+    // @ghidraAddress BRGlide: 0x10055a40
     virtual int WriteSeasonDescFile(int nUnused);
 
-    /**
-     * Load and uppercase a season description into the active screen's first file list.
-     *
-     * @param nSlot The signed slot index.
-     * @return One, including when the file does not open.
-     * @ghidraAddress BRD3D: 0x1005ccd0
-     * @ghidraAddress BRGlide: 0x10055af0
-     */
+    // Load and uppercase a season description into the active screen's first file list. The slot
+    // index is signed. Returns one, including when the file does not open.
+    // @ghidraAddress BRD3D: 0x1005ccd0
+    // @ghidraAddress BRGlide: 0x10055af0
     virtual int LoadSeasonDescription(short nSlot);
 
-    /**
-     * Set a root screen file-list entry using the numeric part of its filename.
-     *
-     * @param pszFileName The saved filename.
-     * @param pszDescription The description copied into the entry.
-     * @return One.
-     * @ghidraAddress BRD3D: 0x1005ce30
-     * @ghidraAddress BRGlide: 0x10055c50
-     */
+    // Set a root screen file-list entry using the numeric part of its filename, copying the
+    // description into the entry. Always returns one.
+    // @ghidraAddress BRD3D: 0x1005ce30
+    // @ghidraAddress BRGlide: 0x10055c50
     virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
 };
 
@@ -245,17 +225,22 @@ public:
     virtual int RemoveItem(int index);
 
     /**
+     * Access the text object of one row.
      * @param index The font slot index, 0..99.
      * @return A mutable slot reference valid until destruction; row removal can replace its value.
      */
     MenuFont &GetFont(int index) {
         return fonts[index];
     }
-    /** @return The stored row count, normally 0..100. */
+    /**
+     * Read the number of rows added and not removed.
+     * @return The stored row count, normally 0..100.
+     */
     unsigned short GetItemCount() const {
         return wItemCount;
     }
     /**
+     * Read the payload of one row without copying it.
      * @param index The payload slot index, 0..99.
      * @return The borrowed payload pointer, or null; subsequent slot changes can replace it.
      */
@@ -263,13 +248,17 @@ public:
         return itemData[index].pData;
     }
     /**
+     * Read the writable payload of one row without copying it.
      * @param index The payload slot index, 0..99.
      * @return The mutable borrowed payload pointer, or null; slot changes can replace it.
      */
     void *GetItemData(int index) {
         return itemData[index].pData;
     }
-    /** @return The stored list flag bits. */
+    /**
+     * Read the list flags.
+     * @return The stored list flag bits.
+     */
     unsigned GetFlags() const {
         return dwFlags;
     }
@@ -305,15 +294,24 @@ public:
     void SetItemChangedCallback(int (*callback)(MenuItemList *, int)) {
         pfnItemChanged = callback;
     }
-    /** @return The stored minimum vertical thumb position in menu pixels. */
+    /**
+     * Read the top limit of the vertical scrollbar thumb, set by Initialize.
+     * @return The stored minimum vertical thumb position in menu pixels.
+     */
     float GetMinScrollThumbY() const {
         return fMinScrollThumbY;
     }
-    /** @return The stored maximum vertical thumb position in menu pixels. */
+    /**
+     * Read the bottom limit of the vertical scrollbar thumb, set by Initialize.
+     * @return The stored maximum vertical thumb position in menu pixels.
+     */
     float GetMaxScrollThumbY() const {
         return fMaxScrollThumbY;
     }
-    /** @return The stored vertical thumb position in menu pixels. */
+    /**
+     * Read the current vertical position of the scrollbar thumb.
+     * @return The stored vertical thumb position in menu pixels.
+     */
     float GetScrollThumbY() const {
         return fScrollThumbY;
     }
@@ -340,71 +338,78 @@ public:
     }
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x1005c270
-     * @ghidraAddress BRGlide: 0x10055090
-     */
+    // Draw a sprite of g_aMenuSprites at a menu position, converted to screen pixels. Always
+    // returns one.
+    // @ghidraAddress BRD3D: 0x1005c270
+    // @ghidraAddress BRGlide: 0x10055090
     virtual int BlitSurfaceById(unsigned short image, float x, float y);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c2c0
-     * @ghidraAddress BRGlide: 0x100550e0
-     */
+    // Draw the background, the visible rows, and the scrollbar sprites unless flag 0x200000 hides
+    // the scrollbar. Flag 0x2000000 adds a ready or waiting icon left of each session row. The
+    // selected row draws with style 4; a negative selection draws none, and the selection is
+    // ignored when flag 0x1000000 is set or font flag 0x10 disables the row. Always returns one.
+    // @ghidraAddress BRD3D: 0x1005c2c0
+    // @ghidraAddress BRGlide: 0x100550e0
     virtual int Draw(int selection);
-    /**
-     * @ghidraAddress BRD3D: 0x10042af0
-     * @ghidraAddress BRGlide: 0x100385e0
-     */
+    // Do nothing and return one.
+    // @ghidraAddress BRD3D: 0x10042af0
+    // @ghidraAddress BRGlide: 0x100385e0
     virtual int ReturnOne();
 
-    /**
-     * @ghidraAddress BRD3D: 0x1005c510
-     * @ghidraAddress BRGlide: 0x10055330
-     */
+    // Test the mouse cursor against a rectangle and, when inside, update the pressed flag 0x2 and
+    // set the hovered flag 0x20. With flag 0x40000, a pressed button also sets the repeat flag
+    // 0x80000. The bounds are non-null, borrowed, in menu pixels, and inclusive on every edge.
+    // Returns one when the cursor is inside the bounds, otherwise zero.
+    // @ghidraAddress BRD3D: 0x1005c510
+    // @ghidraAddress BRGlide: 0x10055330
     virtual int UpdateHoverInRect(const RECT *bounds);
-    /**
-     * @ghidraAddress BRD3D: 0x1005c590
-     * @ghidraAddress BRGlide: 0x100553b0
-     */
+    // Process thumb dragging, the scroll arrows, and row hover and activation. Returns at once
+    // when flag 0x8 or 0x10 is set, and repeats continuous scroll input every 60 milliseconds. The
+    // non-null selection receives the activated row and is passed on to the selection callback.
+    // Returns one when the scrollbar or a row is hovered, otherwise zero.
+    // @ghidraAddress BRD3D: 0x1005c590
+    // @ghidraAddress BRGlide: 0x100553b0
     virtual int ProcessInput(int *selection);
 
+    // The row-activation callback, or null.
     int (*pfnSelectionChanged)(MenuItemList *, int *);
-    void (*pfnScrollUp)(void);
-    void (*pfnScrollDown)(void);
-    void (*pfnScrollDrag)(void);
-    int (*pfnItemChanged)(MenuItemList *, int);
+    void (*pfnScrollUp)(void);   // Called after the up arrow scrolls the list, or null.
+    void (*pfnScrollDown)(void); // Called after the list scrolls down, or null.
+    void (*pfnScrollDrag)(void); // Called after each thumb drag step, or null.
+    int (*pfnItemChanged)(MenuItemList *, int); // The text-edit completion callback, or null.
     unsigned dwFlags;
-    float fX;
-    float fY;
-    float fBackgroundX;
-    float fBackgroundY;
-    MenuFont fonts[100];
+    float fX;            // In menu pixels.
+    float fY;            // In menu pixels, the origin of added rows.
+    float fBackgroundX;  // Never written by this class.
+    float fBackgroundY;  // Never written by this class.
+    MenuFont fonts[100]; // The text of each row.
     MenuItemData itemData[100];
     unsigned short wItemCount;
     short nFirstVisibleRow;
-    unsigned short wVisibleRowCount;
-    short nScrollUpImage;
-    short nScrollDownImage;
-    short nBackgroundImage;
-    short nScrollThumbImage;
-    RECT rcBounds;
-    RECT rcScrollUp;
-    RECT rcScrollDown;
+    unsigned short wVisibleRowCount; // Rows are drawn 19 pixels apart.
+    short nScrollUpImage;            // Sprite 0x30, or zero or less for none.
+    short nScrollDownImage;          // Sprite 0x2e, or zero or less for none.
+    short nBackgroundImage;          // A negative value for none.
+    short nScrollThumbImage;         // Sprite 0x3a, or zero or less for none.
+    RECT rcBounds;                   // The bounds of the rows in menu pixels.
+    RECT rcScrollUp;                 // The up arrow of a vertical scrollbar.
+    RECT rcScrollDown;               // The down arrow of a vertical scrollbar.
     RECT rcHorizontalScrollLeft;
     RECT rcHorizontalScrollRight;
     RECT rcScrollThumb;
-    int bScrollUpHovered;
-    int bScrollDownHovered;
+    int bScrollUpHovered;   // Whether the up arrow draws its pressed sprite, 0x2f.
+    int bScrollDownHovered; // Whether the down arrow draws its pressed sprite, 0x2d.
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown1a9a4[8]; /* +0x1a9a4 */
-    float fScrollThumbX;
-    float fScrollThumbY;
-    int bScrollDragging;
-    int bHorizontalScrollbar;
-    int bVerticalScrollbar;
+    float fScrollThumbX;                     // In menu pixels.
+    float fScrollThumbY;                     // In menu pixels.
+    int bScrollDragging;                     // Whether the thumb is being dragged with the mouse.
+    int bHorizontalScrollbar;                // Whether Initialize places a horizontal scrollbar.
+    int bVerticalScrollbar;                  // Whether Initialize places a vertical scrollbar.
     float fMinScrollThumbX;
     float fMaxScrollThumbX;
-    float fMinScrollThumbY;
-    float fMaxScrollThumbY;
-    float fScrollThumbTravel;
+    float fMinScrollThumbY;   // The highest position of a vertical thumb.
+    float fMaxScrollThumbY;   // The lowest position of a vertical thumb.
+    float fScrollThumbTravel; // The travel of the thumb from first to last row, in pixels.
 };
 
 /**
@@ -438,10 +443,11 @@ public:
     virtual int UpdateBlinkTimer();
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x10048010
-     * @ghidraAddress BRGlide: 0x10041460
-     */
+    // Draw the widget when tertiary flag 0x1 is set, as text when flag 0x100000 is set, otherwise
+    // as its current image unless flag 0x200000 hides it. Returns zero when drawing the image
+    // fails, otherwise one.
+    // @ghidraAddress BRD3D: 0x10048010
+    // @ghidraAddress BRGlide: 0x10041460
     virtual int Draw();
 
 public:
@@ -455,10 +461,10 @@ public:
     virtual bool Update();
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x10047a10
-     * @ghidraAddress BRGlide: 0x10040e60
-     */
+    // Draw the current sprite, or with custom frame durations, select the sprite of the current
+    // animation frame and draw its source rectangle from pImageRects. Always returns one.
+    // @ghidraAddress BRD3D: 0x10047a10
+    // @ghidraAddress BRGlide: 0x10040e60
     virtual int DrawCurrentImage();
 
 public:
@@ -474,40 +480,43 @@ public:
     virtual int BlitSurfaceById(int nImage, int x, int y);
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x10047980
-     * @ghidraAddress BRGlide: 0x10040dd0
-     */
+    // Draw a source rectangle (non-null, borrowed, in image pixels) of the image of the current
+    // sprite at the widget position. Always returns one.
+    // @ghidraAddress BRD3D: 0x10047980
+    // @ghidraAddress BRGlide: 0x10040dd0
     virtual int DrawSpriteRegion(const RECT *pRect);
-    /**
-     * @ghidraAddress BRD3D: 0x10047930
-     * @ghidraAddress BRGlide: 0x10040d80
-     */
+    // Draw the current sprite at the widget position, or nothing when the sprite is negative.
+    // Always returns one.
+    // @ghidraAddress BRD3D: 0x10047930
+    // @ghidraAddress BRGlide: 0x10040d80
     virtual int DrawSprite();
-    /**
-     * @ghidraAddress BRD3D: 0x10047a60
-     * @ghidraAddress BRGlide: 0x10040eb0
-     */
+    // Decide whether the widget is selected by the mouse or by keyboard navigation, and update
+    // the activation flag 0x2 and the hovered flag 0x20. Disabled widgets (flag 0x10) advance the
+    // navigation index past themselves. Returns true when the widget is hovered or selected, and
+    // false when flag 0x8 or 0x10 is set or the widget is neither under the cursor nor at the
+    // navigation index.
+    // @ghidraAddress BRD3D: 0x10047a60
+    // @ghidraAddress BRGlide: 0x10040eb0
     virtual bool UpdateHoverState();
-    /**
-     * @ghidraAddress BRD3D: 0x10047cb0
-     * @ghidraAddress BRGlide: 0x10041100
-     */
+    // Compute the slide acceleration from the start and end values and save the current position
+    // as the slide origin. The duration divides the distance between fSlideEnd and fSlideStart.
+    // Always returns one.
+    // @ghidraAddress BRD3D: 0x10047cb0
+    // @ghidraAddress BRGlide: 0x10041100
     virtual int InitSlideAnimation(int nDuration);
-    /**
-     * @ghidraAddress BRD3D: 0x10047ce0
-     * @ghidraAddress BRGlide: 0x10041130
-     */
+    // Compute the distance in menu pixels of a uniformly accelerated slide from the saved
+    // position, half of fSlideStep times the squared time in milliseconds, scaled by 0.001.
+    // @ghidraAddress BRD3D: 0x10047ce0
+    // @ghidraAddress BRGlide: 0x10041130
     virtual long double ComputeSlideOffset(int nTicks);
-    /**
-     * @ghidraAddress BRD3D: 0x10047d10
-     * @ghidraAddress BRGlide: 0x10041160
-     */
+    // Restore the saved position and mark the slide as running. Always returns one.
+    // @ghidraAddress BRD3D: 0x10047d10
+    // @ghidraAddress BRGlide: 0x10041160
     virtual int StartSlideAnimation();
-    /**
-     * @ghidraAddress BRD3D: 0x10047d30
-     * @ghidraAddress BRGlide: 0x10041180
-     */
+    // Advance a running slide by the elapsed time on each enabled axis, and stop it once every
+    // axis arrives at its target. Always returns one.
+    // @ghidraAddress BRD3D: 0x10047d30
+    // @ghidraAddress BRGlide: 0x10041180
     virtual int UpdateSlideAnimation();
 
 public:
@@ -546,29 +555,40 @@ public:
                             short nImage);
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x10048060
-     * @ghidraAddress BRGlide: 0x100414b0
-     */
+    // Report whether the save-season dialog blocks this widget, and record the result in
+    // g_dwModalDialogBlocking. The dialog blocks the widget when the second panel of the
+    // save-season screen is active and this widget is not the save-season widget.
+    // @ghidraAddress BRD3D: 0x10048060
+    // @ghidraAddress BRGlide: 0x100414b0
     virtual bool IsBlockedByModalDialog();
 
 public:
-    /** @return The borrowed parent screen, or null before assignment. */
+    /**
+     * Read the screen assigned by Initialize.
+     * @return The borrowed parent screen, or null before assignment.
+     */
     MenuScreen *GetScreen() const {
         return pScreen;
     }
     /**
+     * Access one embedded text object; slot zero is the label set by SetText.
      * @param index The font slot index, 0..2.
      * @return A mutable reference to embedded font storage, valid until widget destruction.
      */
     MenuFont &GetFont(int index) {
         return fonts[index];
     }
-    /** @return A mutable reference to the embedded item list, valid until widget destruction. */
+    /**
+     * Access the embedded row list.
+     * @return A mutable reference to the embedded item list, valid until widget destruction.
+     */
     MenuItemList &GetItemList() {
         return itemList;
     }
-    /** @return The stored primary widget flag bits. */
+    /**
+     * Read the primary flags.
+     * @return The stored primary widget flag bits.
+     */
     unsigned GetFlags() const {
         return dwFlags;
     }
@@ -579,11 +599,17 @@ public:
     void SetFlags(unsigned value) {
         dwFlags = value;
     }
-    /** @return The horizontal position in menu pixels. */
+    /**
+     * Read the current left position. A slide changes the position.
+     * @return The horizontal position in menu pixels.
+     */
     float GetX() const {
         return fX;
     }
-    /** @return The vertical position in menu pixels. */
+    /**
+     * Read the current top position. A slide changes the position.
+     * @return The vertical position in menu pixels.
+     */
     float GetY() const {
         return fY;
     }
@@ -608,7 +634,10 @@ public:
     void SetSpriteId(short value) {
         nSpriteId = value;
     }
-    /** @return The stored current sprite identifier. */
+    /**
+     * Read the sprite drawn by the widget.
+     * @return The stored current sprite identifier.
+     */
     short GetSpriteId() const {
         return nSpriteId;
     }
@@ -651,11 +680,15 @@ public:
     void SetFrameDuration(int index, int value) {
         anFrameDurations[index] = value;
     }
-    /** @return The stored linked-widget count, normally 0..25. */
+    /**
+     * Read the number of widgets updated with this one.
+     * @return The stored linked-widget count, normally 0..25.
+     */
     short GetLinkedWidgetCount() const {
         return nLinkedWidgetCount;
     }
     /**
+     * Read one linked widget index.
      * @param index The link slot index, 0..24.
      * @return The linked widget index in the parent screen's current panel.
      */
@@ -677,11 +710,17 @@ public:
     void SetLinkedWidgetIndex(int index, short value) {
         anLinkedWidgetIndices[index] = value;
     }
-    /** @return The stored left bound in menu pixels. */
+    /**
+     * Read the left of the hover bounds.
+     * @return The stored left bound in menu pixels.
+     */
     LONG GetBoundsLeft() const {
         return rcBounds.left;
     }
-    /** @return The stored top bound in menu pixels. */
+    /**
+     * Read the top of the hover bounds.
+     * @return The stored top bound in menu pixels.
+     */
     LONG GetBoundsTop() const {
         return rcBounds.top;
     }
@@ -721,7 +760,10 @@ public:
     void SetUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnUpdate = callback;
     }
-    /** @return The installed widget-update callback, or null. */
+    /**
+     * Read the widget-update callback.
+     * @return The installed widget-update callback, or null.
+     */
     auto GetUpdateCallback() const {
         return pfnUpdate;
     }
@@ -732,7 +774,10 @@ public:
     void SetActionCallback(int (*callback)(MenuActionWidget *)) {
         pfnAction = callback;
     }
-    /** @return The installed activation callback, or null. */
+    /**
+     * Read the activation callback.
+     * @return The installed activation callback, or null.
+     */
     auto GetActionCallback() const {
         return pfnAction;
     }
@@ -750,7 +795,10 @@ public:
     void SetTextEditCompleteCallback(int (*callback)(MenuWidget *)) {
         pfnTextEditComplete = callback;
     }
-    /** @return The installed text-edit completion callback, or null. */
+    /**
+     * Read the text-edit completion callback.
+     * @return The installed text-edit completion callback, or null.
+     */
     auto GetTextEditCompleteCallback() const {
         return pfnTextEditComplete;
     }
@@ -761,7 +809,10 @@ public:
     void SetBeforeUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnBeforeUpdate = callback;
     }
-    /** @return The installed callback for panel processing before widget updates, or null. */
+    /**
+     * Read the callback the panel runs before the widget update.
+     * @return The installed callback for panel processing before widget updates, or null.
+     */
     auto GetBeforeUpdateCallback() const {
         return pfnBeforeUpdate;
     }
@@ -772,78 +823,107 @@ public:
     void SetAfterUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnAfterUpdate = callback;
     }
-    /** @return The installed callback for panel processing after widget updates, or null. */
+    /**
+     * Read the callback the panel runs after the widget update.
+     * @return The installed callback for panel processing after widget updates, or null.
+     */
     auto GetAfterUpdateCallback() const {
         return pfnAfterUpdate;
     }
 
 private:
+    // Look up a borrowed linked widget, by link slot 0..24, in the current panel of the parent
+    // screen.
     inline MenuWidget *LinkedMenuWidget(int index);
+    // Move one axis of a slide from its saved position towards its target, setting current to
+    // the target on arrival. A direction of one moves in the positive direction, minus one in
+    // the negative direction, and zero not at all. Returns true when the axis is disabled,
+    // still, or at its target, and false while moving or for any other direction.
     inline bool UpdateMenuSlideAxis(int enabled,
                                     signed char direction,
                                     const float &saved,
                                     const float &target,
                                     float &current);
 
+    // The per-frame callback run by Update before hover handling, or null.
     int (*pfnUpdate)(MenuWidget *);
-    int (*pfnAction)(MenuActionWidget *);
-    int (*pfnIdleAction)(MenuWidget *);
+    int (*pfnAction)(MenuActionWidget *); // Run when the widget is activated, or null.
+    int (*pfnIdleAction)(MenuWidget *);   // Run when hovered but not activated, or null.
+    // The text-edit completion callback, or null. This class does not call it.
     int (*pfnTextEditComplete)(MenuWidget *);
-    int (*pfnBeforeUpdate)(MenuWidget *);
-    int (*pfnAfterUpdate)(MenuWidget *);
-    unsigned dwFlags;
+    int (*pfnBeforeUpdate)(MenuWidget *); // Run by the panel before Update, or null.
+    int (*pfnAfterUpdate)(MenuWidget *);  // Run by the panel after Update, or null.
+    unsigned dwFlags; // The primary flag bits for input, drawing, and linking; one at start.
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown20[4]; /* +0x20 */
-    unsigned dwSecondaryFlags;
-    unsigned dwTertiaryFlags;
+    unsigned dwSecondaryFlags;            // Combined by Initialize and not read by this class.
+    unsigned dwTertiaryFlags;             // Bit 0x1 lets Draw draw the widget.
+    // The first byte is set to 0xff by the constructor; not otherwise accessed.
     char abUnknown2c[4]; /* +0x2c */
-    float fSavedX;
-    float fSavedY;
-    float fSavedZ;
-    float fX;
-    float fY;
-    float fZ;
-    short nWidth;
-    short nHeight;
+    float fSavedX;       // The left position at the start of a slide.
+    float fSavedY;       // The top position at the start of a slide.
+    float fSavedZ;       // The depth at the start of a slide.
+    float fX;            // In menu pixels.
+    float fY;            // In menu pixels.
+    float fZ;            // The depth, 0.99 at construction.
+    short nWidth;        // The width of the measured label in pixels.
+    short nHeight;       // The height of the measured label in pixels.
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown4c[4]; /* +0x4c */
-    RECT rcBounds;
+    RECT rcBounds;                        // The hover bounds in menu pixels.
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown60[0xc8]; /* +0x60 */
-    short nAnimationFrame;
-    char abUnknown12a[10000];                 /* +0x12a */
-    [[maybe_unused]] char abUnknown283a[2];   /* +0x283a */
+    short nAnimationFrame;                   // The current frame of a custom animation.
+    // Filled with 0xff by the constructor and not otherwise accessed.
+    char abUnknown12a[10000]; /* +0x12a */
+    // Not accessed by the reconstructed code.
+    [[maybe_unused]] char abUnknown283a[2]; /* +0x283a */
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown283c[200]; /* +0x283c */
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown2904[100]; /* +0x2904 */
-    int nImageMode;
-    int bCustomFrameDurations;
-    int nAnimationLastTime;
-    int nAnimationElapsed;
-    int anFrameDurations[50];
+    int nImageMode;            // The image-animation mode; zero disables UpdateBlinkTimer.
+    int bCustomFrameDurations; // Whether frames advance by anFrameDurations and pImageRects.
+    int nAnimationLastTime;    // The time of the last animation step in milliseconds.
+    int nAnimationElapsed;     // The milliseconds since the last frame change.
+    int anFrameDurations[50];  // The duration of each custom frame; zero or less wraps.
+    // The sprite of each animation frame, all 0xffff at construction. Slot zero is the idle
+    // sprite and slot one the pressed sprite under flag 0x400000.
     short anSpriteIds[50];
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown2aa4[10]; /* +0x2aa4 */
-    [[maybe_unused]] char abUnknown2aae[6];  /* +0x2aae */
+    // Not accessed by the reconstructed code.
+    [[maybe_unused]] char abUnknown2aae[6]; /* +0x2aae */
     short nLinkedWidgetCount;
+    // The panel indices of the widgets Update and the panel update with this one.
     short anLinkedWidgetIndices[25];
-    MenuScreen *pScreen;
+    MenuScreen *pScreen; // Borrowed, or null before Initialize.
+    // The first byte is set to one by the constructor; not otherwise accessed.
     [[maybe_unused]] char abUnknown2aec[4]; /* +0x2aec */
-    char abUnknown2af0[100];                /* +0x2af0 */
+    // Filled with 0xff by the constructor and not otherwise accessed.
+    char abUnknown2af0[100]; /* +0x2af0 */
+    // The first byte is set to one by the constructor; not otherwise accessed.
     [[maybe_unused]] char abUnknown2b54[4]; /* +0x2b54 */
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown2b58[4]; /* +0x2b58 */
-    MenuFont fonts[3];
+    MenuFont fonts[3];                      // Slot zero is the label.
     int bSlideX;
     int bSlideY;
-    signed char nSlideDirectionX;
-    signed char nSlideDirectionY;
+    signed char nSlideDirectionX; // One, minus one, or zero.
+    signed char nSlideDirectionY; // One, minus one, or zero.
     float fSlideTargetX;
     float fSlideTargetY;
     int bSliding;
-    float fSlideStart;
-    float fSlideEnd;
-    float fSlideStep;
-    int nSlideLastTime;
-    int nSlideElapsed;
+    float fSlideStart;  // The start value from which InitSlideAnimation computes.
+    float fSlideEnd;    // The end value from which InitSlideAnimation computes.
+    float fSlideStep;   // The slide acceleration computed by InitSlideAnimation.
+    int nSlideLastTime; // The time of the last slide step, or zero before the first.
+    int nSlideElapsed;  // The milliseconds since the slide started.
+    // Cleared by the constructor and not otherwise accessed by the reconstructed code.
     [[maybe_unused]] char abUnknown3830[8]; /* +0x3830 */
-    MenuItemList itemList;
-    short nSpriteId;
-    const RECT *pImageRects;
+    MenuItemList itemList;                  // Animation steps set its flag 0x100.
+    short nSpriteId;                        // A negative value for none.
+    const RECT *pImageRects;                // The borrowed source rectangle of each custom frame.
 };
 
 /** Callbacks for PC music-track selection and persistent music and sound-effect volume. */
@@ -2255,6 +2335,8 @@ public:
     /**
      * Draw the selected lap count unless an empty ghost slot is showing.
      *
+     * @param pWidget The non-null borrowed widget whose font slot zero receives the count.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100408d0
      * @ghidraAddress BRGlide: 0x10039e10
      */
@@ -2263,6 +2345,8 @@ public:
     /**
      * Choose the track image from the selected championship round or track menu.
      *
+     * @param pWidget The non-null borrowed image widget whose sprite is replaced.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040730
      * @ghidraAddress BRGlide: 0x10039c70
      */
@@ -2271,6 +2355,9 @@ public:
     /**
      * Choose the weather image from the selected championship round or weather menu.
      *
+     * @param pWidget The non-null borrowed image widget whose sprite is replaced.
+     * @return Minus two to skip the rest of the widget update while an empty ghost slot is
+     * showing, otherwise one.
      * @ghidraAddress BRD3D: 0x100407e0
      * @ghidraAddress BRGlide: 0x10039d20
      */
@@ -2279,6 +2366,8 @@ public:
     /**
      * Cycle through available tracks, including unlocked bonus tracks, and notify network peers.
      *
+     * @param pItem Not read.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042ee0
      * @ghidraAddress BRGlide: 0x1003c430
      */
@@ -2287,6 +2376,8 @@ public:
     /**
      * Cycle the lap count from 1 through 12 and notify network peers.
      *
+     * @param pItem Not read.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100430b0
      * @ghidraAddress BRGlide: 0x1003c600
      */
@@ -2295,6 +2386,8 @@ public:
     /**
      * Cycle the weather selection and notify network peers.
      *
+     * @param pItem Not read.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10043180
      * @ghidraAddress BRGlide: 0x1003c6d0
      */
@@ -2303,6 +2396,8 @@ public:
     /**
      * Draw the selected track name, or the ghost-slot prompt when no ghost is selected.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fa00
      * @ghidraAddress BRGlide: 0x10038f40
      */
@@ -2311,6 +2406,8 @@ public:
     /**
      * Draw the selected weather, or the ghost-slot prompt when no ghost is selected.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fe80
      * @ghidraAddress BRGlide: 0x100393c0
      */
@@ -2319,6 +2416,8 @@ public:
     /**
      * Return from race setup to the root menu.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046450
      * @ghidraAddress BRGlide: 0x1003f8f0
      */
@@ -2327,6 +2426,8 @@ public:
     /**
      * Return from race setup to the time attack menu.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10044cb0
      * @ghidraAddress BRGlide: 0x1003e200
      */
@@ -2339,6 +2440,8 @@ public:
     /**
      * Discard the cached results screens and return to the root menu.
      *
+     * @param pWidget A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046fd0
      * @ghidraAddress BRGlide: 0x10040420
      */
@@ -2347,6 +2450,8 @@ public:
     /**
      * Return to race-result totals without closing the season.
      *
+     * @param pWidget Not read.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10047050
      * @ghidraAddress BRGlide: 0x100404a0
      */
@@ -2359,6 +2464,9 @@ public:
     /**
      * Process championship save text confirmation or cancellation.
      *
+     * @param pWidget The non-null borrowed save-season widget; Y starts text editing on it, and
+     * other input restores its label.
+     * @return Minus one to end the widget update after Y or other input, otherwise one.
      * @ghidraAddress BRD3D: 0x10047210
      * @ghidraAddress BRGlide: 0x10040660
      */
@@ -2367,6 +2475,9 @@ public:
     /**
      * Start naming a new championship slot or activate confirmation for an existing file.
      *
+     * @param pList The borrowed slot list, recorded in g_pSaveSeasonEditMenu.
+     * @param pnSlot A non-null borrowed activated-row index, read without modification.
+     * @return Zero for a negative slot, otherwise one; the list discards the result.
      * @ghidraAddress BRD3D: 0x10042020
      * @ghidraAddress BRGlide: 0x1003b580
      */
@@ -2375,6 +2486,8 @@ public:
     /**
      * Update the selected save slot and notify its item during text entry.
      *
+     * @param pWidget The non-null borrowed widget whose item list is drawn and processed.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003eb10
      * @ghidraAddress BRGlide: 0x10038100
      */
@@ -2383,6 +2496,10 @@ public:
     /**
      * Save a named championship slot, or restore its previous label when naming is cancelled.
      *
+     * @param pList The non-null borrowed slot list with the edited label.
+     * @param nStatus The edited row, or -1 when the label edit is cancelled.
+     * @return Zero when no season is loaded, otherwise one, including after a failed write; the
+     * list discards the result.
      * @ghidraAddress BRD3D: 0x10041df0
      * @ghidraAddress BRGlide: 0x1003b350
      */
@@ -2391,6 +2508,9 @@ public:
     /**
      * Invoke the save menu's return callback and restore championship mode.
      *
+     * @param pWidget The non-null active-screen widget passed to the action callback of
+     * g_pSaveSeasonBackHandlerMenu, invalidated when that callback destroys its panels.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100450f0
      * @ghidraAddress BRGlide: 0x1003e640
      */
@@ -2399,6 +2519,9 @@ public:
     /**
      * Enable the Continue item after a slot has been named.
      *
+     * @param pWidget The non-null borrowed Continue widget, whose flags 0x10 and 0x1000 are
+     * cleared once g_dwSaveSeasonSlotNamed is set.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100418d0
      * @ghidraAddress BRGlide: 0x1003ae30
      */
@@ -2407,6 +2530,8 @@ public:
     /**
      * Return from the save menu to car setup.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046bf0
      * @ghidraAddress BRGlide: 0x10040040
      */
@@ -2415,6 +2540,8 @@ public:
     /**
      * Return from the save menu to pre-race information.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046790
      * @ghidraAddress BRGlide: 0x1003fbe0
      */
@@ -2423,6 +2550,8 @@ public:
     /**
      * Return from the save menu to championship progress.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046870
      * @ghidraAddress BRGlide: 0x1003fcc0
      */
@@ -2431,6 +2560,8 @@ public:
     /**
      * Return from the save menu to race results.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046eb0
      * @ghidraAddress BRGlide: 0x10040300
      */
@@ -2439,6 +2570,8 @@ public:
     /**
      * Return from the save menu to the race-result details.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046950
      * @ghidraAddress BRGlide: 0x1003fda0
      */
@@ -2447,6 +2580,8 @@ public:
     /**
      * Return from the save menu to the race-result summary.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046a30
      * @ghidraAddress BRGlide: 0x1003fe80
      */
@@ -2455,6 +2590,8 @@ public:
     /**
      * Return from the save menu to the race-result totals.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046b10
      * @ghidraAddress BRGlide: 0x1003ff60
      */
@@ -2467,6 +2604,9 @@ public:
     /**
      * Process time attack save text confirmation or cancellation.
      *
+     * @param pWidget The non-null borrowed ghost-save widget; Y starts text editing on it, and
+     * other input restores its label.
+     * @return Minus one to end the widget update after Y or other input, otherwise one.
      * @ghidraAddress BRD3D: 0x10047250
      * @ghidraAddress BRGlide: 0x100406a0
      */
@@ -2475,6 +2615,9 @@ public:
     /**
      * Open overwrite confirmation for an existing ghost slot, or start naming an empty slot.
      *
+     * @param pList The non-null borrowed slot list, recorded in g_pSaveTimeAttackEditMenu.
+     * @param pnSlot A non-null borrowed activated-row index, read without modification.
+     * @return One; the list discards the result.
      * @ghidraAddress BRD3D: 0x10042740
      * @ghidraAddress BRGlide: 0x1003bca0
      */
@@ -2483,6 +2626,9 @@ public:
     /**
      * Save the named ghost slot, or restore its old label when naming is cancelled.
      *
+     * @param pList The non-null borrowed slot list with the edited label.
+     * @param status The edited row, or -1 when the label edit is cancelled.
+     * @return One, including after a failed write; the list discards the result.
      * @ghidraAddress BRD3D: 0x10042560
      * @ghidraAddress BRGlide: 0x1003bac0
      */
@@ -2491,6 +2637,8 @@ public:
     /**
      * Return from the ghost save menu to time attack.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10044f00
      * @ghidraAddress BRGlide: 0x1003e450
      */
@@ -2503,6 +2651,8 @@ public:
     /**
      * Update the ghost save-slot selection using the championship slot-list handler.
      *
+     * @param pWidget The non-null borrowed widget whose item list is drawn and processed.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ec30
      * @ghidraAddress BRGlide: 0x10038250
      */
@@ -2515,6 +2665,8 @@ public:
     /**
      * Advance the championship completion screen when input is detected.
      *
+     * @param pWidget The non-null borrowed widget passed to OnPressAnyKeyContinue.
+     * @return Minus one to end the widget update after input, otherwise one.
      * @ghidraAddress BRD3D: 0x100471f0
      * @ghidraAddress BRGlide: 0x10040640
      */
@@ -2523,6 +2675,9 @@ public:
     /**
      * Select the primary completion banner from championship flags and season progress.
      *
+     * @param pWidget The non-null borrowed image widget; its sprite is set to -1 when no banner
+     * applies.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f440
      * @ghidraAddress BRGlide: 0x10038980
      */
@@ -2531,6 +2686,9 @@ public:
     /**
      * Select the secondary completion banner from championship flags and season progress.
      *
+     * @param pWidget The non-null borrowed image widget; its sprite is set to -1 when no banner
+     * applies.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f540
      * @ghidraAddress BRGlide: 0x10038a80
      */
@@ -2543,6 +2701,8 @@ public:
     /**
      * Draw the championship year as a one-based number.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040a50
      * @ghidraAddress BRGlide: 0x10039f90
      */
@@ -2551,6 +2711,8 @@ public:
     /**
      * Draw the championship round as a one-based number.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040ac0
      * @ghidraAddress BRGlide: 0x1003a000
      */
@@ -2563,6 +2725,8 @@ public:
     /**
      * Draw the season progress round with its label and two separating spaces.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040b30
      * @ghidraAddress BRGlide: 0x1003a070
      */
@@ -2571,6 +2735,8 @@ public:
     /**
      * Draw the remaining points required to advance, with negative results clamped to zero.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return Zero when the formatted number is empty, otherwise one.
      * @ghidraAddress BRD3D: 0x100415a0
      * @ghidraAddress BRGlide: 0x1003ab00
      */
@@ -2579,6 +2745,8 @@ public:
     /**
      * Open car setup for the current championship and configure its return action.
      *
+     * @param pWidget The non-null borrowed widget passed to ShowCarSetupScreen.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10045050
      * @ghidraAddress BRGlide: 0x1003e5a0
      */
@@ -2587,6 +2755,8 @@ public:
     /**
      * Reset the saved championship round to the first round.
      *
+     * @param pWidget Not read.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10047340
      * @ghidraAddress BRGlide: 0x10040790
      */
@@ -2595,6 +2765,8 @@ public:
     /**
      * Open options and configure the return action for championship progress.
      *
+     * @param pWidget The non-null borrowed widget passed to ShowOptionsMenu.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100457c0
      * @ghidraAddress BRGlide: 0x1003ec50
      */
@@ -2603,6 +2775,8 @@ public:
     /**
      * Open the championship save screen and configure its return action.
      *
+     * @param pWidget The borrowed widget forwarded to ShowSaveSeasonScreen.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100457e0
      * @ghidraAddress BRGlide: 0x1003ec70
      */
@@ -2611,6 +2785,8 @@ public:
     /**
      * Return from championship progress to pre-race information.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10047060
      * @ghidraAddress BRGlide: 0x100404b0
      */
@@ -2623,6 +2799,8 @@ public:
     /**
      * Draw the points earned in the selected championship round.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ea90
      * @ghidraAddress BRGlide: 0x100380b0
      */
@@ -2631,6 +2809,8 @@ public:
     /**
      * Draw the finishing place in the selected championship round.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003e8d0
      * @ghidraAddress BRGlide: 0x10037ef0
      */
@@ -2639,6 +2819,8 @@ public:
     /**
      * Draw the selected championship class name when its text is available.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return Zero when the name string is empty, otherwise one.
      * @ghidraAddress BRD3D: 0x10041300
      * @ghidraAddress BRGlide: 0x1003a860
      */
@@ -2647,6 +2829,8 @@ public:
     /**
      * Draw the year with the translated suffix for its ordinal.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100413b0
      * @ghidraAddress BRGlide: 0x1003a910
      */
@@ -2655,6 +2839,8 @@ public:
     /**
      * Draw the sum of the selected season's four race scores, or zero before loading.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return Zero when the formatted number is empty, otherwise one.
      * @ghidraAddress BRD3D: 0x100414b0
      * @ghidraAddress BRGlide: 0x1003aa10
      */
@@ -2667,6 +2853,8 @@ public:
     /**
      * Return from time attack to the root menu.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10044c70
      * @ghidraAddress BRGlide: 0x1003e1c0
      */
@@ -2679,6 +2867,9 @@ public:
     /**
      * Update the selected time attack track image after a saved slot has been selected.
      *
+     * @param pWidget The non-null borrowed image widget whose sprite is replaced.
+     * @return Minus two to skip the rest of the widget update while an empty ghost slot is
+     * showing, otherwise one.
      * @ghidraAddress BRD3D: 0x100407a0
      * @ghidraAddress BRGlide: 0x10039ce0
      */
@@ -2687,6 +2878,8 @@ public:
     /**
      * Draw the ghost's best race time.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One after drawing the time as M:SS.HH, or --:-- when no time is recorded.
      * @ghidraAddress BRD3D: 0x10041040
      * @ghidraAddress BRGlide: 0x1003a580
      */
@@ -2695,6 +2888,8 @@ public:
     /**
      * Draw the ghost's best lap time.
      *
+     * @param pWidget The non-null borrowed label widget.
+     * @return One after drawing the time as M:SS.HH, or --:-- when no time is recorded.
      * @ghidraAddress BRD3D: 0x10041180
      * @ghidraAddress BRGlide: 0x1003a6d0
      */
@@ -2707,6 +2902,8 @@ public:
     /**
      * Return from video options to the options menu.
      *
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100465e0
      * @ghidraAddress BRGlide: 0x1003fa80
      */
@@ -2760,6 +2957,8 @@ int RestoreMenuItemTextB(MenuWidget *pWidget);
 /**
  * Destroy the active network setup screen and restore the cached race setup.
  *
+ * @param pWidget A non-null active-screen widget, invalidated when its panels are destroyed.
+ * @return Zero to end the current widget update.
  * @ghidraAddress BRD3D: 0x10046400
  * @ghidraAddress BRGlide: 0x1003f8a0
  */
@@ -2768,6 +2967,8 @@ int ReturnToMultiplayerLobby(MenuWidget *pWidget);
 /**
  * Destroy display mode panels and restore the cached input configuration screen.
  *
+ * @param pWidget A non-null active-screen widget, invalidated when its panels are destroyed.
+ * @return Zero to end the current widget update.
  * @ghidraAddress BRD3D: 0x10046670
  * @ghidraAddress BRGlide: 0x1003fac0
  */
@@ -2776,6 +2977,8 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
 /**
  * Destroy device selection panels and restore the cached input configuration screen.
  *
+ * @param pWidget A non-null active-screen widget, invalidated when its panels are destroyed.
+ * @return Zero to end the current widget update.
  * @ghidraAddress BRD3D: 0x10046620
  */
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
@@ -2822,6 +3025,7 @@ extern int g_dwActiveDisplayModeIndex;
  * Open cached input options, building the screen on its first visit.
  *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x100452c0
  * @ghidraAddress BRGlide: 0x1003e810
  */
@@ -2830,6 +3034,8 @@ int ShowInputOptionsMenu(MenuWidget *pWidget);
 /**
  * Select saved-round browsing for season previews.
  *
+ * @param pWidget Not read.
+ * @return One.
  * @ghidraAddress BRD3D: 0x1003e8b0
  * @ghidraAddress BRGlide: 0x10037ed0
  */
@@ -2838,6 +3044,8 @@ int SeasonRoundList_SetBrowsingFlag(MenuWidget *pWidget = nullptr);
 /**
  * Select the current round for season previews.
  *
+ * @param pWidget Not read.
+ * @return One.
  * @ghidraAddress BRD3D: 0x1003e8c0
  * @ghidraAddress BRGlide: 0x10037ee0
  */
@@ -2916,6 +3124,7 @@ int OnTcpIpPortEdited(MenuWidget *pWidget);
 /**
  * Build input options on the supplied screen.
  *
+ * @param pScreen The non-null screen to populate with one panel.
  * @return 1.
  * @ghidraAddress BRD3D: 0x1004c4a0
  * @ghidraAddress BRGlide: 0x100458d0
@@ -2926,20 +3135,27 @@ int BuildInputOptionsUI(MenuScreen *pScreen);
  * Open cached video options, building the screen on its first visit.
  *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x10045390
  * @ghidraAddress BRGlide: 0x1003e8e0
  */
 int ShowVideoOptionsMenu(MenuWidget *pWidget);
 
 /**
+ * Open cached audio options, building the screen with BuildAudioOptionsUI on its first visit.
+ *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x100455e0
  * @ghidraAddress BRGlide: 0x1003ea70
  */
 int ShowAudioOptionsMenu(MenuWidget *pWidget);
 
 /**
+ * Open cached game options, building the screen with BuildGameOptionsUI on its first visit.
+ *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x100456b0
  * @ghidraAddress BRGlide: 0x1003eb40
  */
@@ -2991,6 +3207,7 @@ int BuildGameOptionsUI(MenuScreen *pScreen);
 /**
  * Build video options on the supplied screen.
  *
+ * @param pScreen The non-null screen to populate.
  * @return 1.
  * @ghidraAddress BRD3D: 0x1004d1f0
  * @ghidraAddress BRGlide: 0x10046620
@@ -3001,6 +3218,7 @@ int BuildVideoOptionsUI(MenuScreen *pScreen);
  * Open cached key configuration, building the screen on its first visit.
  *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x100434c0
  * @ghidraAddress BRGlide: 0x1003ca10
  */
@@ -3009,6 +3227,7 @@ int ShowKeyConfigScreen(MenuWidget *pWidget);
 /**
  * Build key configuration on the supplied screen.
  *
+ * @param pScreen The non-null screen to populate.
  * @return 1.
  * @ghidraAddress BRD3D: 0x1004cac0
  * @ghidraAddress BRGlide: 0x10045ef0
@@ -3019,6 +3238,7 @@ int BuildKeyConfigUI(MenuScreen *pScreen);
  * Open cached modem connection options, building the screen on its first visit.
  *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x10043da0
  * @ghidraAddress BRGlide: 0x1003d2f0
  */
@@ -3028,6 +3248,7 @@ int ShowModemDialUpScreen(MenuWidget *pWidget);
  * Reset time attack choices and restore race setup after a season.
  *
  * @param pWidget Not read.
+ * @return Zero when the race setup screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x10046260
  * @ghidraAddress BRGlide: 0x1003f700
  */
@@ -3036,6 +3257,8 @@ int ReturnToMainMenuFromSeason(MenuWidget *pWidget);
 /**
  * Build modem connection options on the supplied screen.
  *
+ * @param pScreen The non-null screen to populate with one panel.
+ * @return One.
  * @ghidraAddress BRD3D: 0x10056a10
  * @ghidraAddress BRGlide: 0x1004f8c0
  */
@@ -3054,6 +3277,7 @@ int ShowDisplayModeSelectMenu(MenuWidget *pWidget);
 /**
  * Build display mode selection on the supplied screen.
  *
+ * @param pScreen The non-null screen to populate.
  * @return 1.
  * @ghidraAddress BRD3D: 0x1004db00
  * @ghidraAddress BRGlide: 0x100469b0
@@ -3072,6 +3296,7 @@ int PopulateVideoSettingsLists(void);
 /**
  * Populate available display devices.
  *
+ * @return Zero when no DirectDraw driver is available, otherwise one.
  * @ghidraAddress BRD3D: 0x1007a840
  */
 int PopulateDisplayDeviceList(void);
@@ -3119,6 +3344,7 @@ int ShowD3DDeviceSelectMenu(MenuWidget *pWidget);
 /**
  * Build Direct3D device selection on the supplied screen.
  *
+ * @param pScreen The non-null screen to populate.
  * @return 1.
  * @ghidraAddress BRD3D: 0x1004d640
  */
@@ -3174,6 +3400,8 @@ extern int g_adwKeyBindingDuplicateFlags[KEY_CONFIG_ENTRY_COUNT];
 int DetectDuplicateKeyBindings(int nDevice);
 
 /**
+ * Open cached car setup, building the screen with BuildCarSetupUI on its first visit.
+ *
  * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045110
@@ -3262,6 +3490,7 @@ int BuildMultiplayerConnectionUI(MenuScreen *pScreen);
 /**
  * Open cached connection settings, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043cd0
  * @ghidraAddress BRGlide: 0x1003d220
@@ -3398,17 +3627,19 @@ extern int g_dwMenuTextEditActive;
 
 /** A panel of a screen of the front end. */
 class MenuPanel {
-    int (*pfnBeforeWidgets)(void);
+    int (*pfnBeforeWidgets)(void); // Run first in RunFrame, or null; the result is discarded.
+    // Run by RunFrame after every widget, or null; the result is discarded.
     int (*pfnAfterWidgets)(void);
+    // Run by RunFrame after pfnBeforeWidgets, or null; only the constructor writes it.
     int (*pfnUpdate)(void);
-    int nFlags;
+    int nFlags; // Written by SetFlags and not read by this class.
     unsigned short wWidgetCount;
-    MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT]; /*!< The items of the panel. */
-    float fX;
-    float fY;
-    MenuScreen *pScreen;
-    unsigned short wNavigationCount;
-    unsigned short wSelectedIndex;
+    MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT];
+    float fX;                        // In menu pixels.
+    float fY;                        // In menu pixels.
+    MenuScreen *pScreen;             // Borrowed.
+    unsigned short wNavigationCount; // The number of widgets keyboard navigation visits.
+    unsigned short wSelectedIndex;   // The navigation index selected by RestoreSelection.
 
 public:
     /**
@@ -3444,59 +3675,110 @@ public:
      */
     virtual bool RunFrame();
 
-    /** Set the callback invoked before panel widgets run. */
+    /**
+     * Set the callback invoked before panel widgets run.
+     * @param callback The callback, or null; its result is discarded.
+     */
     void SetBeforeWidgetsCallback(int (*callback)(void)) {
         pfnBeforeWidgets = callback;
     }
-    /** Set the callback invoked after panel widgets run. */
+    /**
+     * Set the callback invoked after panel widgets run.
+     * @param callback The callback, or null; its result is discarded.
+     */
     void SetAfterWidgetsCallback(int (*callback)(void)) {
         pfnAfterWidgets = callback;
     }
-    /** Replace the panel flags. */
+    /**
+     * Replace the panel flags.
+     * @param value The panel flag bits.
+     * @return The stored flag bits.
+     */
     int SetFlags(int value) {
         return nFlags = value;
     }
-    /** @return The number of widgets in the panel. */
+    /**
+     * Read the number of widgets RunFrame visits.
+     * @return The number of widgets in the panel.
+     */
     unsigned short GetWidgetCount() const {
         return wWidgetCount;
     }
-    /** Replace the number of widgets in the panel. */
+    /**
+     * Replace the number of widgets in the panel without checking the stored pointers.
+     * @param value The widget count, at most MENU_PANEL_WIDGET_COUNT.
+     * @return The stored count.
+     */
     unsigned short SetWidgetCount(unsigned short value) {
         return wWidgetCount = value;
     }
-    /** @return The widget at @p index. */
+    /**
+     * Read one widget pointer.
+     * @param index The widget index, 0..MENU_PANEL_WIDGET_COUNT - 1, without bounds checking.
+     * @return The widget at @p index, or null for an empty slot.
+     */
     MenuWidget *GetWidget(int index) const {
         return apWidgets[index];
     }
-    /** Replace the widget at @p index. */
+    /**
+     * Replace the widget at @p index without changing the widget count.
+     * @param index The widget index, 0..MENU_PANEL_WIDGET_COUNT - 1, without bounds checking.
+     * @param widget The widget, or null; DestroyPanels of the screen deletes it.
+     * @return The stored widget.
+     */
     MenuWidget *SetWidget(int index, MenuWidget *widget) {
         return apWidgets[index] = widget;
     }
-    /** @return The panel's horizontal position. */
+    /**
+     * Read the panel's horizontal position.
+     * @return The left of the panel in menu pixels.
+     */
     float GetX() const {
         return fX;
     }
-    /** Set the panel's horizontal position. */
+    /**
+     * Set the panel's horizontal position without moving its widgets.
+     * @param value The left of the panel in menu pixels.
+     * @return The stored position.
+     */
     float SetX(float value) {
         return fX = value;
     }
-    /** @return The panel's vertical position. */
+    /**
+     * Read the panel's vertical position.
+     * @return The top of the panel in menu pixels.
+     */
     float GetY() const {
         return fY;
     }
-    /** Set the panel's vertical position. */
+    /**
+     * Set the panel's vertical position without moving its widgets.
+     * @param value The top of the panel in menu pixels.
+     * @return The stored position.
+     */
     float SetY(float value) {
         return fY = value;
     }
-    /** Associate the panel with @p screen. */
+    /**
+     * Associate the panel with @p screen.
+     * @param screen The borrowed screen whose reset widget index RunFrame reads.
+     * @return The stored screen.
+     */
     MenuScreen *SetScreen(MenuScreen *screen) {
         return pScreen = screen;
     }
-    /** @return The number of navigable widgets. */
+    /**
+     * Read the number of widgets keyboard navigation visits.
+     * @return The number of navigable widgets.
+     */
     unsigned short GetNavigationCount() const {
         return wNavigationCount;
     }
-    /** Replace the number of navigable widgets. */
+    /**
+     * Replace the number of navigable widgets.
+     * @param value The navigation count, the range to which RestoreSelection clamps the hover.
+     * @return The stored count.
+     */
     unsigned short SetNavigationCount(unsigned short value) {
         return wNavigationCount = value;
     }
@@ -3521,27 +3803,22 @@ public:
     virtual ~MenuScreen();
 
 private:
-    /**
-     * Start a frame of the screen.
-     *
-     * @return Always true.
-     * @ghidraAddress BRD3D: 0x100488b0
-     * @ghidraAddress BRGlide: 0x10041d00
-     */
+    // Start a frame of the screen. Always returns true.
+    // @ghidraAddress BRD3D: 0x100488b0
+    // @ghidraAddress BRGlide: 0x10041d00
     virtual bool BeginFrame();
-    /**
-     * Finish a frame of the screen.
-     *
-     * @return Whether the frame finished.
-     * @ghidraAddress BRD3D: 0x100488c0
-     * @ghidraAddress BRGlide: 0x10041d10
-     */
+    // Finish a frame of the screen, returning whether the frame finished.
+    // @ghidraAddress BRD3D: 0x100488c0
+    // @ghidraAddress BRGlide: 0x10041d10
     virtual bool EndFrame();
 
 public:
     /**
      * Return to the main menu from another front-end screen.
      *
+     * @param pWidget A non-null widget of the active screen, whose screen frees the cached
+     * screens.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10043fa0
      * @ghidraAddress BRGlide: 0x1003d4f0
      */
@@ -3599,86 +3876,146 @@ public:
      */
     virtual HRESULT ClearBackBuffer();
 
-    /** @return The callback that builds the screen. */
+    /**
+     * Read the callback that builds the screen.
+     * @return The stored build callback, or null.
+     */
     auto GetBuildCallback() const {
         return pfnBuildMenu;
     }
-    /** Set the callback that builds the screen. */
+    /**
+     * Set the callback that builds the screen without invoking it.
+     * @param callback The callback receiving this screen, or null.
+     */
     void SetBuildCallback(int (*callback)(MenuScreen *)) {
         pfnBuildMenu = callback;
     }
-    /** @return Whether the screen has been built. */
+    /**
+     * Report whether the screen has been built.
+     * @return Whether the build callback has populated the screen.
+     */
     bool IsBuilt() const {
         return bBuilt != 0;
     }
-    /** Set whether the screen has been built. */
+    /**
+     * Set whether the screen has been built.
+     * @param value Whether the build callback has populated the screen.
+     */
     void SetBuilt(bool value) {
         bBuilt = value;
     }
-    /** @return The number of panels in the screen. */
+    /**
+     * Read the number of panels in use.
+     * @return The number of panels in the screen.
+     */
     unsigned short GetPanelCount() const {
         return wPanelCount;
     }
-    /** Replace the number of panels in the screen. */
+    /**
+     * Replace the number of panels in the screen without checking the stored pointers.
+     * @param value The panel count, at most MENU_SCREEN_PANEL_COUNT.
+     * @return The stored count.
+     */
     unsigned short SetPanelCount(unsigned short value) {
         return wPanelCount = value;
     }
-    /** Set the index of the current panel. */
+    /**
+     * Set the index of the current panel without updating pCurrentPanel.
+     * @param value The panel index, 0..MENU_SCREEN_PANEL_COUNT - 1.
+     * @return The stored index.
+     */
     unsigned short SetCurrentPanelIndex(unsigned short value) {
         return wCurrentPanel = value;
     }
-    /** @return The panel at @p index. */
+    /**
+     * Read one panel pointer.
+     * @param index The panel index, 0..MENU_SCREEN_PANEL_COUNT - 1, without bounds checking.
+     * @return The panel at @p index, or null for an empty slot.
+     */
     MenuPanel *GetPanel(int index) const {
         return apPanels[index];
     }
-    /** Replace the panel at @p index. */
+    /**
+     * Replace the panel at @p index without changing the panel count.
+     * @param index The panel index, 0..MENU_SCREEN_PANEL_COUNT - 1, without bounds checking.
+     * @param panel The panel, or null; DestroyPanels deletes it.
+     * @return The stored panel.
+     */
     MenuPanel *SetPanel(int index, MenuPanel *panel) {
         return apPanels[index] = panel;
     }
-    /** @return The current panel. */
+    /**
+     * Read the panel that runs.
+     * @return The current panel, or null before the first frame selects one.
+     */
     MenuPanel *GetCurrentPanel() const {
         return pCurrentPanel;
     }
-    /** @return Whether the screen is running. */
+    /**
+     * Report whether the screen is running.
+     * @return Whether the screen runs and reads window messages.
+     */
     bool IsRunning() const {
         return bRunning != 0;
     }
-    /** Set whether the screen is running. */
+    /**
+     * Set whether the screen is running.
+     * @param value Whether the screen runs and reads window messages.
+     */
     void SetRunning(bool value) {
         bRunning = value;
     }
-    /** @return Whether the panel at @p index is active. */
+    /**
+     * Read the activation state of one panel.
+     * @param index The panel index, 0..MENU_SCREEN_PANEL_COUNT - 1, without bounds checking.
+     * @return Nonzero when the panel at @p index is active.
+     */
     int GetPanelActive(int index) const {
         return anPanelActive[index];
     }
-    /** Set whether the panel at @p index is active. */
+    /**
+     * Set whether the panel at @p index is active.
+     * @param index The panel index, 0..MENU_SCREEN_PANEL_COUNT - 1, without bounds checking.
+     * @param value Nonzero to activate the panel, or zero to deactivate it.
+     * @return The stored value.
+     */
     int SetPanelActive(int index, int value) {
         return anPanelActive[index] = value;
     }
-    /** @return The save-file list at @p index. */
+    /**
+     * Read one list of saved files.
+     * @param index Zero for the season saves or one for the time attack saves.
+     * @return The save-file list at @p index.
+     */
     SaveFileList *GetFileList(int index) const {
         return apFiles[index];
     }
-    /** @return The widget selected when panel navigation resets. */
+    /**
+     * Read the index of the widget that last reset panel activation.
+     * @return The widget selected when panel navigation resets.
+     */
     unsigned short GetPanelResetWidgetIndex() const {
         return wPanelResetWidgetIndex;
     }
-    /** Reset panel activation and select @p widgetIndex. */
+    /**
+     * Reset panel activation and select @p widgetIndex. Only the first panel remains active.
+     * @param widgetIndex The index of the widget in the current panel that reset activation.
+     */
     inline void ResetPanelActivation(unsigned short widgetIndex);
 
 private:
-    int (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
-    int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
-    int bBuilt;                   /*!< Whether pfnBuildMenu built the items of the screen. */
-    unsigned short wPanelCount;   /*!< The number of entries of apPanels in use. */
-    unsigned short wCurrentPanel; /*!< The index of the panel that runs. */
-    MenuPanel *apPanels[MENU_SCREEN_PANEL_COUNT]; /*!< The panels of the screen. */
-    MenuPanel *pCurrentPanel;                     /*!< The panel that runs. */
-    int bRunning; /*!< Whether the screen runs and reads window messages. */
-    /** Whether each panel of apPanels runs its items. */
+    int (*pfnBuildMenu)(MenuScreen *pScreen); // Builds the items of the screen.
+    int dwFlags;                              // Bit 0x10 stops EndFrame().
+    int bBuilt;                               // Whether pfnBuildMenu built the items.
+    unsigned short wPanelCount;               // The number of entries of apPanels in use.
+    unsigned short wCurrentPanel;             // The index of the panel that runs.
+    MenuPanel *apPanels[MENU_SCREEN_PANEL_COUNT];
+    MenuPanel *pCurrentPanel; // The panel that runs.
+    int bRunning;             // Whether the screen runs and reads window messages.
+    // Whether each panel of apPanels runs its items.
     int anPanelActive[MENU_SCREEN_PANEL_COUNT];
-    unsigned short wPanelResetWidgetIndex;
-    SaveFileList *apFiles[2]; /*!< The two lists of saved files of the screen. */
+    unsigned short wPanelResetWidgetIndex; // The widget that last reset panel activation.
+    SaveFileList *apFiles[2];              // The two lists of saved files of the screen.
 };
 
 #ifdef __cplusplus
@@ -3762,6 +4099,7 @@ struct FrontEndResourceSlot {
 /** The number of entries of g_adwFrontEndResourceFlags. */
 #define FRONT_END_RESOURCE_FLAG_COUNT 100
 
+/** @cond */
 /**
  * The screen the front end starts at.
  *
@@ -3809,6 +4147,7 @@ extern MenuWidget *g_pPlayerNameContinueItem;
  * @ghidraAddress BRGlide: 0x10ac5d10
  */
 extern MenuWidget *g_pMultiplayerGameSetupMenu;
+/** @endcond */
 
 /**
  * Bounds used for the centre panel of the multiplayer session list.
@@ -3872,6 +4211,7 @@ extern const char g_szSpace[];
 extern char g_szEmptyString[1];
 /** @endcond */
 
+/** @cond */
 /**
  * The menu to save a time attack.
  *
@@ -3887,6 +4227,7 @@ extern MenuWidget *g_pSaveTimeAttackMenu;
  * @ghidraAddress BRGlide: 0x10ac5d28
  */
 extern MenuItemList *g_pSaveTimeAttackEditMenu;
+/** @endcond */
 
 /**
  * The menu to join a network session.
@@ -3912,6 +4253,7 @@ extern NetworkMenuWidget *g_pNetworkCarSetupMenu;
  */
 extern MenuWidget *g_pNetworkPlayerListMenu;
 
+/** @cond */
 /**
  * The item that continues from the modem screen.
  *
@@ -3919,6 +4261,7 @@ extern MenuWidget *g_pNetworkPlayerListMenu;
  * @ghidraAddress BRGlide: 0x10ac5d40
  */
 extern MenuWidget *g_pModemContinueItem;
+/** @endcond */
 
 /**
  * The menu that chooses the display mode.
@@ -3928,6 +4271,7 @@ extern MenuWidget *g_pModemContinueItem;
  */
 extern MenuWidget *g_pDisplayModeSelectMenu;
 
+/** @cond */
 /**
  * The menu that chooses the Direct3D device.
  *
@@ -3935,6 +4279,7 @@ extern MenuWidget *g_pDisplayModeSelectMenu;
  * @ghidraAddress BRGlide: 0x10ac5d48
  */
 extern MenuWidget *g_pD3DDeviceSelectMenu;
+/** @endcond */
 
 /** @cond */
 /**
@@ -4066,8 +4411,12 @@ int IsGameCdInDrive(int nDrive);
 int FindGameCdDrive(void);
 
 /**
+ * Open the cached championship season menu when the game CD is found, building the screen on
+ * its first visit; otherwise show the missing-CD message on the active item.
+ *
  * @param pWidget The item chosen, unread.
- * @return Whether the screen was allocated or already cached.
+ * @return Zero when the game CD is not found, otherwise whether the screen was allocated or
+ * already cached.
  * @ghidraAddress BRD3D: 0x10045900
  * @ghidraAddress BRGlide: 0x1003ed90
  */
@@ -4094,7 +4443,11 @@ int BuildChampionshipSeasonUI(MenuScreen *pScreen);
 int BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
+ * Clear the ghost times and open the cached ghost loading menu, building the screen on its
+ * first visit.
+ *
  * @param pWidget Not read.
+ * @return Zero when the screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x10044d00
  * @ghidraAddress BRGlide: 0x1003e250
  */
@@ -4120,6 +4473,9 @@ int ShowHostRaceSetupScreen(MenuWidget *pWidget);
 int ShowCreateGameScreen(MenuWidget *pWidget);
 
 /**
+ * Resolve the race selections and open the cached player-name screen, building it on its first
+ * visit.
+ *
  * @param pWidget The item chosen, or null from the lobby; unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043bf0
@@ -4128,6 +4484,9 @@ int ShowCreateGameScreen(MenuWidget *pWidget);
 int ShowMultiplayerNameScreen(MenuWidget *pWidget);
 
 /**
+ * Open the cached join-or-create screen, building it on its first visit, and initialise the
+ * service provider 0 or 1 when no session is active and the game was not lobby-launched.
+ *
  * @param pWidget The item of the chosen service provider, or null from the lobby; unread.
  * @return 0 when the screen cannot be allocated, otherwise 1.
  * @ghidraAddress BRD3D: 0x10043e70
@@ -4146,6 +4505,9 @@ int ShowJoinCreateGameScreen(MenuWidget *pWidget);
 int ShowSeasonProgressInfoScreen(MenuWidget *pWidget = nullptr);
 
 /**
+ * Select arcade mode, reset the menu selections, and open the cached race setup, building it and
+ * resolving its selections on the first visit.
+ *
  * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10044f50
@@ -4154,6 +4516,8 @@ int ShowSeasonProgressInfoScreen(MenuWidget *pWidget = nullptr);
 int ShowRaceSetupMenu(MenuWidget *pWidget);
 
 /**
+ * Play the menu sound and open the cached quit confirmation, building it on its first visit.
+ *
  * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10046170
@@ -4222,7 +4586,14 @@ int BuildJoinCreateGameUI(MenuScreen *pScreen);
 int BuildCreateGameMenuUI(MenuScreen *pScreen);
 
 /**
+ * Join the selected network session as a client, unless the menu screen is already activated,
+ * and open the cached multiplayer game setup once joined. Service providers 2 and 3 mark session
+ * enumeration pending and start the provider when the session list is empty; provider 2 returns
+ * early while the phone number is shorter than seven characters.
+ *
  * @param pWidget Not read.
+ * @return Zero when the game setup screen cannot be allocated, otherwise one, including while
+ * the session is not yet joined.
  * @ghidraAddress BRD3D: 0x10044280
  * @ghidraAddress BRGlide: 0x1003d7d0
  */
@@ -4259,6 +4630,8 @@ int BuildRaceSetupUI(MenuScreen *pScreen);
 int BuildQuitGameConfirmUI(MenuScreen *pScreen);
 
 /**
+ * Open the cached Options menu, building it on its first visit.
+ *
  * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x100451e0
@@ -4464,6 +4837,7 @@ extern "C" {
 /**
  * Show the screen of the results of a race.
  *
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045ea0
  * @ghidraAddress BRGlide: 0x1003f340
  */
@@ -4472,6 +4846,7 @@ int ShowRaceResultsScreen(void);
 /**
  * Show the lobby of network play again after a race.
  *
+ * @return Zero when the network car setup screen cannot be allocated, otherwise one.
  * @ghidraAddress BRD3D: 0x100447d0
  * @ghidraAddress BRGlide: 0x1003dd20
  */
@@ -4519,6 +4894,7 @@ void EnterNetworkLobbyScreen(void);
 
 #endif /* TGR_BRD3D */
 
+/** @cond */
 /**
  * Whether ActivateMenuScreen() is entering the screen the game returns to.
  *
@@ -4534,6 +4910,7 @@ extern int g_dwMenuScreenActivated;
  * @ghidraAddress BRGlide: 0x10ac5da8
  */
 extern int g_dwLobbyLaunchHandled;
+/** @endcond */
 
 /**
  * Restore the surfaces of the loaded menu images and load their bitmaps into them again.
@@ -4585,6 +4962,7 @@ void ReleaseMenuSurfaces(void);
  */
 extern int g_dwNetworkMenuState;
 
+/** @cond */
 /**
  * Whether the cheat that unlocks every track was entered.
  *
@@ -4616,6 +4994,7 @@ extern int g_dwCheatBonusCarsUnlocked;
  * @ghidraAddress BRGlide: 0x10ac5d98
  */
 extern int g_dwCheatOutroSequenceEnabled;
+/** @endcond */
 
 /**
  * Unlock every track, play the sound of a cheat, and set the network menus to state 2.
@@ -4657,6 +5036,7 @@ void Cheat_Sophia_EnableOutroSequence(void);
  */
 void Cheat_Lynette_UnlockBonusCars(void);
 
+/** @cond */
 /**
  * Whether the cheat that unlocks every car was entered.
  *
@@ -4664,6 +5044,7 @@ void Cheat_Lynette_UnlockBonusCars(void);
  * @ghidraAddress BRGlide: 0x10ac5c48
  */
 extern int g_dwCheatAllCarsUnlocked;
+/** @endcond */
 
 /**
  * Unlock every car, play the sound of a cheat, and set the network menus to state 2.
@@ -4693,6 +5074,7 @@ extern CheatCode g_aCheatCodes[CHEAT_CODE_COUNT];
 /** The number of entries of g_anCheatInputBuffer. */
 #define CHEAT_INPUT_BUFFER_SIZE 32
 
+/** @cond */
 /**
  * The last characters typed for the cheats, a ring that wraps at its end.
  *
@@ -4708,6 +5090,7 @@ extern int g_anCheatInputBuffer[CHEAT_INPUT_BUFFER_SIZE];
  * @ghidraAddress BRGlide: 0x10ac5da0
  */
 extern int g_dwCheatInputCount;
+/** @endcond */
 
 /**
  * The last character the window received, or 0 once it is read.
@@ -4742,6 +5125,7 @@ void CheckCheatCodeMatches(void);
  */
 extern int g_dwSelectedSessionIndex;
 
+/** @cond */
 /**
  * The track of the CD the menus show, counted from the first music track.
  *
@@ -4749,6 +5133,7 @@ extern int g_dwSelectedSessionIndex;
  * @ghidraAddress BRGlide: 0x10ac5d8c
  */
 extern int g_dwSelectedCdTrack;
+/** @endcond */
 
 /**
  * Whether the list of network sessions is refreshing. No frame is flipped while it refreshes.
@@ -4774,6 +5159,7 @@ extern int g_dwTrackMenuIndex;
  */
 extern int g_dwSelectedWeather;
 
+/** @cond */
 /**
  * An unused value cleared with the menu selections.
  *
@@ -4781,6 +5167,7 @@ extern int g_dwSelectedWeather;
  * @ghidraAddress BRGlide: 0x10ac5d5c
  */
 extern int g_dwUnusedWeatherMenuValue;
+/** @endcond */
 
 /**
  * The chosen class of car.
@@ -4827,6 +5214,7 @@ struct ErrorMessage {
 /** The number of entries of g_ErrorMessageTable. */
 #define ERROR_MESSAGE_COUNT 8
 
+/** @cond */
 /**
  * The errors of the game, indexed by the code of the error.
  *
@@ -4834,6 +5222,7 @@ struct ErrorMessage {
  * @ghidraAddress BRGlide: 0x100abe00
  */
 extern ErrorMessage g_ErrorMessageTable[ERROR_MESSAGE_COUNT];
+/** @endcond */
 
 /**
  * Give a message of the main window to the front end.
@@ -5008,6 +5397,7 @@ int ShowNotEnoughPointsScreen(MenuWidget *pWidget);
 /**
  * Show cached race totals, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x100460a0
  * @ghidraAddress BRGlide: 0x1003f540
@@ -5017,6 +5407,7 @@ int ShowRaceResultsTotalsScreen(MenuWidget *pWidget = nullptr);
 /**
  * Show cached race summary results and build an exit confirmation on the first visit.
  *
+ * @param pWidget Not read.
  * @return Whether both initial allocations succeeded, or the summary was already cached.
  * @ghidraAddress BRD3D: 0x10045f70
  * @ghidraAddress BRGlide: 0x1003f410

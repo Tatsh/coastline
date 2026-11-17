@@ -1,5 +1,11 @@
 #ifndef COASTLINE_RACE_PHASES_H
 #define COASTLINE_RACE_PHASES_H
+
+/**
+ * @file
+ * The phases of a race from its start through the countdown, the race, the results, and the exit.
+ */
+
 #include "common/race.h"
 
 #ifdef __cplusplus

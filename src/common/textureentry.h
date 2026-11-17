@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The table of texture entries and the routines that allocate, size, and alias them.
+ */
+
 #include "common/renderbackend.h"
 #include "common/texturetile.h"
 

@@ -1,6 +1,12 @@
 #ifndef COASTLINE_PLAYERINPUT_H
 #define COASTLINE_PLAYERINPUT_H
 
+/**
+ * @file
+ * The input of each player: its buttons and stick, its recordings, and its button history for the
+ * cheat codes.
+ */
+
 #include "common/types.h"
 
 #if TGR_BOSS_RALLY && defined(errno)

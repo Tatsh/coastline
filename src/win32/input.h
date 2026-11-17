@@ -20,45 +20,75 @@
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {
 private:
-    int nCursorX;                            /*!< The horizontal position of the cursor. */
-    int nCursorY;                            /*!< The vertical position of the cursor. */
-    int nWheel;                              /*!< The position of the wheel. */
-    int nPrevCursorX;                        /*!< nCursorX when the mouse was read before. */
-    int nPrevCursorY;                        /*!< nCursorY when the mouse was read before. */
+    int nCursorX;
+    int nCursorY;
+    int nWheel;       // The position of the wheel.
+    int nPrevCursorX; // nCursorX when the mouse was read before.
+    int nPrevCursorY; // nCursorY when the mouse was read before.
+    // Bytes the reconstructed code does not read or write.
     [[maybe_unused]] char abUnknown14[0x10]; /* +0x14 */
-    unsigned char abButtons[4];              /*!< The buttons that are down, 0x80 for down. */
-    unsigned char abPrevButtons[4];          /*!< abButtons when the mouse was read before. */
-    int abHeld[4];                           /*!< Whether each button is held down. */
-    int abClicked[4];             /*!< Whether each button was let go since the read before. */
-    int bPressPending;            /*!< Set while a button is down, cleared when one is let go. */
-    IDirectInputDeviceA *pDevice; /*!< The DirectInput device of the mouse. */
+    unsigned char abButtons[4];              // The buttons that are down, 0x80 for down.
+    unsigned char abPrevButtons[4];          // abButtons when the mouse was read before.
+    int abHeld[4];                           // Whether each button is down.
+    int abClicked[4];             // Whether each button was let go since the read before.
+    int bPressPending;            // Set while a button is down, cleared when one is let go.
+    IDirectInputDeviceA *pDevice; // The DirectInput device of the mouse.
 
 public:
-    /** @return The horizontal cursor position. */
+    /**
+     * Get the horizontal position of the cursor, clamped to the screen by each poll.
+     *
+     * @return The horizontal cursor position in pixels.
+     */
     int GetCursorX() const {
         return nCursorX;
     }
-    /** @return The vertical cursor position. */
+    /**
+     * Get the vertical position of the cursor, clamped to the screen by each poll.
+     *
+     * @return The vertical cursor position in pixels.
+     */
     int GetCursorY() const {
         return nCursorY;
     }
-    /** @return The previous vertical cursor position. */
+    /**
+     * Get the vertical position of the cursor at the poll before the last one.
+     *
+     * @return The previous vertical cursor position in pixels.
+     */
     int GetPreviousCursorY() const {
         return nPrevCursorY;
     }
-    /** Set the horizontal cursor position. */
+    /**
+     * Move the cursor horizontally. The next poll adds the movement of the mouse and clamps it.
+     *
+     * @param value The horizontal cursor position in pixels.
+     */
     void SetCursorX(int value) {
         nCursorX = value;
     }
-    /** Set the vertical cursor position. */
+    /**
+     * Move the cursor vertically. The next poll adds the movement of the mouse and clamps it.
+     *
+     * @param value The vertical cursor position in pixels.
+     */
     void SetCursorY(int value) {
         nCursorY = value;
     }
-    /** @return Whether button @p index is held. */
+    /**
+     * Test whether a button of the mouse is down.
+     *
+     * @param index The button, from 0 to 3.
+     * @return Whether the button is down.
+     */
     bool IsButtonHeld(int index) const {
         return abHeld[index] != 0;
     }
-    /** @return The underlying DirectInput mouse device. */
+    /**
+     * Get the DirectInput device of the mouse.
+     *
+     * @return The device, or nullptr before CreateMouseDevice() succeeds.
+     */
     IDirectInputDeviceA *GetDirectInputDevice() const {
         return pDevice;
     }
@@ -310,12 +340,14 @@ unsigned char IsInputBindingPressed(int nBinding);
  */
 unsigned char IsInputBindingHeld(int nBinding);
 
+/** @cond */
 /**
  * Movement ranges for the eight mouse sensitivity settings.
  * @ghidraAddress BRD3D: 0x100bd400
  * @ghidraAddress BRGlide: 0x100bcc08
  */
 extern int g_anMouseAxisRanges[8];
+/** @endcond */
 
 /**
  * The keys of the keyboard the game read last, as DirectInput reports them.
@@ -526,6 +558,7 @@ extern int g_bForceFeedbackAvailable;
  */
 void SetForceFeedbackMagnitude(LONG lMagnitude);
 
+/** @cond */
 /**
  * The direction of the jolt, along the negative X axis.
  *
@@ -533,6 +566,7 @@ void SetForceFeedbackMagnitude(LONG lMagnitude);
  * @ghidraAddress BRGlide: 0x100bcc38
  */
 extern LONG g_adwForceFeedbackDirection[2];
+/** @endcond */
 
 /**
  * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt

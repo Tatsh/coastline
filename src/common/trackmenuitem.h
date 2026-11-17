@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TRACKMENUITEM_H
 #define COASTLINE_TRACKMENUITEM_H
 
+/**
+ * @file
+ * The track descriptors and the items of the track selection menu.
+ */
+
 #include "common/types.h"
 
 struct Model;

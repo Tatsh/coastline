@@ -1,6 +1,11 @@
 #ifndef COASTLINE_CONVERTEDVERTEX_H
 #define COASTLINE_CONVERTEDVERTEX_H
 
+/**
+ * @file
+ * The model vertex in the working format of the renderer, and its copy routine.
+ */
+
 #include "common/vecmath.h"
 
 /** A model vertex converted into the renderer's working format. */

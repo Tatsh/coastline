@@ -23,12 +23,15 @@ typedef struct Rgb565Image {
     uint16_t colorKey; /*!< The pixel value treated as transparent. */
 } Rgb565Image;
 
-/** Allocate an RGB 565 image and an uninitialised pixel buffer.
- * @return The image, or NULL when allocation fails.
+/** Allocate an RGB 565 image and an uninitialised pixel buffer, with a colour key of 0.
+ * @param width The image width in pixels.
+ * @param height The image height in pixels.
+ * @return The image, or NULL when allocation fails. Release it with FreeRgb565Image().
  * @ghidraAddress BRGlide: 0x10001130 */
 Rgb565Image *CreateRgb565Image(int width, int height);
 
 /** Free @p image and its pixel buffer, accepting NULL.
+ * @param image The image to free, or NULL.
  * @ghidraAddress BRGlide: 0x10001190 */
 void FreeRgb565Image(Rgb565Image *image);
 
@@ -43,11 +46,15 @@ void ConvertBgr24ToRgb565FlipVertical(
     uint16_t *destination, const uint8_t *source, int width, int height, int sourceStride);
 
 /** Convert a 24-bit Windows bitmap to an RGB 565 image.
+ * @param bitmap The bitmap, bottom row first, with its pixel bits in memory.
  * @return The image, or NULL for another bit depth or failed allocation.
  * @ghidraAddress BRGlide: 0x10001240 */
 Rgb565Image *CreateRgb565ImageFromBitmap(const BITMAP *bitmap);
 
 /** Load a bitmap resource or file at the requested dimensions and convert it to RGB 565.
+ * @param name The resource of the executable, or else the path of the bitmap file.
+ * @param width The width to load at in pixels, or 0 for the width of the bitmap.
+ * @param height The height to load at in pixels, or 0 for the height of the bitmap.
  * @return The image with a green colour key, or NULL when loading or conversion fails.
  * @ghidraAddress BRGlide: 0x10001290 */
 Rgb565Image *LoadBitmapToRgb565Image(const char *name, int width, int height);
@@ -107,6 +114,8 @@ void CopyRgb565RectColorKeyed(uint16_t *destination,
                               uint16_t colorKey);
 
 /** Convert a Windows RGB colour to the image's RGB 565 transparency key.
+ * @param image The image whose colour key is set.
+ * @param color The colour, truncated to 5, 6, and 5 bits of red, green, and blue.
  * @ghidraAddress BRGlide: 0x100014a0 */
 void SetRgb565ImageColorKey(Rgb565Image *image, COLORREF color);
 

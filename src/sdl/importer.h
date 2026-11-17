@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The import of the Boss Rally disc and the Top Gear Rally cartridges into asset packs.
+ */
+
 #include <cstdint>
 #include <expected>
 #include <filesystem>

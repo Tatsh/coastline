@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The entry point of the EAR sound library.
+ */
+
 #include <windows.h>
 
 #ifdef __cplusplus

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_WIN_BUILDINFO_H
 #define COASTLINE_WIN_BUILDINFO_H
 
+/**
+ * @file
+ * The build identity diagnostics of patched builds. Builds without patches expand them to nothing.
+ */
+
 #ifdef ENABLE_PATCHES
 #ifdef __cplusplus
 extern "C" {

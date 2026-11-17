@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_MFC_H
 #define COASTLINE_EAR_MFC_H
 
+/**
+ * @file
+ * The subset of MFC 4.2 that EAR uses: the object base, word and pointer hash maps, the word list,
+ * and the Windows file wrapper.
+ */
+
 #include <cstddef>
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -25,7 +31,11 @@ void *MfcAllocateWithNewHandler(std::size_t size);
 /** Polymorphic MFC compatibility base with inactive serialisation and diagnostic hooks. */
 class CObject {
 public:
-    /** @return Null because runtime class metadata is unavailable. */
+    /**
+     * Report the runtime class of the object. EAR never queries a container for its class.
+     *
+     * @return Null because runtime class metadata is unavailable.
+     */
     virtual CRuntimeClass *GetRuntimeClass() const;
     /** The base destructor does not perform additional cleanup. */
     virtual ~CObject();
@@ -66,11 +76,23 @@ public:
     explicit CMapWordToPtr(int blockSize = 10);
     /** Release buckets and association pools without deleting pointer values. */
     ~CMapWordToPtr() override;
-    /** @return The number of registered associations. */
+    /**
+     * Count the associations of the map.
+     *
+     * @return The number of registered associations.
+     */
     int GetCount() const;
-    /** @return The configured bucket count, even before bucket allocation. */
+    /**
+     * Report the bucket count used for hashing.
+     *
+     * @return The configured bucket count, even before bucket allocation.
+     */
     UINT GetHashTableSize() const;
-    /** @return TRUE when the association count is zero; otherwise FALSE. */
+    /**
+     * Test whether the map has no associations.
+     *
+     * @return TRUE when the association count is zero; otherwise FALSE.
+     */
     BOOL IsEmpty() const;
     /**
      * Look up a pointer without changing the output on a missing key.
@@ -93,7 +115,11 @@ public:
     BOOL RemoveKey(WORD key);
     /** Release all associations and buckets without deleting pointer values. */
     void RemoveAll();
-    /** @return A cursor before the first association, or null for an empty map. */
+    /**
+     * Begin an iteration over the associations with GetNextAssoc().
+     *
+     * @return A cursor before the first association, or null for an empty map.
+     */
     POSITION GetStartPosition() const;
     /**
      * Retrieve an association in hash-bucket order and advance the cursor.
@@ -111,12 +137,12 @@ public:
 
 private:
     class Association;
-    Association **hashTable;
-    UINT hashTableSize;
+    Association **hashTable; // Null until the first insertion.
+    UINT hashTableSize;      // 17 unless InitHashTable() changes it.
     int count;
-    Association *freeAssociations;
-    CPlex *blocks;
-    int blockSize;
+    Association *freeAssociations; // Singly linked pool of unused associations.
+    CPlex *blocks;                 // Chain of pool blocks the associations are allocated from.
+    int blockSize;                 // Associations allocated in each pool block.
 };
 
 /**
@@ -132,13 +158,29 @@ public:
     explicit CWordList(int blockSize = 10);
     /** Release all nodes and pool blocks. */
     ~CWordList() override;
-    /** @return TRUE when the list is empty; otherwise FALSE. */
+    /**
+     * Test whether the list has no nodes.
+     *
+     * @return TRUE when the list is empty; otherwise FALSE.
+     */
     BOOL IsEmpty() const;
-    /** @return The number of list nodes. */
+    /**
+     * Count the nodes of the list.
+     *
+     * @return The number of list nodes.
+     */
     int GetCount() const;
-    /** @return A mutable reference to the first value; the list must be nonempty. */
+    /**
+     * Access the value of the first node.
+     *
+     * @return A mutable reference to the first value; the list must be nonempty.
+     */
     WORD &GetHead();
-    /** @return The first node position, or null when the list is empty. */
+    /**
+     * Begin an iteration from the head with GetNext().
+     *
+     * @return The first node position, or null when the list is empty.
+     */
     POSITION GetHeadPosition() const;
     /**
      * Retrieve a node value and advance towards the tail.
@@ -182,12 +224,12 @@ public:
 
 private:
     struct Node;
-    Node *head;
-    Node *tail;
+    Node *head; // Null for an empty list.
+    Node *tail; // Null for an empty list.
     int count;
-    Node *freeNodes;
-    CPlex *blocks;
-    int blockSize;
+    Node *freeNodes; // Singly linked pool of unused nodes.
+    CPlex *blocks;   // Chain of pool blocks the nodes are allocated from.
+    int blockSize;   // Nodes allocated in each pool block.
 };
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -229,13 +271,13 @@ public:
     virtual void Close();
 
 private:
-    UINT file;
-    BOOL closeOnDelete;
+    UINT file;          // Windows file handle, or (UINT)-1 when no file is open.
+    BOOL closeOnDelete; // Whether the destructor closes the file, set by a successful Open().
 #if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
     // The unused field preserves the MFC class layout.
-    [[maybe_unused]] char *fileName;
+    [[maybe_unused]] char *fileName; // Unused path pointer, initialised to null.
 #else
-    char *fileName;
+    char *fileName; // Unused path pointer, initialised to null.
 #endif
 };
 #endif
@@ -254,9 +296,17 @@ public:
     explicit CMapPtrToPtr(int blockSize = 10);
     /** Release buckets and association pools without deleting key or value objects. */
     ~CMapPtrToPtr() override;
-    /** @return The number of registered associations. */
+    /**
+     * Count the associations of the map.
+     *
+     * @return The number of registered associations.
+     */
     int GetCount() const;
-    /** @return The configured bucket count, even before bucket allocation. */
+    /**
+     * Report the bucket count used for hashing.
+     *
+     * @return The configured bucket count, even before bucket allocation.
+     */
     UINT GetHashTableSize() const;
     /**
      * Insert or replace a pointer without releasing the previous value.
@@ -279,12 +329,12 @@ public:
 
 private:
     class Association;
-    Association **hashTable;
-    UINT hashTableSize;
+    Association **hashTable; // Null until the first insertion.
+    UINT hashTableSize;      // 17 unless InitHashTable() changes it.
     int count;
-    Association *freeAssociations;
-    CPlex *blocks;
-    int blockSize;
+    Association *freeAssociations; // Singly linked pool of unused associations.
+    CPlex *blocks;                 // Chain of pool blocks the associations are allocated from.
+    int blockSize;                 // Associations allocated in each pool block.
 };
 
 #endif /* COASTLINE_EAR_MFC_H */

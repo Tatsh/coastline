@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_VERSION_H
 #define COASTLINE_EAR_VERSION_H
 
+/**
+ * @file
+ * The version exports of the EAR library.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -8,6 +13,8 @@ extern "C" {
 #endif
 
 /**
+ * Forward the version query to EAR_DLL_GetVersion().
+ *
  * @return The packed EAR build and version through EAR_DLL_GetVersion(), with its query effects.
  * @ghidraAddress EAR: 0x1000c8c0
  */

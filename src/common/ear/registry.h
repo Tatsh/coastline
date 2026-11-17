@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_REGISTRY_H
 #define COASTLINE_EAR_REGISTRY_H
 
+/**
+ * @file
+ * The registries of the EAR library that map handles to channels, presets, environments,
+ * matrices, playbacks, and active events.
+ */
+
 #include <bit>
 #include <cstdint>
 #include <type_traits>
@@ -131,6 +137,8 @@ public:
     ~EarActiveEventRegistry() override;
 
     /**
+     * Check the association count of the registry.
+     *
      * @return Whether the registry has no events.
      * @ghidraAddress EAR: 0x10006670
      */
@@ -162,12 +170,12 @@ public:
 
 private:
     class Association;
-    Association **hashTable;
-    UINT hashTableSize;
+    Association **hashTable; // Null until the first insertion.
+    UINT hashTableSize;      // Always 17.
     int count;
-    Association *freeAssociations;
-    CPlex *blocks;
-    int blockSize;
+    Association *freeAssociations; // Singly linked pool of unused associations.
+    CPlex *blocks;                 // Chain of pool blocks the associations are allocated from.
+    int blockSize;                 // Associations allocated in each pool block.
 };
 
 /**

@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The music of the races and the menus, from the XM modules of the cartridge or the converted CD
+ * audio of the disc.
+ */
+
 #include <filesystem>
 #include <memory>
 
@@ -17,11 +23,15 @@ public:
     ~RaceMusicContext();
     /** Prevent copying registered race music resources. */
     RaceMusicContext(const RaceMusicContext &) = delete;
-    /** Prevent assignment of registered race music resources. */
+    /**
+     * Prevent assignment of registered race music resources.
+     *
+     * @return This context; the operator is deleted and never called.
+     */
     RaceMusicContext &operator=(const RaceMusicContext &) = delete;
 
 private:
-    std::unique_ptr<RaceMusic> m_music;
+    std::unique_ptr<RaceMusic> m_music; // The race music player the free routines drive.
 };
 
 /** Where the music of a race comes from. */
@@ -45,7 +55,11 @@ public:
     ~FrontEndMusic();
     /** Prevent copying playback control and CD resources. */
     FrontEndMusic(const FrontEndMusic &) = delete;
-    /** Prevent assignment of playback control and CD resources. */
+    /**
+     * Prevent assignment of playback control and CD resources.
+     *
+     * @return This controller; the operator is deleted and never called.
+     */
     FrontEndMusic &operator=(const FrontEndMusic &) = delete;
 
     /**
@@ -71,6 +85,7 @@ public:
 
 private:
     struct State;
+    // The shared XM player, music directory, source, CD player, volume, and loaded module.
     std::unique_ptr<State> m_state;
 };
 

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLECAMERA_H
 #define COASTLINE_VEHICLECAMERA_H
 
+/**
+ * @file
+ * The indices of the cameras of a vehicle.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * A memory mapping placed within 32-bit offsets of an anchor for the pointers of converted assets.
+ */
+
 #include <cstddef>
 
 namespace coastline {
@@ -19,17 +24,25 @@ public:
     ~Ptr32Memory();
     /** Copying is disabled because the mapping has exclusive lifetime management. */
     Ptr32Memory(const Ptr32Memory &) = delete;
-    /** Assignment is disabled because converted pointers require a stable mapping address. */
+    /**
+     * Assignment is disabled because converted pointers require a stable mapping address.
+     *
+     * @return This mapping; the operator is deleted and never called.
+     */
     Ptr32Memory &operator=(const Ptr32Memory &) = delete;
 
-    /** @return The start of the mapping. */
+    /**
+     * Get the address of the writable mapping.
+     *
+     * @return The start of the mapping.
+     */
     void *Data() const {
         return m_data;
     }
 
 private:
-    void *m_data = nullptr;
-    std::size_t m_bytes;
+    void *m_data = nullptr; // The start of the mapping, released by the destructor.
+    std::size_t m_bytes;    // The size of the mapping in bytes, passed to the release.
 };
 
 } // namespace coastline

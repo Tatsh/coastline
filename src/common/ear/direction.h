@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_DIRECTION_H
 #define COASTLINE_EAR_DIRECTION_H
 
+/**
+ * @file
+ * The selection of the direction sector and the directional preset of an event.
+ */
+
 #include <stdint.h>
 
 #include "eventparameters.h"

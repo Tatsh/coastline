@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The sky palettes and textures, and the texture source of the track.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern "C" {
 

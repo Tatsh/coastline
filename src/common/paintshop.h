@@ -34,12 +34,14 @@ typedef struct CarPaintTextureSet {
     const char *pszBitmapName; /*!< The source bitmap name. */
 } CarPaintTextureSet;
 
+/** @cond */
 /**
  * The option at offset 16 of the paint set selected last.
  *
  * @ghidraAddress BRD3D: 0x100b2ad0
  */
 extern int g_nSelectedPaintOption10;
+/** @endcond */
 
 /**
  * The group used to prepare car paint textures.
@@ -138,6 +140,7 @@ int BlitPaintImageToPixels(const void *pImage,
  */
 extern CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT_SET_COUNT];
 
+/** @cond */
 /**
  * The bitmaps of the damage of the paint, from malloc().
  *
@@ -145,6 +148,7 @@ extern CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT
  * @ghidraAddress BRGlide: 0x10ac67b0
  */
 extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
+/** @endcond */
 
 /**
  * Scale RGB by the first channel of the selected 64 by 64 damage mask, preserving alpha.
@@ -170,12 +174,14 @@ void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int h
  */
 void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask);
 
+/** @cond */
 /**
  * Whether additional car-paint damage variants are generated when paint textures load.
  *
  * @ghidraAddress BRD3D: 0x100adfc8
  */
 extern int g_bCarPaintTexturesEnabled;
+/** @endcond */
 
 /**
  * Load one car group's paint bitmaps and optionally generate damage variants.
@@ -187,6 +193,7 @@ extern int g_bCarPaintTexturesEnabled;
  */
 void LoadCarPaintTextures(int group, int damageVariants);
 
+/** @cond */
 /**
  * The multiplier of the red of the tint of the paint.
  *
@@ -210,6 +217,7 @@ extern int g_dwColorTintGreen;
  * @ghidraAddress BRGlide: 0x10ac67bc
  */
 extern int g_dwColorTintBlue;
+/** @endcond */
 
 /**
  * Set the multipliers of the tint of the paint.
@@ -222,6 +230,7 @@ extern int g_dwColorTintBlue;
  */
 void SetColorTintMultipliers(int nRed, int nGreen, int nBlue);
 
+/** @cond */
 /**
  * The width of the bitmap ConvertBitmap24ToRgba32() converted last.
  *
@@ -237,6 +246,7 @@ extern int g_dwConvertedBitmapWidth;
  * @ghidraAddress BRGlide: 0x10ac67c8
  */
 extern int g_dwConvertedBitmapHeight;
+/** @endcond */
 
 /**
  * Copy the rows of a bitmap of 24 bits from the bottom up into pixels of RGBA 8888, opaque.

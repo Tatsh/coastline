@@ -1,6 +1,11 @@
 #ifndef COASTLINE_NETWORKRACE_H
 #define COASTLINE_NETWORKRACE_H
 
+/**
+ * @file
+ * The DirectPlay session of a network race: player slots, received messages, and pause requests.
+ */
+
 #include <stdbool.h>
 
 #include <windows.h>

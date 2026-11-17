@@ -1,6 +1,11 @@
 #ifndef COASTLINE_N64_PAINTINPUT_H
 #define COASTLINE_N64_PAINTINPUT_H
 
+/**
+ * @file
+ * The N64 mouse and Randnet keyboard input of the paint shop.
+ */
+
 #include "common/playerinput.h"
 
 /**

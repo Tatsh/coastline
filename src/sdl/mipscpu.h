@@ -119,7 +119,12 @@ public:
      */
     void Jump(std::uint32_t address);
 
-    /** @return The fault that ended Run(), or empty text. Later faults replace the stored text. */
+    /**
+     * Report why Run() ended with a fault. The first fault is recorded and is never cleared or
+     * replaced by a later fault.
+     *
+     * @return The fault with the address of its instruction, or empty text without a fault.
+     */
     const std::string &Fault() const {
         return m_fault;
     }
@@ -227,45 +232,86 @@ public:
     /** The ticks of Count added to those of the instructions, as time spent idle. */
     std::uint64_t idleTicks = 0;
 
-    /** @return Count ticks since power on, one for two instructions plus accumulated idle ticks. */
+    /**
+     * Count the ticks of the Count register since power on.
+     *
+     * @return One tick for every two instructions run, plus the idle ticks.
+     */
     std::uint64_t Ticks() const {
         return instructions / 2 + idleTicks;
     }
 
-    /** @return The value of Count, the low word of Ticks(). */
+    /**
+     * Read the Count register of the system control processor.
+     *
+     * @return The low word of Ticks().
+     */
     std::uint32_t Count() const {
         return static_cast<std::uint32_t>(Ticks());
     }
 
 private:
+    // Fetch and run the instruction at the program counter. A branch to itself calls the idle
+    // routine first, and the instruction is skipped when the routine moves the program counter or
+    // stops the processor.
     void Step();
+    // Decode an instruction by its major opcode and run it. The address is the virtual address of
+    // the instruction, for the targets of branches.
     void Execute(std::uint32_t instruction, std::uint32_t address);
+    // Run an instruction of the SPECIAL opcode, decoded by its function field.
     void Special(std::uint32_t instruction);
+    // Run a REGIMM branch on the sign of a register, with link and likely forms. Other forms fault.
     void RegImm(std::uint32_t instruction, std::uint32_t address);
+    // Run a move to or from the system control processor. Count reads from Ticks(), the TLB
+    // instructions do nothing, and ERET faults.
     void Cop0(std::uint32_t instruction);
+    // Run a move or a branch of the floating-point unit, or pass an arithmetic instruction to
+    // FloatOperation().
     void Cop1(std::uint32_t instruction, std::uint32_t address);
+    // Run an arithmetic, conversion, or comparison instruction of the floating-point unit in the
+    // single, double, word, or long format, with the rounding mode of fcr31.
     void FloatOperation(std::uint32_t instruction);
+    // Resolve a branch. A taken branch sets the target after the delay slot, and a branch likely
+    // not taken skips its delay slot.
     void Branch(bool taken, std::uint32_t target, bool likely);
+    // Record a fault with the address of the current instruction, unless a fault is already
+    // recorded. Run() stops after the instruction.
     void SetFault(const std::string &fault);
+    // Find bytes of RDRAM through KSEG0 or KSEG1. Returns nullptr when the address is outside
+    // KSEG0 and KSEG1 or the access passes the end of RDRAM.
     std::uint8_t *RamAt(std::uint32_t address, int size);
+    // Read an address outside RDRAM. The cartridge image supplies 0x10000000 to 0x1FBFFFFF, with
+    // zero past its end, and the read routine supplies the other physical addresses. A mapped
+    // address faults. Returns the big-endian value, or zero after a fault or without a read
+    // routine.
     std::uint64_t ReadDevice(std::uint32_t address, int size);
+    // Write an address outside RDRAM through the write routine. A mapped address faults. Without
+    // the routine the write is discarded.
     void WriteDevice(std::uint32_t address, int size, std::uint64_t value);
+    // Read the bits of a floating-point register as a float.
     float GetSingle(int reg) const;
+    // Read a pair of floating-point registers as a double. The low bit of the register is ignored.
     double GetDouble(int reg) const;
     void SetSingle(int reg, float value);
+    // Write a double to a pair of floating-point registers. The low bit of the register is ignored.
     void SetDouble(int reg, double value);
+    // Read a pair of floating-point registers as 64 bits, with the odd register in the high word
+    // and the even register in the low word. The low bit of the register is ignored.
     std::uint64_t GetLong(int reg) const;
+    // Write 64 bits to a pair of floating-point registers, with the high word to the odd register
+    // and the low word to the even register. The low bit of the register is ignored.
     void SetLong(int reg, std::uint64_t value);
 
-    std::span<const std::uint8_t> m_rom;
-    std::unordered_map<std::uint32_t, Hook> m_hooks;
+    std::span<const std::uint8_t> m_rom;             // The cartridge image from SetRom().
+    std::unordered_map<std::uint32_t, Hook> m_hooks; // The hooks by physical address.
+    // A flag for each word of RDRAM, nonzero where a hook is set, checked before each lookup.
     std::vector<std::uint8_t> m_hooked;
-    DeviceRead m_deviceRead;
-    DeviceWrite m_deviceWrite;
-    std::function<void(MipsCpu &)> m_idle;
-    std::string m_fault;
-    bool m_stopped = false;
-    std::uint32_t m_current = 0;
+    DeviceRead m_deviceRead;               // The read routine from SetDevices(), or empty.
+    DeviceWrite m_deviceWrite;             // The write routine from SetDevices(), or empty.
+    std::function<void(MipsCpu &)> m_idle; // The routine from SetIdle(), or empty.
+    std::string m_fault;                   // The first fault, or empty text.
+    bool m_stopped = false;                // Set by Stop() and cleared by Run().
+    std::uint32_t m_current = 0;           // The address of the instruction Step() runs.
 };
 
 } // namespace coastline

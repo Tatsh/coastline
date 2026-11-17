@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_SHUTDOWN_H
 #define COASTLINE_EAR_SHUTDOWN_H
 
+/**
+ * @file
+ * The shutdown and reset exports of the EAR library.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

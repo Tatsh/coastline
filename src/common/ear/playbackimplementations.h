@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H
 #define COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H
 
+/**
+ * @file
+ * The EAR playback classes for PCM wave files, wave images in memory, preset samples, IMA ADPCM
+ * wave files, and, on Windows, MIDI sequences and CD audio tracks through MCI.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 // Multimedia declarations require the core Windows SDK types first.
@@ -25,9 +31,16 @@ public:
     PcmWaveStream();
 
 private:
-    /** @ghidraAddress EAR: 0x1000af60 */
+    // Release playback through CloseRegisteredEarPlayback().
+    // @ghidraAddress EAR: 0x1000af60
     void ReleaseEarPlaybackResources() override;
-    /** @ghidraAddress EAR: 0x1000b8fa */
+    // Open and read a wave file, create the device buffer, and register the playback. Source flag
+    // 0x4000 supplies an open file handle; without source flags the source is a terminated path.
+    // Nonzero streaming streams through two buffer halves, but files that fit in the maximum
+    // streaming buffer play from one buffer. Nonzero looping restarts at the data start when the
+    // data ends. Returns one on success, and zero with an EAR error for a null source, a file
+    // failure, a device failure, or a full playback registry (error 0x1a).
+    // @ghidraAddress EAR: 0x1000b8fa
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
 
 protected:
@@ -50,7 +63,12 @@ protected:
     void CloseRegisteredEarPlayback() override;
 
 private:
-    /** @ghidraAddress EAR: 0x1000af76 */
+    // Read the next file data into the sample half opposite the refill index and copy it to the
+    // device buffer. The half is first filled with silence. At the end of the data a looping
+    // stream seeks to the data start and fills the rest of the half; otherwise the file is closed
+    // (or released when borrowed) and later refills complete playback. Read and seek failures
+    // record EAR error 0x0e and complete playback.
+    // @ghidraAddress EAR: 0x1000af76
     void RefillEarPlaybackStream() override;
 
 protected:
@@ -63,7 +81,9 @@ protected:
     void CopyEarPlaybackSamplesToOutput() override;
 
 private:
-    /** @ghidraAddress EAR: 0x1000b260 */
+    // Drain the stream and mark playback complete with looping disabled once the device buffer
+    // stops. Does nothing without sample storage or a playback handle.
+    // @ghidraAddress EAR: 0x1000b260
     void CompleteEarPlayback() override;
 
 protected:
@@ -75,19 +95,33 @@ protected:
     int CheckEarPlaybackLoopCompletion() override;
 
 private:
-    /** @ghidraAddress EAR: 0x10009ac0 */
+    // Size of the decoded PCM data in bytes.
+    // @ghidraAddress EAR: 0x10009ac0
     std::uint32_t GetEarPlaybackMediaLength() override;
 
-    /** @ghidraAddress EAR: 0x1000b2a3 */
+    // Open a wave file at a terminated path for reading. Returns one on success, and zero with
+    // EAR error 0x0d when the file cannot be opened.
+    // @ghidraAddress EAR: 0x1000b2a3
     int OpenWaveFileStream(const char *path);
-    /** @ghidraAddress EAR: 0x1000b2ec */
+    // Read the format and data chunks of the open file, allocate sample storage, and read the
+    // first buffer. The source given to InitializeEarPlayback() is ignored in favour of the open
+    // file. Streaming is disabled when the data fits in one buffer, and a non-streaming file is
+    // closed after the read. Returns one on success, and zero after FailPcmWavePreparation() on a
+    // missing file (0x0d), a read or seek failure (0x0e), a file that is not a PCM wave file
+    // (0x0f), refused device access (6), or an allocation failure (0x10).
+    // @ghidraAddress EAR: 0x1000b2ec
     int PreparePcmWaveStream(const void *source);
 
+    // Close a file opened from a path, or restore the original position of a borrowed file, and
+    // clear the file handle.
     void CloseWaveFileStream();
+    // Record an EAR error, free sample storage, and close the file. Returns zero for the failing
+    // preparation to return.
     int FailPcmWavePreparation(std::uint32_t error);
 
 protected:
     /**
+     * Report whether the wave playback device may be used.
      * @return One; this implementation does not query device access.
      * @ghidraAddress EAR: 0x10012e1b
      */
@@ -113,20 +147,22 @@ public:
     MemoryWaveStream();
 
 private:
-    /** @ghidraAddress EAR: 0x1000a2bf */
+    // Release playback through CloseRegisteredEarPlayback().
+    // @ghidraAddress EAR: 0x1000a2bf
     void ReleaseEarPlaybackResources() override;
-    /** @ghidraAddress EAR: 0x1000a5b9 */
+    // Read a borrowed RIFF wave image in memory, create the device buffer, and register the
+    // playback. The image must remain valid until playback release. The streaming request is
+    // stored with the looping marker, and nonzero looping restarts at the data start when the
+    // data ends. Returns one on success, and zero with an EAR error for a null source (0x0d), an
+    // unreadable image, a device failure, or a full playback registry (0x1a).
+    // @ghidraAddress EAR: 0x1000a5b9
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
-    /** @ghidraAddress EAR: 0x1000a2d5 */
+    // Unregister the playback without closing a file or freeing the borrowed samples.
+    // @ghidraAddress EAR: 0x1000a2d5
     void CloseRegisteredEarPlayback() override;
 
-    /**
-     * Read the format of a wave file in memory and point the samples at its data.
-     *
-     * @param source The wave file.
-     * @return Whether the file was read.
-     * @ghidraAddress EAR: 0x1000a2e8
-     */
+    // Read the format of a wave file in memory and point the samples at its data.
+    // @ghidraAddress EAR: 0x1000a2e8
     int OpenMemoryWaveStream(const void *source);
 };
 
@@ -140,13 +176,21 @@ public:
     SampleWavePlayback();
 
 private:
-    /** @ghidraAddress EAR: 0x1000992f */
+    // Release playback through CloseRegisteredEarPlayback().
+    // @ghidraAddress EAR: 0x1000992f
     void ReleaseEarPlaybackResources() override;
-    /** @ghidraAddress EAR: 0x10009958 */
+    // Create the device buffer from the samples ApplyPreset() attached and register the playback.
+    // The source and streaming request are unused, and streaming is always disabled. Nonzero
+    // looping repeats the samples. Returns one on success, and zero on a device failure or a full
+    // playback registry (EAR error 0x1a).
+    // @ghidraAddress EAR: 0x10009958
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
-    /** @ghidraAddress EAR: 0x10009945 */
+    // Unregister the playback without freeing the borrowed preset samples.
+    // @ghidraAddress EAR: 0x10009945
     void CloseRegisteredEarPlayback() override;
-    /** @ghidraAddress EAR: 0x10009a0c */
+    // Borrow the format, samples, and size of a preset sample and size the buffer halves from
+    // them. The preset must remain valid until playback release.
+    // @ghidraAddress EAR: 0x10009a0c
     void ApplyPreset(EarWaveSample *preset) override;
 };
 
@@ -233,15 +277,17 @@ protected:
 
 private:
     // The native slots share the empty folded body of CObject::AssertValid.
+    // Does nothing; the MIDI mixer volume is written by SetEarPlaybackDirectionalGain().
     void UpdateDirectSoundPlaybackGainAndPan() override;
+    // Does nothing; MIDI playback has no device-buffer frequency.
     void UpdateDirectSoundPlaybackFrequency() override;
 
-    MCI_PLAY_PARMS playParameters;   /*!< The play command from the start. */
-    MCI_PLAY_PARMS resumeParameters; /*!< The play command a resume sends. */
-    DWORD lengthMilliseconds;        /*!< The length of the sequence. */
-    char *path;                      /*!< The file the sequencer plays. */
-    int ownsTemporaryFile;           /*!< Whether `path` is a copy to delete on release. */
-    double pendingGain;              /*!< The gain set while inactive, applied at the start. */
+    MCI_PLAY_PARMS playParameters;   // Plays from the start.
+    MCI_PLAY_PARMS resumeParameters; // Sent by a resume.
+    DWORD lengthMilliseconds;
+    char *path;            // File the sequencer plays.
+    int ownsTemporaryFile; // Whether path is a copy to delete on release.
+    double pendingGain;    // Gain set while inactive, applied at the start.
 };
 
 /**
@@ -301,6 +347,7 @@ public:
      */
     int ResumeEarPlayback() override;
     /**
+     * Report the length of the configured track range.
      * @return The configured playback range duration in milliseconds.
      * @ghidraAddress EAR: 0x1000a280
      */
@@ -329,13 +376,15 @@ protected:
 
 private:
     // The native slots share the empty folded body of CObject::AssertValid.
+    // Does nothing; the CD mixer volume is written by SetEarPlaybackDirectionalGain().
     void UpdateDirectSoundPlaybackGainAndPan() override;
+    // Does nothing; CD playback has no device-buffer frequency.
     void UpdateDirectSoundPlaybackFrequency() override;
 
-    MCI_PLAY_PARMS playParameters; /*!< The play command, from and to positions in milliseconds. */
-    MCI_PLAY_PARMS resumeParameters; /*!< The play command a resume sends. */
-    int wholeDisc;                   /*!< Whether every audio track plays, positions then tracks. */
-    DWORD durationMilliseconds;      /*!< The length of the tracks. */
+    MCI_PLAY_PARMS playParameters;   // From and to positions in milliseconds.
+    MCI_PLAY_PARMS resumeParameters; // Sent by a resume.
+    int wholeDisc;                   // Whether every audio track plays, positions then tracks.
+    DWORD durationMilliseconds;      // Length of the tracks.
 };
 #endif
 
@@ -356,54 +405,57 @@ public:
     ImaAdpcmWaveStream();
 
 private:
-    /** @ghidraAddress EAR: 0x100010aa */
+    // Release playback through CloseRegisteredEarPlayback() and delete the decoder states.
+    // @ghidraAddress EAR: 0x100010aa
     void ReleaseEarPlaybackResources() override;
-    /** @ghidraAddress EAR: 0x10001a16 */
+    // Open an IMA ADPCM wave file, decode the first half (both halves when streaming), create the
+    // device buffer, and register the playback. The source is a terminated path, or the wave file
+    // in memory for source flag 0x2000. Nonzero streaming decodes and streams through two buffer
+    // halves, and nonzero looping restarts at the data start when the data ends. Returns one on
+    // success, and zero with an EAR error for a null source (0x0d), an unreadable file, a device
+    // failure, or a full playback registry (0x1a).
+    // @ghidraAddress EAR: 0x10001a16
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
-    /** @ghidraAddress EAR: 0x10001bd7 */
+    // Close the PCM stream state and free the encoded block buffer unless it is in memory.
+    // @ghidraAddress EAR: 0x10001bd7
     void CloseRegisteredEarPlayback() override;
-    /** @ghidraAddress EAR: 0x10001c21 */
+    // Read the next encoded blocks into the half opposite the refill index, decode them, and copy
+    // the samples to the device buffer. Both halves are first cleared. At the end of the data a
+    // looping stream seeks to the data start; otherwise the file is closed (or released when
+    // borrowed) and later refills complete playback. Read and seek failures record EAR error 0x0e
+    // and complete playback.
+    // @ghidraAddress EAR: 0x10001c21
     void RefillEarPlaybackStream() override;
-    /** @ghidraAddress EAR: 0x10001ea5 */
+    // Drain the stream and mark playback complete with looping disabled once the device buffer
+    // stops. Does nothing without sample storage or a playback handle.
+    // @ghidraAddress EAR: 0x10001ea5
     void CompleteEarPlayback() override;
-    /**
-     * Get the bytes of the encoded data.
-     *
-     * @return The bytes of the data chunk.
-     * @ghidraAddress EAR: 0x10003ae0
-     */
+    // Bytes of the encoded data chunk.
+    // @ghidraAddress EAR: 0x10003ae0
     std::uint32_t GetEarPlaybackMediaLength() override;
 
-    /**
-     * Open a wave file of IMA ADPCM, from a path or from memory, read its format, and read the
-     * first blocks.
-     *
-     * @param source The path, or the wave file in memory.
-     * @return Whether the file was opened.
-     * @ghidraAddress EAR: 0x100010f3
-     */
+    // Open a wave file of IMA ADPCM, from a path or from memory, read its format, and read the
+    // first blocks.
+    // @ghidraAddress EAR: 0x100010f3
     int OpenImaAdpcmWaveStream(const void *source);
 
-    /**
-     * Decode the blocks of the half of the encoded buffer the stream fills next into the same half
-     * of the samples.
-     *
-     * @ghidraAddress EAR: 0x10001ee5
-     */
+    // Decode the blocks of the half of the encoded buffer the stream fills next into the same half
+    // of the samples.
+    // @ghidraAddress EAR: 0x10001ee5
     void DecodeImaAdpcmStreamBlocks();
 
-    EarImaAdpcmWaveFormat adpcmFormat; /*!< The format of the file. */
-    std::uint8_t *blockBuffer;  /*!< The encoded blocks, or the part of them being streamed. */
-    DWORD adpcmDataBytes;       /*!< The bytes of the data chunk. */
-    DWORD blockBufferBytes;     /*!< The bytes of `blockBuffer`. */
-    DWORD blockHalfBytes;       /*!< The encoded bytes each half of the buffer decodes. */
-    int decodedSample;          /*!< The sample the decoder produced last. */
-    int decodedDifference;      /*!< The difference the decoder added last. */
-    std::uint8_t decodedNibble; /*!< The code the decoder read last. */
-    ImaAdpcmChannelState *channelStates; /*!< The state of the decoder of each channel. */
-    std::uint16_t blocksPerHalf;         /*!< The blocks each half of the buffer decodes. */
-    DWORD dataWordsPerBlock;             /*!< The words of codes of all the channels in a block. */
-    int memorySource;                    /*!< Whether the file is in memory, read in place. */
+    EarImaAdpcmWaveFormat adpcmFormat;
+    std::uint8_t *blockBuffer; // Encoded blocks, or the part of them being streamed.
+    DWORD adpcmDataBytes;      // Bytes of the data chunk.
+    DWORD blockBufferBytes;
+    DWORD blockHalfBytes;                // Encoded bytes each half of the buffer decodes.
+    int decodedSample;                   // Last sample the decoder produced.
+    int decodedDifference;               // Last difference the decoder added.
+    std::uint8_t decodedNibble;          // Last code the decoder read.
+    ImaAdpcmChannelState *channelStates; // One per channel.
+    std::uint16_t blocksPerHalf;         // Blocks each half of the buffer decodes.
+    DWORD dataWordsPerBlock;             // Words of codes of all the channels in a block.
+    int memorySource;                    // Whether the file is in memory, read in place.
 };
 
 /**

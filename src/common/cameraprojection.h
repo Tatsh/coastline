@@ -1,6 +1,11 @@
 #ifndef COASTLINE_CAMERAPROJECTION_H
 #define COASTLINE_CAMERAPROJECTION_H
 
+/**
+ * @file
+ * The fixed and menu projections and the clip planes of perspective cameras.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

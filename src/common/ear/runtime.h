@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_RUNTIME_H
 #define COASTLINE_EAR_RUNTIME_H
 
+/**
+ * @file
+ * The readiness markers and locks of the EAR library, and its readiness, update, and shutdown
+ * exports.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -8,6 +14,8 @@ extern "C" {
 #endif
 
 /**
+ * Check the three readiness markers of the library.
+ *
  * @return Nonzero when code validation, component initialisation, and final initialisation markers
  * are all set; otherwise zero. This query does not change the last EAR error.
  * @ghidraAddress EAR: 0x10003c86
@@ -15,6 +23,8 @@ extern "C" {
 int IsEarReady(void);
 
 /**
+ * Forward the readiness query to EAR_DLL_EarInactive().
+ *
  * @return Nonzero when EAR is not ready, after clearing the last EAR error through the export.
  * @ghidraAddress EAR: 0x1000c680
  */

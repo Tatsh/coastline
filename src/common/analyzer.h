@@ -2,6 +2,12 @@
 #define COASTLINE_ANALYZER_H
 
 /**
+ * @file
+ * The annotation of dead stores reconstructed from the original code for the Clang static
+ * analyser.
+ */
+
+/**
  * Suppress analyser diagnostics on a dead store verified against original disassembly.
  * Compiler builds expand the annotation to nothing, preserving matching code generation.
  */

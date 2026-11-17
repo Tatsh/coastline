@@ -267,6 +267,7 @@ extern Vec3f g_vVehicleObbHalfExtents;
 /** A contact plane with a vector view and its original four-component array view. */
 typedef union CollisionContactVector {
     Vec3f vector; /*!< The three-dimensional contact point. */
+    /** The four components of the contact plane by name. */
     struct {
         f32 x; /*!< The horizontal component. */
         f32 y; /*!< The vertical component. */

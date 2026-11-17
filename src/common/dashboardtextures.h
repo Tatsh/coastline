@@ -1,6 +1,11 @@
 #ifndef COASTLINE_DASHBOARD_TEXTURES_H
 #define COASTLINE_DASHBOARD_TEXTURES_H
 
+/**
+ * @file
+ * The set-up of the dashboard textures of the cockpit view.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

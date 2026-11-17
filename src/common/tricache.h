@@ -102,6 +102,7 @@ extern Vec3f g_vRayGroundNormalInit;
 extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The count of the uses of the cache.
  *
@@ -113,6 +114,7 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * @ghidraAddress BRGlide: 0x11778840
  */
 extern u32 g_dwTriCacheLruCounter;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**

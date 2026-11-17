@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_VOLUME_H
 #define COASTLINE_EAR_VOLUME_H
 
+/**
+ * @file
+ * The conversion of percentage gains into DirectSound volume and pan attenuations.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus

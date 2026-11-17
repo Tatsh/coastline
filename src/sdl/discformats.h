@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The file extensions of the disc images and metadata files the importer accepts.
+ */
+
 #include <algorithm>
 #include <array>
 #include <string_view>

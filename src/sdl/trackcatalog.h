@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The tracks offered by track selection after the console tracks, with their engine indices and
+ * asset names.
+ */
+
 #include <array>
 #include <cstddef>
 #include <string_view>
@@ -33,6 +39,9 @@ inline constexpr int MENU_TRACK_COUNT =
     CONSOLE_TRACK_COUNT + static_cast<int>(EXTRA_MENU_TRACKS.size());
 
 /**
+ * Map a track-selection entry to the track of the race engine, skipping engine track 5 for the
+ * console tracks.
+ *
  * @param track The zero-based track-selection index.
  * @return The race-engine track, or -1 for a menu action or invalid index.
  */
@@ -47,6 +56,8 @@ constexpr int EngineTrackForMenu(int track) {
 }
 
 /**
+ * Find the first track-selection entry that EngineTrackForMenu() maps to an engine track.
+ *
  * @param track The PC race-engine track index.
  * @return The menu track, or -1 for an invalid engine track.
  */

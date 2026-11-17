@@ -84,6 +84,7 @@ typedef WPARAM(WINAPI *EarMixEventProc)(EarPlayParams *pParams);
  */
 extern EarPlayParams g_EarPlayParams;
 
+/** @cond */
 /**
  * The EAR library.
  *
@@ -132,6 +133,7 @@ extern int g_dwEarSoundDllMode;
  * @ghidraAddress BRGlide: 0x104b1688
  */
 extern int g_dwEarSoundInitRefCount;
+/** @endcond */
 
 /**
  * Load an EAR library and find its routines.
@@ -143,6 +145,7 @@ extern int g_dwEarSoundInitRefCount;
  */
 bool LoadEarSoundDll(int bUsePds);
 
+/** @cond */
 /**
  * _EAR_DLL_AAA_Validate of the EAR library.
  *
@@ -158,6 +161,7 @@ extern EarProc1 g_pfnEarAaaValidate;
  * @ghidraAddress BRGlide: 0x104b1634
  */
 extern EarAssignHwndProc g_pfnEarAssignHwnd;
+/** @endcond */
 
 /**
  * _EAR_DLL_ChangeChannelControl of the EAR library.
@@ -175,6 +179,7 @@ extern EarProc2 g_pfnEarChangeChannelControl;
  */
 extern EarProc2 g_pfnEarClearChannel;
 
+/** @cond */
 /**
  * _EAR_DLL_EarInactive of the EAR library.
  *
@@ -214,6 +219,7 @@ extern EarProc0 g_pfnEarGetVersion;
  * @ghidraAddress BRGlide: 0x104b1668
  */
 extern EarProc1 g_pfnEarInitializeEar;
+/** @endcond */
 
 /**
  * _EAR_DLL_MixEvent of the EAR library.
@@ -223,6 +229,7 @@ extern EarProc1 g_pfnEarInitializeEar;
  */
 extern EarMixEventProc g_pfnEarMixEvent;
 
+/** @cond */
 /**
  * _EAR_DLL_MoveEvent of the EAR library.
  *
@@ -238,6 +245,7 @@ extern EarProc1 g_pfnEarMoveEvent;
  * @ghidraAddress BRGlide: 0x104b1674
  */
 extern EarProc2 g_pfnEarRegisterBank;
+/** @endcond */
 
 /**
  * _EAR_DLL_RegisterChannel of the EAR library.
@@ -247,6 +255,7 @@ extern EarProc2 g_pfnEarRegisterBank;
  */
 extern EarProc4 g_pfnEarRegisterChannel;
 
+/** @cond */
 /**
  * _EAR_DLL_RegisterEnvironment of the EAR library.
  *
@@ -254,6 +263,7 @@ extern EarProc4 g_pfnEarRegisterChannel;
  * @ghidraAddress BRGlide: 0x104b1654
  */
 extern EarProc1 g_pfnEarRegisterEnvironment;
+/** @endcond */
 
 /**
  * _EAR_DLL_RegisterMatrix of the EAR library.
@@ -263,6 +273,7 @@ extern EarProc1 g_pfnEarRegisterEnvironment;
  */
 extern EarProc1 g_pfnEarRegisterMatrix;
 
+/** @cond */
 /**
  * _EAR_DLL_RegisterPreset of the EAR library.
  *
@@ -278,6 +289,7 @@ extern EarProc2 g_pfnEarRegisterPreset;
  * @ghidraAddress BRGlide: 0x104b163c
  */
 extern EarProc0 g_pfnEarResetEar;
+/** @endcond */
 
 /**
  * _EAR_DLL_SetAttenuationLevel of the EAR library.
@@ -287,6 +299,7 @@ extern EarProc0 g_pfnEarResetEar;
  */
 extern EarProc2 g_pfnEarSetAttenuationLevel;
 
+/** @cond */
 /**
  * _EAR_DLL_SetUserDistanceUnit of the EAR library.
  *
@@ -310,6 +323,7 @@ extern EarProc0 g_pfnEarShowLastError;
  * @ghidraAddress BRGlide: 0x104b1600
  */
 extern EarProc1 g_pfnEarShutDownBank;
+/** @endcond */
 
 /**
  * _EAR_DLL_ShutDownChannel of the EAR library.
@@ -319,6 +333,7 @@ extern EarProc1 g_pfnEarShutDownBank;
  */
 extern EarProc1 g_pfnEarShutDownChannel;
 
+/** @cond */
 /**
  * _EAR_DLL_ShutDownEar of the EAR library.
  *
@@ -390,6 +405,7 @@ extern EarProc0 g_pfnEarShutDownTimer;
  * @ghidraAddress BRGlide: 0x104b1664
  */
 extern EarProc0 g_pfnEarUpdateEar;
+/** @endcond */
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Locked reading and atomic replacement of the save files of the game.
+ */
+
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -78,7 +83,9 @@ public:
 
 private:
     struct State;
+    // Take over a save whose lock file the factory has opened and locked exclusively.
     explicit SaveFile(std::unique_ptr<State> state);
+    // The path, the in-process mutex, and the exclusively locked lock file of the save.
     std::unique_ptr<State> m_state;
 };
 

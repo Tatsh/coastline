@@ -269,6 +269,7 @@ extern u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
  */
 bool LoadSeasonSaveFile(int nMode, bool bAllowFailure);
 
+/** @cond */
 /**
  * The four-byte signature of a saved season.
  *
@@ -276,6 +277,7 @@ bool LoadSeasonSaveFile(int nMode, bool bAllowFailure);
  * @ghidraAddress BRGlide: 0x100b559c
  */
 extern const char g_szSeasonSaveMagic[4];
+/** @endcond */
 
 /**
  * The path used for automatic season saves.

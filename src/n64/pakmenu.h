@@ -110,6 +110,7 @@ typedef struct DecalCharMap {
     char chars[DECAL_CHAR_COUNT]; /*!< The ASCII of each character, a space for those it lacks. */
 } DecalCharMap;
 
+/** @cond */
 /**
  * The ASCII of the characters of the names of notes, a space for those it lacks.
  *
@@ -119,6 +120,7 @@ typedef struct DecalCharMap {
  * @ghidraAddress JPN: 0x8028ff40
  */
 extern const DecalCharMap g_szDecalCharMap;
+/** @endcond */
 
 /** @cond */
 /**
@@ -130,6 +132,7 @@ extern const DecalCharMap g_szDecalCharMap;
 extern u8 g_bPakMenuInitialized;
 /** @endcond */
 
+/** @cond */
 /**
  * The notes the menu found empty, a bit for each.
  *
@@ -139,6 +142,7 @@ extern u8 g_bPakMenuInitialized;
  * @ghidraAddress JPN: 0x8028ffdc
  */
 extern u16 g_wPakEmptySlotMask;
+/** @endcond */
 
 /** @cond */
 /**
@@ -182,6 +186,7 @@ extern u8 g_bPakLastValidNote;
 extern s32 g_dwPakNoteCount;
 /** @endcond */
 
+/** @cond */
 /**
  * The free space of the Pak in bytes.
  *
@@ -201,6 +206,7 @@ extern s32 g_dwPakFreeBlocks;
  * @ghidraAddress JPN: 0x8036b1e0
  */
 extern OSPfsState g_aPakDirEntries[PAK_NOTES];
+/** @endcond */
 
 /** @cond */
 /**
@@ -220,6 +226,7 @@ extern u8 g_bPakMenuState;
 extern s32 g_nPakFilesUsed;
 /** @endcond */
 
+/** @cond */
 /**
  * The notes InitPakAndEnumerateFiles() reads.
  *
@@ -229,6 +236,7 @@ extern s32 g_nPakFilesUsed;
  * @ghidraAddress JPN: 0x8036b3f0
  */
 extern OSPfsState g_aPakFileStates[PAK_NOTES];
+/** @endcond */
 
 /**
  * The file system of the Pak of each controller.

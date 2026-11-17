@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The deduplication of generated asset files into alias tables, the finalisation and removal of
+ * generated packs, and the reading of alias tables.
+ */
+
 #include <cstdint>
 #include <expected>
 #include <filesystem>

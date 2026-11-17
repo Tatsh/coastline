@@ -40,6 +40,8 @@ typedef struct SdlFrontEndState {
 } SdlFrontEndState;
 
 /**
+ * Get the front-end settings of the active engine runtime.
+ *
  * @pre An EngineRuntime is active.
  * @return Front-end storage, valid until the runtime is destroyed.
  */

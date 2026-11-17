@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_SOUND_H
 #define COASTLINE_VEHICLE_SOUND_H
 
+/**
+ * @file
+ * The engine and event sounds of a vehicle.
+ */
+
 #include "common/vehicle.h"
 
 #if TGR_BOSS_RALLY

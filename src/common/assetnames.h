@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The file names and display labels of the PC music, track, car, and sound assets.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

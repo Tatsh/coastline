@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_INITIALIZATION_H
 #define COASTLINE_EAR_INITIALIZATION_H
 
+/**
+ * @file
+ * The initialisation export of the EAR library.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus

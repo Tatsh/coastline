@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_ENVIRONMENT_H
 #define COASTLINE_EAR_ENVIRONMENT_H
 
+/**
+ * @file
+ * EAR spatial environments, with their registration record, registry exports, and the default
+ * environment.
+ */
+
 #include <cstdint>
 
 #pragma pack(push, 1)
@@ -174,41 +180,47 @@ public:
     void SetReservedAuxiliaryWordE(std::uint16_t value);
 
     /**
+     * Read the attenuation that spatial suppression starts from.
      * @return The stored initial gain in units of 1/10000 of full amplitude.
      * @ghidraAddress EAR: 0x10008a40
      */
     std::uint16_t GetEnvironmentInitialGain() const;
     /**
+     * Read the sound speed of Doppler and distance-delay calculations.
      * @return The stored Doppler sound speed in centimetres per millisecond.
      * @ghidraAddress EAR: 0x10008a60
      */
     std::uint16_t GetEnvironmentSoundSpeed() const;
     /**
+     * Read the distance threshold for smoothing Doppler direction changes.
      * @return The stored Doppler crossover threshold in centimetres.
      * @ghidraAddress EAR: 0x10008a80
      */
     std::uint16_t GetEnvironmentDopplerCrossoverDistance() const;
     /**
+     * Read the default random pitch half-range.
      * @return The stored pitch half-range in units of 1/10000 of base frequency.
      * @ghidraAddress EAR: 0x1000d710
      */
     std::uint16_t GetEnvironmentPitchVariationRange() const;
 
 private:
-    std::uint32_t reservedRegistrationDwordA;
-    std::uint16_t reservedRegistrationWord;
-    std::uint32_t reservedRegistrationDwordB;
-    std::uint16_t soundSpeed;
+    std::uint32_t reservedRegistrationDwordA; // Uninterpreted.
+    std::uint16_t reservedRegistrationWord;   // Uninterpreted.
+    std::uint32_t reservedRegistrationDwordB; // Uninterpreted.
+    std::uint16_t soundSpeed;                 // Doppler sound speed in centimetres per millisecond.
+    // Bytes that registration does not write; the allocation does not initialise them.
     [[maybe_unused]] std::uint8_t unwrittenBytes[6]; /* +0x0c */
-    std::uint32_t reservedRegistrationDwordC;
-    std::uint16_t initialGain;
+    std::uint32_t reservedRegistrationDwordC;        // Uninterpreted.
+    std::uint16_t initialGain; // Suppression initial gain in 1/10000 of full amplitude.
+    // Random pitch half-range in units of 1/10000 of base frequency.
     std::uint16_t pitchVariationRange;
-    std::uint16_t dopplerCrossoverDistance;
-    std::uint16_t reservedAuxiliaryWordA;
-    std::uint16_t reservedAuxiliaryWordB;
-    std::uint16_t reservedAuxiliaryWordC;
-    std::uint16_t reservedAuxiliaryWordD;
-    std::uint16_t reservedAuxiliaryWordE;
+    std::uint16_t dopplerCrossoverDistance; // Doppler crossover threshold in centimetres.
+    std::uint16_t reservedAuxiliaryWordA;   // Uninterpreted.
+    std::uint16_t reservedAuxiliaryWordB;   // Uninterpreted.
+    std::uint16_t reservedAuxiliaryWordC;   // Uninterpreted.
+    std::uint16_t reservedAuxiliaryWordD;   // Uninterpreted.
+    std::uint16_t reservedAuxiliaryWordE;   // Uninterpreted.
 };
 
 /**

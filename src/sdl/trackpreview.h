@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The generator of the simplified track models of the track selection menu.
+ */
+
 #include <expected>
 #include <string>
 #include <string_view>

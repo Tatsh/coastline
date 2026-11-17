@@ -58,12 +58,16 @@ ListBrowserDirectory(const std::filesystem::path &directory,
 std::filesystem::path ResolveUserPath(std::string_view text, const std::filesystem::path &home);
 
 /**
+ * Convert UTF-8 text to a native path with preferred directory separators.
+ *
  * @param text A path in UTF-8.
  * @return The path.
  */
 std::filesystem::path PathFromUtf8(std::string_view text);
 
 /**
+ * Read the extension of a path for case-insensitive comparison.
+ *
  * @param path A path.
  * @return The extension of the path in ASCII lowercase, with the full stop, or empty.
  */

@@ -15,6 +15,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * The pictures of the five button layouts.
  *
@@ -64,6 +65,7 @@ extern Texture g_texControllerLayout3;
  * @ghidraAddress JPN: 0x80274100
  */
 extern Texture g_texControllerLayout4;
+/** @endcond */
 
 /**
  * The title picture of the options screens.
@@ -75,6 +77,7 @@ extern Texture g_texControllerLayout4;
  */
 extern Texture g_TitleBarTextureDesc;
 
+/** @cond */
 /**
  * The items of the screen, one per layout.
  *
@@ -84,6 +87,7 @@ extern Texture g_TitleBarTextureDesc;
  * @ghidraAddress JPN: 0x80274178
  */
 extern MenuItem *g_apControllerScreenItems[];
+/** @endcond */
 
 /**
  * Draw the picture of a button layout with the action of each button.

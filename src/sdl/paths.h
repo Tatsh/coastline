@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The configuration, data, cache, and state directories of the game, their portable and XDG
+ * resolution, asset pack lookup, and the migration, export, and reset of the directories.
+ */
+
 #include <expected>
 #include <filesystem>
 #include <functional>
@@ -12,6 +18,8 @@
 namespace coastline {
 
 /**
+ * Convert a path to UTF-8 text for logs, settings, and the screen.
+ *
  * @param path A native filesystem path.
  * @return The path in UTF-8, with native directory separators.
  */
@@ -31,7 +39,11 @@ struct GamePaths {
     bool portableData = false;    /*!< Whether data uses a local portable directory. */
 };
 
-/** @return Whether this build supports adjacent portable configuration and assets. */
+/**
+ * Report the COASTLINE_PORTABLE build option.
+ *
+ * @return Whether this build supports adjacent portable configuration and assets.
+ */
 bool PortablePathsEnabled();
 
 /**

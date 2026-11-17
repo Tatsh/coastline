@@ -65,6 +65,7 @@ typedef void (*MenuPreDrawCallback)(void);
  */
 extern MenuPostDrawCallback g_pfnScreenPostDrawCallback;
 
+/** @cond */
 /**
  * The callback that draws in place of the menu items, or NULL.
  *
@@ -74,6 +75,7 @@ extern MenuPostDrawCallback g_pfnScreenPostDrawCallback;
  * @ghidraAddress JPN: 0x80273a6c
  */
 extern MenuPreDrawCallback g_pfnScreenPreDrawCallback;
+/** @endcond */
 
 /**
  * The player whose press chose the last menu item.
@@ -177,6 +179,7 @@ extern f32 g_fScreenIdleTimeout;
 extern f32 g_fScreenIdleTime;
 /** @endcond */
 
+/** @cond */
 /**
  * Whether ProcessScreenState() has set up its screen.
  *
@@ -237,6 +240,7 @@ extern s32 g_nScreenPendingSelection;
  * @ghidraAddress JPN: 0x80316b34
  */
 extern f32 g_fScreenSlideOffset;
+/** @endcond */
 
 /** @cond */
 /**
@@ -248,6 +252,7 @@ extern f32 g_fScreenSlideOffset;
 extern f32 g_fScreenRotationAngle;
 /** @endcond */
 
+/** @cond */
 /**
  * Whether the screen fades out because an item was chosen.
  *
@@ -267,6 +272,7 @@ extern s32 g_bScreenItemChosen;
  * @ghidraAddress JPN: 0x80316b40
  */
 extern s8 *g_pScreenScrollSoundBuf;
+/** @endcond */
 
 /** @cond */
 /**
@@ -324,6 +330,7 @@ extern Texture g_ArrowRightTextureDesc;
  */
 extern Texture g_BgTextureDesc;
 
+/** @cond */
 /**
  * Whether the vertices of the beam of the spotlight over the stage are set; nothing sets it.
  *
@@ -364,6 +371,7 @@ extern Gfx g_aMenuSpotlightDisplayList[];
  * @ghidraAddress JPN: 0x802739c8
  */
 extern Gfx g_aMenuChoiceMarkerDisplayList[];
+/** @endcond */
 
 /** @cond */
 /**
@@ -375,6 +383,7 @@ extern Gfx g_aMenuChoiceMarkerDisplayList[];
 extern Mtx g_MenuChoiceMarkerMtx;
 /** @endcond */
 
+/** @cond */
 /**
  * The number of items of the track menu.
  *
@@ -434,6 +443,7 @@ extern s32 g_bTrackMenuPakScreen;
  * @ghidraAddress JPN: 0x803167f0
  */
 extern s32 g_bSeasonFirstRace;
+/** @endcond */
 
 /**
  * Whether the track menu follows the results of a race.
@@ -445,6 +455,7 @@ extern s32 g_bSeasonFirstRace;
  */
 extern s32 g_dwContinueFromResults;
 
+/** @cond */
 /**
  * The text of the track menu and of its records.
  *
@@ -454,6 +465,7 @@ extern s32 g_dwContinueFromResults;
  * @ghidraAddress JPN: 0x803168a8
  */
 extern char g_szTrackMenuTextBuf[];
+/** @endcond */
 
 /** @cond */
 /**

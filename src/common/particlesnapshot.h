@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The capture of the particle pool of a race frame and its selection for rendering.
+ */
+
 #include "common/effects.h"
 
 /** Captured particle pool and list indices for one race simulation frame. */

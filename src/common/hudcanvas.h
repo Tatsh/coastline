@@ -1,6 +1,11 @@
 #ifndef COASTLINE_HUDCANVAS_H
 #define COASTLINE_HUDCANVAS_H
 
+/**
+ * @file
+ * The scaled HUD canvas of a race and the display-list opcodes that mark it.
+ */
+
 #include <common/render.h>
 
 /** The display-list opcode that begins or ends a scaled HUD canvas. */
@@ -14,16 +19,28 @@
 extern "C" {
 #endif
 
-/** @return The active HUD width, or the framebuffer width outside an overlay, in pixels. */
+/**
+ * Get the width of the HUD canvas BeginRaceHudCanvas() selected.
+ *
+ * @return The active HUD width, or the framebuffer width outside an overlay, in pixels.
+ */
 int GetHudCanvasWidth(void);
-/** @return The active HUD height, or the framebuffer height outside an overlay, in pixels. */
+/**
+ * Get the height of the HUD canvas BeginRaceHudCanvas() selected.
+ *
+ * @return The active HUD height, or the framebuffer height outside an overlay, in pixels.
+ */
 int GetHudCanvasHeight(void);
 /**
+ * Scale a horizontal framebuffer coordinate by the ratio of the canvas and framebuffer widths.
+ *
  * @param coordinate A horizontal framebuffer coordinate, in pixels.
  * @return The coordinate scaled into the current HUD canvas, rounded towards zero.
  */
 int GetHudCanvasX(int coordinate);
 /**
+ * Scale a vertical framebuffer coordinate by the ratio of the canvas and framebuffer heights.
+ *
  * @param coordinate A vertical framebuffer coordinate, in pixels.
  * @return The coordinate scaled into the current HUD canvas, rounded towards zero.
  */

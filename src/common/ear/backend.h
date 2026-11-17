@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_BACKEND_H
 #define COASTLINE_EAR_BACKEND_H
 
+/**
+ * @file
+ * The checks of the audio component version and of the initialisation features of the EAR
+ * library.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -38,11 +44,15 @@ int __stdcall ValidateEarStereoSolution(uint32_t enabled);
  */
 int __stdcall SetReservedEarInitializationOption(uint32_t option);
 /**
+ * Reject initialisation flag 0x4000. EAR_DLL_InitializeEar() fails when the flag is set.
+ *
  * @return Zero because initialisation feature 0x4000 is unsupported.
  * @ghidraAddress EAR: 0x100100fd
  */
 int RejectUnsupportedInitializationFeature4000(void);
 /**
+ * Reject initialisation flag 0x2000. EAR_DLL_InitializeEar() fails when the flag is set.
+ *
  * @return Zero because initialisation feature 0x2000 is unsupported.
  * @ghidraAddress EAR: 0x10010104
  */

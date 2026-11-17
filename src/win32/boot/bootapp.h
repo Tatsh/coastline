@@ -1,6 +1,11 @@
 #ifndef COASTLINE_LAUNCHER_BOOTAPP_H
 #define COASTLINE_LAUNCHER_BOOTAPP_H
 
+/**
+ * @file
+ * The application object of the Boss Rally disc launcher.
+ */
+
 #include <afxwin.h>
 
 /** The Boss Rally disc launcher and its process lifecycle. */
@@ -14,13 +19,23 @@ public:
     ~CBootApp() override;
 
 private:
-    /** @ghidraAddress Boot: 0x00401120 */
+    // Show the launcher dialog repeatedly and run the setup program, the display wizard, or the
+    // game the user selects. A running game is brought to the foreground instead. Returns FALSE
+    // to end the application after the dialog closes.
+    // @ghidraAddress Boot: 0x00401120
     BOOL InitInstance() override;
-    /** @ghidraAddress Boot: 0x00401590 */
+    // Run a program and wait for it to exit, returning its exit code. A non-zero code is treated
+    // as a failure, and a NULL directory runs the program in the current directory. The original
+    // formats a log message here and discards it.
+    // @ghidraAddress Boot: 0x00401590
     DWORD RunProcessAndWait(const char *directory, const char *application, char *commandLine);
-    /** @ghidraAddress Boot: 0x004016e0 */
+    // Show `Error while` followed by the operation (such as `running Display Wizard`) in a message
+    // box and exit the process.
+    // @ghidraAddress Boot: 0x004016e0
     [[noreturn]] void FatalErrorExit(const char *operation);
-    /** @ghidraAddress Boot: 0x00401770 */
+    // Check whether a drive is a CD-ROM drive with a volume labelled `Boss Rally`. The drive
+    // number is 1 for A, and the drive becomes the current drive.
+    // @ghidraAddress Boot: 0x00401770
     bool IsBossRallyCdInDrive(int drive);
 
     DECLARE_MESSAGE_MAP()

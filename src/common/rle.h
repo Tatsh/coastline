@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RLE_H
 #define COASTLINE_RLE_H
 
+/**
+ * @file
+ * The run-length compression and expansion of interleaved channel data.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

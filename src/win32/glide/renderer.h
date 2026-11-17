@@ -21,12 +21,14 @@ extern "C" {
  */
 extern int g_nGlideNumTmus;
 
+/** @cond */
 /**
  * The Glide hardware grSstQueryHardware() found.
  *
  * @ghidraAddress BRGlide: 0x105ccbd8
  */
 extern GrHwConfiguration g_GlideHwConfig;
+/** @endcond */
 
 /**
  * The megabytes of the frame buffer of the Glide hardware.

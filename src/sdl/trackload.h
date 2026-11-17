@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The loader of the models, textures, and vertices of the race engine, and the dents of the cars.
+ */
+
 #include <array>
 #include <memory>
 #include <span>
@@ -21,17 +26,29 @@ public:
     ~EngineModels();
     /** Prevent copying registered model storage and relocation tables. */
     EngineModels(const EngineModels &) = delete;
-    /** Prevent assignment of registered model storage and relocation tables. */
+    /**
+     * Prevent assignment of registered model storage and relocation tables.
+     *
+     * @return This loader; the operator is deleted and never called.
+     */
     EngineModels &operator=(const EngineModels &) = delete;
 
 private:
-    std::unique_ptr<ModelLoader> m_loader;
+    std::unique_ptr<ModelLoader> m_loader; // The vertex pool and relocation tables.
 };
 
-/** @return The entries of the texture map LoadTrackTextureMap() read last. */
+/**
+ * Report the size of the texture map of the shared model loader.
+ *
+ * @return The entries of the texture map LoadTrackTextureMap() read last.
+ */
 int LoadedTextureMapEntries();
 
-/** @return The vertices converted into the pool since ResetModelDataPool(). */
+/**
+ * Report the vertex count of the shared model loader.
+ *
+ * @return The vertices converted into the pool since ResetModelDataPool().
+ */
 unsigned ConvertedVertexCount();
 
 /**

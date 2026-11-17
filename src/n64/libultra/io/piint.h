@@ -153,6 +153,8 @@ void __osDevMgrMain(void *arg);
 /**
  * Wait while the PI is busy with a DMA or an I/O access. The status is read once before the loop
  * tests it, and again on each pass.
+ *
+ * @param stat The variable that receives `PI_STATUS_REG`, idle on completion.
  */
 #define WAIT_ON_IOBUSY(stat)                                                                       \
     stat = IO_READ(PI_STATUS_REG);                                                                 \

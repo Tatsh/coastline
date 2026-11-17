@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The player of the intro movies of asset packs.
+ */
+
 #include <filesystem>
 #include <memory>
 #include <optional>
@@ -24,7 +29,11 @@ public:
     ~VideoPlayer();
     /** Prevent copying decoder resources. */
     VideoPlayer(const VideoPlayer &) = delete;
-    /** Prevent assigning decoder resources. */
+    /**
+     * Prevent assigning decoder resources.
+     *
+     * @return This player; the operator is deleted and never called.
+     */
     VideoPlayer &operator=(const VideoPlayer &) = delete;
     /**
      * Decode through elapsed movie time and update audio gain.
@@ -45,14 +54,24 @@ public:
      * @param paused Whether playback is paused. The caller must also stop its playback clock.
      */
     void SetPaused(bool paused);
-    /** @return Movie duration in seconds, or zero when unavailable. */
+    /**
+     * Get the length of the movie the container reports.
+     *
+     * @return Movie duration in seconds, or zero when unavailable.
+     */
     double Duration() const;
-    /** @return The borrowed video texture, initially blank and valid until player destruction. */
+    /**
+     * Get the texture the decoded frames are uploaded to.
+     *
+     * @return The borrowed video texture, initially blank and valid until player destruction.
+     */
     const RenderTexture *Texture() const;
 
 private:
     struct State;
+    // Take over the opened decoder, texture, and audio stream that Open() prepared.
     explicit VideoPlayer(std::unique_ptr<State> state);
+    // The texture, decoder, buffered frames, and audio stream of the movie.
     std::unique_ptr<State> m_state;
 };
 

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The download of a file over HTTPS during the import.
+ */
+
 #include <filesystem>
 #include <optional>
 #include <string>

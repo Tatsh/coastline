@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_BANK_H
 #define COASTLINE_EAR_BANK_H
 
+/**
+ * @file
+ * The bank exports of the EAR library. Every bank request is rejected.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -8,6 +13,8 @@ extern "C" {
 #endif
 
 /**
+ * Forward a bank registration to EAR_DLL_RegisterBank().
+ *
  * @param bank The bank.
  * @param data The data of the bank.
  * @return 0.
@@ -26,6 +33,8 @@ int __stdcall EarRegisterBankExportWrapper(uint32_t bank, uint32_t data);
 int __stdcall EAR_DLL_RegisterBank(uint32_t bank, uint32_t data);
 
 /**
+ * Forward a bank shutdown to EAR_DLL_ShutDownBank().
+ *
  * @param bank The bank.
  * @return 0.
  * @ghidraAddress EAR: 0x1000f070

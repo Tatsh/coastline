@@ -27,6 +27,7 @@ extern "C" {
 /** The points of the route a search for a straight line looks ahead. */
 #define TRACE_DEPTH 8
 
+/** @cond */
 /**
  * The axis that points up.
  *
@@ -36,6 +37,7 @@ extern "C" {
  * @ghidraAddress JPN: 0x8028d794
  */
 extern Vec3f g_vUpAxis;
+/** @endcond */
 
 /**
  * How much of its velocity a computer's vehicle retains each frame in the championship, by season,

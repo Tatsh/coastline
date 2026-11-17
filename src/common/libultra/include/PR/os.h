@@ -103,11 +103,23 @@ typedef struct OSMesgQueue_s {
 #define OS_EVENT_THREADSTATUS 13 /*!< The status of a thread changed. */
 #define OS_EVENT_PRENMI 14       /*!< The reset button was pressed. */
 
-/** The number of messages in a queue. */
+/**
+ * The number of messages in a queue.
+ *
+ * @param mq A pointer to the OSMesgQueue to read.
+ */
 #define MQ_GET_COUNT(mq) ((mq)->validCount)
-/** Whether a queue has no messages. */
+/**
+ * Whether a queue has no messages.
+ *
+ * @param mq A pointer to the OSMesgQueue to test.
+ */
 #define MQ_IS_EMPTY(mq) (MQ_GET_COUNT(mq) == 0)
-/** Whether a queue has no room for another message. */
+/**
+ * Whether a queue has no room for another message.
+ *
+ * @param mq A pointer to the OSMesgQueue whose message count is compared with its capacity.
+ */
 #define MQ_IS_FULL(mq) (MQ_GET_COUNT(mq) >= (mq)->msgCount)
 
 /* Interrupt masks. */
@@ -146,15 +158,31 @@ typedef struct OSTimer_s {
 #define OS_CLOCK_RATE 62500000LL
 /** The rate of the CPU counter, in cycles a second. */
 #define OS_CPU_COUNTER (OS_CLOCK_RATE * 3 / 4)
-/** Convert nanoseconds to cycles of the CPU counter. */
+/**
+ * Convert nanoseconds to cycles of the CPU counter.
+ *
+ * @param n A duration in nanoseconds, widened to u64 before the conversion.
+ */
 #define OS_NSEC_TO_CYCLES(n)                                                                       \
     (((u64)(n) * (OS_CPU_COUNTER / 15625000LL)) / (1000000000LL / 15625000LL))
-/** Convert microseconds to cycles of the CPU counter. */
+/**
+ * Convert microseconds to cycles of the CPU counter.
+ *
+ * @param n A duration in microseconds, widened to u64 before the conversion.
+ */
 #define OS_USEC_TO_CYCLES(n) (((u64)(n) * (OS_CPU_COUNTER / 15625LL)) / (1000000LL / 15625LL))
-/** Convert cycles of the CPU counter to nanoseconds. */
+/**
+ * Convert cycles of the CPU counter to nanoseconds.
+ *
+ * @param c A count of CPU counter cycles, widened to u64 before the conversion.
+ */
 #define OS_CYCLES_TO_NSEC(c)                                                                       \
     (((u64)(c) * (1000000000LL / 15625000LL)) / (OS_CPU_COUNTER / 15625000LL))
-/** Convert cycles of the CPU counter to microseconds. */
+/**
+ * Convert cycles of the CPU counter to microseconds.
+ *
+ * @param c A count of CPU counter cycles, widened to u64 before the conversion.
+ */
 #define OS_CYCLES_TO_USEC(c) (((u64)(c) * (1000000LL / 15625LL)) / (OS_CPU_COUNTER / 15625LL))
 
 /* Peripheral access. */
@@ -258,14 +286,18 @@ typedef struct {
 
 /** The television standard reported by IPL3. */
 extern u32 osTvType;
+/** @cond */
 /** The cartridge ROM type reported by IPL3. */
 extern u32 osRomType;
+/** @endcond */
 /** The cartridge ROM base address reported by IPL3. */
 extern u32 osRomBase;
 /** The reset type reported by IPL3. */
 extern u32 osResetType;
+/** @cond */
 /** The cartridge CIC identifier reported by IPL3. */
 extern u32 osCicId;
+/** @endcond */
 /** The operating-system version reported by IPL3. */
 extern u32 osVersion;
 /** The installed memory size reported by IPL3. */

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RACE_LOAD_H
 #define COASTLINE_RACE_LOAD_H
 
+/**
+ * @file
+ * The initialisation of a race after its track and vehicles have loaded.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

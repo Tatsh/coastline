@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_FORWARD_H
 #define COASTLINE_VEHICLE_FORWARD_H
 
+/**
+ * @file
+ * The forward declaration of the vehicle type.
+ */
+
 #if TGR_BOSS_RALLY && defined(__cplusplus)
 /** A vehicle in the race simulation. */
 class Vehicle;

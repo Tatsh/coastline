@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLERESET_H
 #define COASTLINE_VEHICLERESET_H
 
+/**
+ * @file
+ * The initialisation, respawning, and placement of a vehicle.
+ */
+
 #include "common/vehicle.h"
 
 #ifdef __cplusplus

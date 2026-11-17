@@ -1,6 +1,11 @@
 #ifndef COASTLINE_MODEL_DISPLAY_LIST_H
 #define COASTLINE_MODEL_DISPLAY_LIST_H
 
+/**
+ * @file
+ * Display list commands that set up the textures, the tiles, and the lights of a model.
+ */
+
 #include "common/displaylistops.h"
 #include "common/render.h"
 
@@ -48,14 +53,23 @@ static inline void SetModelTextures(void) {
 }
 #endif
 
-/** Draw a display list of the current model when it has one. */
+/**
+ * Draw a display list of the current model when it has one.
+ *
+ * @param displayList The display list to call, or NULL to skip the command.
+ */
 static inline void DrawModelDisplayList(DisplayListCommand *displayList) {
     if (displayList != NULL) {
         gSPDisplayList(gDisplayListPtr++, displayList);
     }
 }
 
-/** Set the colours of the light of the sun and of the ambient light. */
+/**
+ * Set the colours of the light of the sun and of the ambient light.
+ *
+ * @param dir The packed RGBA colour of the directional light, light 1.
+ * @param ambient The packed RGBA colour of the ambient light, light 2.
+ */
 static inline void SetVehicleLightColors(u32 dir, u32 ambient) {
     gSPLightColor(gDisplayListPtr++, LIGHT_1, dir);
     gSPLightColor(gDisplayListPtr++, LIGHT_2, ambient);

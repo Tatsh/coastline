@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The table of loaded sound buffers and frequency multipliers of each sound sample.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus

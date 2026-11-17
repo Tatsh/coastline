@@ -169,6 +169,7 @@ extern Sprite g_texKeyboardHighlight;
  */
 extern Sprite g_texDecalFont;
 
+/** @cond */
 /**
  * The icon of the round brush.
  *
@@ -178,6 +179,7 @@ extern Sprite g_texDecalFont;
  * @ghidraAddress JPN: 0x8028f5e0
  */
 extern Sprite g_texPaintShapeFilledCircle;
+/** @endcond */
 
 /**
  * Three contiguous paint shop frames, starting with the area around the decal.
@@ -269,6 +271,7 @@ extern u8 g_bDashColorB;
  */
 extern u8 g_bBrushSize;
 
+/** @cond */
 /**
  * The rectangle of the size of the brush.
  *
@@ -278,6 +281,7 @@ extern u8 g_bBrushSize;
  * @ghidraAddress JPN: 0x8028fc94
  */
 extern ScreenRect g_rcBrush;
+/** @endcond */
 
 /**
  * The icon of the decal being edited.
@@ -620,6 +624,7 @@ extern u8 g_bTextShadowPickerOpen;
  */
 extern u8 g_bPaintShopExiting;
 
+/** @cond */
 /**
  * The colors of the bars of the color editor.
  *
@@ -685,6 +690,7 @@ extern const char *g_apszRectStyleNames[4];
  * @ghidraAddress EUR: 0x802904a4
  */
 extern const char *g_apszOvalStyleNames[4];
+/** @endcond */
 
 /**
  * The palette of the decal as it is shown.
@@ -706,6 +712,7 @@ extern PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
  */
 extern ScreenRect g_aPaintToolButtonRects[PAINT_TOOLS];
 
+/** @cond */
 /**
  * The color the color editor restores when it is cancelled.
  *
@@ -715,6 +722,7 @@ extern ScreenRect g_aPaintToolButtonRects[PAINT_TOOLS];
  * @ghidraAddress JPN: 0x8036af08
  */
 extern u8 g_abSavedSwatchColor[3];
+/** @endcond */
 
 /**
  * The buttons of the decals.

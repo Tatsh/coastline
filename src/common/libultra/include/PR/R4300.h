@@ -16,19 +16,62 @@ extern "C" {
 #define K1BASE 0xA0000000 /*!< The kernel segment, unmapped and uncached. */
 #define K2BASE 0xC0000000 /*!< The supervisor segment, mapped through the TLB. */
 
-/** Whether address x lies in the cached unmapped segment. */
+/**
+ * Whether address x lies in the cached unmapped segment.
+ *
+ * @param x The address, converted to `u32`.
+ */
 #define IS_KSEG0(x) ((u32)(x) >= K0BASE && (u32)(x) < K1BASE)
-/** Whether address x lies in the uncached unmapped segment. */
+/**
+ * Whether address x lies in the uncached unmapped segment.
+ *
+ * @param x The address, converted to `u32`.
+ */
 #define IS_KSEG1(x) ((u32)(x) >= K1BASE && (u32)(x) < K2BASE)
 
 /* Conversions between the segments and physical addresses. */
-#define K0_TO_K1(x) ((u32)(x) | 0xA0000000)    /*!< The uncached alias of a cached address. */
-#define K1_TO_K0(x) ((u32)(x) & 0x9FFFFFFF)    /*!< The cached alias of an uncached address. */
-#define K0_TO_PHYS(x) ((u32)(x) & 0x1FFFFFFF)  /*!< The physical address of a cached address. */
-#define K1_TO_PHYS(x) ((u32)(x) & 0x1FFFFFFF)  /*!< The physical address of an uncached address. */
-#define KDM_TO_PHYS(x) ((u32)(x) & 0x1FFFFFFF) /*!< The physical address of a kernel address. */
-#define PHYS_TO_K0(x) ((u32)(x) | 0x80000000)  /*!< The cached address of a physical address. */
-#define PHYS_TO_K1(x) ((u32)(x) | 0xA0000000)  /*!< The uncached address of a physical address. */
+/**
+ * The uncached alias of a cached address.
+ *
+ * @param x An address in the cached segment.
+ */
+#define K0_TO_K1(x) ((u32)(x) | 0xA0000000)
+/**
+ * The cached alias of an uncached address.
+ *
+ * @param x An address in the uncached segment.
+ */
+#define K1_TO_K0(x) ((u32)(x) & 0x9FFFFFFF)
+/**
+ * The physical address of a cached address.
+ *
+ * @param x An address in the cached segment.
+ */
+#define K0_TO_PHYS(x) ((u32)(x) & 0x1FFFFFFF)
+/**
+ * The physical address of an uncached address.
+ *
+ * @param x An address in the uncached segment.
+ */
+#define K1_TO_PHYS(x) ((u32)(x) & 0x1FFFFFFF)
+/**
+ * The physical address of a kernel address.
+ *
+ * @param x An address in either unmapped kernel segment.
+ */
+#define KDM_TO_PHYS(x) ((u32)(x) & 0x1FFFFFFF)
+/**
+ * The cached address of a physical address.
+ *
+ * @param x A physical address below 0x20000000.
+ */
+#define PHYS_TO_K0(x) ((u32)(x) | 0x80000000)
+/**
+ * The uncached address of a physical address.
+ *
+ * @param x A physical address below 0x20000000.
+ */
+#define PHYS_TO_K1(x) ((u32)(x) | 0xA0000000)
 
 /* Cache geometry. */
 #define ICACHE_SIZE 0x4000 /*!< The size of the instruction cache in bytes. */

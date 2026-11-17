@@ -1156,6 +1156,7 @@ referer
 reflectiondata
 reflow
 regen
+regimm
 reginfo
 renderbackend
 renderdefaults
@@ -1492,10 +1493,12 @@ unmirrored
 unmute
 unmuted
 unmuting
+unnormalised
 unrecovered
 unrotated
 unscii
 unsquashfs
+unstarted
 uopt
 userabort
 usermod

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RACE_PROGRESS_H
 #define COASTLINE_RACE_PROGRESS_H
 
+/**
+ * @file
+ * The messages of the progress and the finishing places of a race in the PC release.
+ */
+
 #include "common/racers.h"
 
 #if TGR_BOSS_RALLY
@@ -13,11 +18,20 @@ extern "C" {
 #endif
 
 #if TGR_BOSS_RALLY
-/** Look up a localised race message. */
+/**
+ * Look up a localised race message.
+ *
+ * @param id The string resource identifier.
+ * @return The text of the string resource.
+ */
 static inline const char *GetRaceProgressMessage(s32 id) {
     return GetStringResource(id);
 }
-/** The empty message shown after a network finish. */
+/**
+ * Get the empty message shown after a network finish.
+ *
+ * @return The empty user interface string.
+ */
 static inline const char *GetNetworkRaceFinishMessage(void) {
     return g_szEmptyUiString;
 }

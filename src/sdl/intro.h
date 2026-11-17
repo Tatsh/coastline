@@ -55,7 +55,11 @@ public:
     ~Intro();
     /** Prevent copying renderer-bound splash-screen resources. */
     Intro(const Intro &) = delete;
-    /** Prevent assignment of renderer-bound splash-screen resources. */
+    /**
+     * Prevent assignment of renderer-bound splash-screen resources.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     Intro &operator=(const Intro &) = delete;
 
     /** Start the splash screens again from the first logo, fading in. */
@@ -83,16 +87,25 @@ public:
      * @param height Output height in pixels.
      */
     void DrawProgress(SceneRenderer &renderer, float width, float height) const;
-    /** @return Whether the current pack-sequence entry displays progress. */
+    /**
+     * Report the progress bar of the pack sequence. The regional splash screens have none.
+     *
+     * @return Whether the current pack-sequence entry displays progress.
+     */
     bool ShowsProgress() const;
 
-    /** @return Whether a pack movie currently replaces menu music. */
+    /**
+     * Report a movie of the pack sequence. The regional splash screens have none.
+     *
+     * @return Whether a pack movie currently replaces menu music.
+     */
     bool PlayingVideo() const;
 
 private:
     struct State;
+    // Take the resources Load() prepared.
     explicit Intro(std::unique_ptr<State> state);
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The resources and the progress of the splash screens.
 };
 
 } // namespace coastline

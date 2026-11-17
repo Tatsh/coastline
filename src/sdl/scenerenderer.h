@@ -31,6 +31,8 @@ using Matrix4 = std::array<float, 16>;
 inline constexpr Matrix4 IDENTITY_MATRIX{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
 /**
+ * Compose two transformations into one matrix.
+ *
  * @param a The matrix applied second.
  * @param b The matrix applied first.
  * @return The product a b.
@@ -235,17 +237,26 @@ public:
     ~RenderDocument();
     /** Prevent copying uploaded document resources. */
     RenderDocument(const RenderDocument &) = delete;
-    /** Prevent assignment of uploaded document resources. */
+    /**
+     * Prevent assignment of uploaded document resources.
+     *
+     * @return This document; the operator is deleted and never called.
+     */
     RenderDocument &operator=(const RenderDocument &) = delete;
 
-    /** @return The number of paints whose images the document has uploaded. */
+    /**
+     * Count the paint colours the models of the document have taken so far.
+     *
+     * @return The number of paints whose images the document has uploaded.
+     */
     std::size_t PaintCount() const;
 
 private:
     friend class RenderModel;
     struct State;
+    // Take ownership of the document data Load() read and uploaded.
     explicit RenderDocument(std::unique_ptr<State> state);
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The parsed document and its GPU resources.
 };
 
 /** A converted model on the GPU: its meshes, its parts, and its animations. */
@@ -278,21 +289,41 @@ public:
     ~RenderModel();
     /** Prevent copying model resources and animation progress. */
     RenderModel(const RenderModel &) = delete;
-    /** Prevent assignment of model resources and animation progress. */
+    /**
+     * Prevent assignment of model resources and animation progress.
+     *
+     * @return This model; the operator is deleted and never called.
+     */
     RenderModel &operator=(const RenderModel &) = delete;
 
-    /** @return The animations of the vertices of the model. */
+    /**
+     * List the vertex animations of the document the model draws from.
+     *
+     * @return The animations of the vertices of the model.
+     */
     const std::vector<VertexAnimationInfo> &Animations() const;
 
-    /** @return The centre of what the model draws, in the units of its document. */
+    /**
+     * Report the middle of the axis-aligned bounding box of the model, computed at load.
+     *
+     * @return The centre of what the model draws, in the units of its document.
+     */
     std::array<float, 3> Centre() const;
 
-    /** @return The radius of what the model draws, in the units of its document. */
+    /**
+     * Report the largest half-extent of the axis-aligned bounding box of the model, computed at
+     * load.
+     *
+     * @return The radius of what the model draws, in the units of its document.
+     */
     float Radius() const;
 
     /**
+     * Expose the vertex positions of the first placed mesh, for computing the dents of a car.
+     *
      * @return The position of each vertex the first mesh of the model indexes, in the units of its
-     * document, where the meshes of a car share their vertices.
+     * document, where the meshes of a car share their vertices. The span is empty when the model
+     * places no mesh or the mesh has no positions.
      */
     std::span<const std::array<float, 3>> Positions() const;
 
@@ -307,8 +338,9 @@ public:
 private:
     friend class SceneRenderer;
     struct State;
+    // Take ownership of the parts, bounds, draw settings, and document reference Load() prepared.
     explicit RenderModel(std::unique_ptr<State> state);
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The parts of the document the model draws.
 };
 
 /** How far each vertex of a model is moved on the GPU, such as by the dents of a car. */
@@ -318,14 +350,20 @@ public:
     ~VertexDisplacement();
     /** Prevent copying the GPU displacement buffer. */
     VertexDisplacement(const VertexDisplacement &) = delete;
-    /** Prevent assignment of the GPU displacement buffer. */
+    /**
+     * Prevent assignment of the GPU displacement buffer.
+     *
+     * @return This displacement; the operator is deleted and never called.
+     */
     VertexDisplacement &operator=(const VertexDisplacement &) = delete;
 
 private:
     friend class SceneRenderer;
+    // Take ownership of a displacement buffer SceneRenderer::CreateDisplacement() uploaded.
     VertexDisplacement(SDL_GPUDevice *device, SDL_GPUBuffer *buffer, int vertexCount);
-    SDL_GPUDevice *m_device;
-    SDL_GPUBuffer *m_buffer;
+    SDL_GPUDevice *m_device; // The device that created the buffer and releases it.
+    SDL_GPUBuffer *m_buffer; // The position and normal offset of each vertex, as two vec4 values.
+    // The vertices the buffer covers. A mesh with more vertices draws without displacement.
     int m_vertexCount;
 };
 
@@ -367,13 +405,25 @@ public:
     ~RenderTexture();
     /** Prevent copying texture allocation and upload resources. */
     RenderTexture(const RenderTexture &) = delete;
-    /** Prevent assignment of texture allocation and upload resources. */
+    /**
+     * Prevent assignment of texture allocation and upload resources.
+     *
+     * @return This texture; the operator is deleted and never called.
+     */
     RenderTexture &operator=(const RenderTexture &) = delete;
 
-    /** @return The width in texels. */
+    /**
+     * Report the width the texture was created with.
+     *
+     * @return The width in texels.
+     */
     int Width() const;
 
-    /** @return The height in texels. */
+    /**
+     * Report the height the texture was created with.
+     *
+     * @return The height in texels.
+     */
     int Height() const;
 
     /**
@@ -387,18 +437,20 @@ public:
 
 private:
     friend class SceneRenderer;
+    // Take ownership of an uploaded texture and its sampler.
     RenderTexture(SDL_GPUDevice *device,
                   SDL_GPUTexture *texture,
                   SDL_GPUSampler *sampler,
                   int width,
                   int height);
+    // The device that created the texture and the sampler and releases them.
     SDL_GPUDevice *m_device;
     SDL_GPUTexture *m_texture;
-    SDL_GPUSampler *m_sampler;
+    SDL_GPUSampler *m_sampler; // The sampler of the filter and edge mode of the texture.
     // The upload of Update(), made by its first call.
     SDL_GPUTransferBuffer *m_transfer = nullptr;
-    int m_width;
-    int m_height;
+    int m_width;  // The width in texels.
+    int m_height; // The height in texels.
     // Whether the shader filters the texels as the RDP does, through a sampler of the nearest.
     bool m_threePoint = false;
 };
@@ -418,6 +470,8 @@ struct FlatVertex {
 class RenderQuadBuffer {
 public:
     /**
+     * Allocate a GPU vertex buffer of persistent quad slots.
+     *
      * @param renderer The renderer whose device allocates the buffer.
      * @param quads The maximum number of persistent quad slots.
      * @return A buffer for @p quads slots, or null with the allocation error logged.
@@ -427,7 +481,11 @@ public:
     ~RenderQuadBuffer();
     /** Prevent copying persistent quad GPU storage. */
     RenderQuadBuffer(const RenderQuadBuffer &) = delete;
-    /** Prevent assignment of persistent quad GPU storage. */
+    /**
+     * Prevent assignment of persistent quad GPU storage.
+     *
+     * @return This buffer; the operator is deleted and never called.
+     */
     RenderQuadBuffer &operator=(const RenderQuadBuffer &) = delete;
 
     /**
@@ -441,8 +499,9 @@ public:
 private:
     friend class SceneRenderer;
     struct State;
+    // Take ownership of the quad storage Create() allocated.
     explicit RenderQuadBuffer(std::unique_ptr<State> state);
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The GPU buffer and the slot vertices.
 };
 
 /** How a run of flat quads is coloured: the textures and the colour combiner of the RDP. */
@@ -478,15 +537,31 @@ public:
     ~SceneRenderer();
     /** Prevent copying pipelines, frame targets, and queued draws. */
     SceneRenderer(const SceneRenderer &) = delete;
-    /** Prevent assignment of pipelines, frame targets, and queued draws. */
+    /**
+     * Prevent assignment of pipelines, frame targets, and queued draws.
+     *
+     * @return This renderer; the operator is deleted and never called.
+     */
     SceneRenderer &operator=(const SceneRenderer &) = delete;
 
-    /** @return The window the renderer draws into. */
+    /**
+     * Give access to the window passed to Create().
+     *
+     * @return The window the renderer draws into.
+     */
     GpuWindow &Window();
 
-    /** @param view Optional eye-space free-camera transform for menus and logos. */
+    /**
+     * Replace the camera the menus and logos build their projections with, for the free camera.
+     *
+     * @param view Optional eye-space free-camera transform for menus and logos.
+     */
     void SetFrontendCamera(std::optional<Matrix4> view);
-    /** @return The menu and logo camera override, or no override during normal rendering. */
+    /**
+     * Report the camera SetFrontendCamera() set last.
+     *
+     * @return The menu and logo camera override, or no override during normal rendering.
+     */
     const std::optional<Matrix4> &FrontendCamera() const;
 
     /**
@@ -745,8 +820,9 @@ private:
     friend class RenderTexture;
     friend class RenderQuadBuffer;
     struct State;
+    // Take ownership of the pipelines and targets Create() made.
     explicit SceneRenderer(std::unique_ptr<State> state);
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The device, pipelines, frame targets, and queued draws.
 };
 
 } // namespace coastline

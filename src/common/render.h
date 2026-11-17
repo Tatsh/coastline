@@ -84,6 +84,7 @@ typedef struct {
 #if TGR_BOSS_RALLY
     u32 textureFlags; /*!< The texture size, animation flag, and texel format in packed bits. */
 #else
+    /** The packed flags, format, and size of the texture as bit fields and as the first byte. */
     union {
         struct {
             unsigned mirrorS : 1;  /*!< Whether the texture repeats mirrored in s. */
@@ -109,11 +110,23 @@ typedef struct {
 /** The size of a model texture, in bytes. */
 #define MODEL_TEXTURE_SIZE(texture) ((texture)->textureFlags & 0x3ffffu)
 #else
-/** Whether a model texture advances through animation frames. */
+/**
+ * Whether a model texture advances through animation frames.
+ *
+ * @param texture A pointer to the ModelTexture.
+ */
 #define MODEL_TEXTURE_ANIMATED(texture) ((texture)->animated)
-/** The texel format of a model texture. */
+/**
+ * The texel format of a model texture, a TEXTURE_FORMAT_* value.
+ *
+ * @param texture A pointer to the ModelTexture.
+ */
 #define MODEL_TEXTURE_FORMAT(texture) ((texture)->format)
-/** The size of a model texture, in bytes. */
+/**
+ * The size of a model texture, in bytes.
+ *
+ * @param texture A pointer to the ModelTexture.
+ */
 #define MODEL_TEXTURE_SIZE(texture) ((texture)->size)
 #endif
 
@@ -716,6 +729,7 @@ extern s32 g_dwStatUnused2;
 extern s32 g_dwStatUnused3;
 /** @endcond */
 
+/** @cond */
 /**
  * The address in the texture memory DrawTexturedTile() loads to.
  *
@@ -735,6 +749,7 @@ extern u32 g_dwTextureTmemAddress;
  * @ghidraAddress JPN: 0x8028c7f0
  */
 extern u32 g_dwTextureRenderTile;
+/** @endcond */
 
 /**
  * The depths the fog starts and ends at, from 0 at the near plane to 1000 at the far.

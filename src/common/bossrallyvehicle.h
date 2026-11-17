@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The vehicle record of the Boss Rally race engine and its accessors.
+ */
+
 #include <common/render.h>
 
 #include "common/carphysics.h"

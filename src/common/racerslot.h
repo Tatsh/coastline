@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RACERSLOT_H
 #define COASTLINE_RACERSLOT_H
 
+/**
+ * @file
+ * The racers of a race and their status bits.
+ */
+
 #include "common/types.h"
 #include "common/vecmath.h"
 #include "common/vehiclefwd.h"

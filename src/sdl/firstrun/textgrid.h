@@ -78,18 +78,24 @@ struct TextCell {
 };
 
 /**
+ * Map a code point to code page 437, printable ASCII directly and the rest by table lookup.
+ *
  * @param codepoint A Unicode code point.
- * @return The character of code page 437 that shows it, or #REPLACEMENT_GLYPH.
+ * @return The character of code page 437 that shows it, or coastline::REPLACEMENT_GLYPH.
  */
 std::uint8_t Cp437FromCodepoint(char32_t codepoint);
 
 /**
+ * Decode UTF-8 text into code points.
+ *
  * @param text UTF-8 text. A byte that does not start a valid sequence reads as U+FFFD.
  * @return The code points of the text.
  */
 std::u32string DecodeUtf8(std::string_view text);
 
 /**
+ * Encode code points as UTF-8.
+ *
  * @param text Unicode code points.
  * @return The text in UTF-8.
  */
@@ -99,6 +105,9 @@ std::string EncodeUtf8(std::u32string_view text);
 class TextGrid {
 public:
     /**
+     * Look up a cell for writing. A write outside the grid lands in a scratch cell and does not
+     * show.
+     *
      * @param column The column, from 0 at the left.
      * @param row The row, from 0 at the top.
      * @return The cell, or a scratch cell outside the grid.
@@ -106,6 +115,8 @@ public:
     TextCell &At(int column, int row);
 
     /**
+     * Look up a cell for reading.
+     *
      * @param column The column, from 0 at the left.
      * @param row The row, from 0 at the top.
      * @return The cell, or a blank cell outside the grid.
@@ -199,8 +210,8 @@ public:
     std::optional<std::array<int, 2>> cursor;
 
 private:
-    std::array<TextCell, GRID_COLUMNS * GRID_ROWS> m_cells{};
-    TextCell m_outside{};
+    std::array<TextCell, GRID_COLUMNS * GRID_ROWS> m_cells{}; // Row by row.
+    TextCell m_outside{}; // The scratch cell At() returns for a place outside the grid.
 };
 
 } // namespace coastline

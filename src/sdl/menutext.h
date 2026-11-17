@@ -75,7 +75,11 @@ public:
     ~MenuText();
     /** Prevent copying GPU-backed font resources. */
     MenuText(const MenuText &) = delete;
-    /** Prevent assignment of GPU-backed font resources. */
+    /**
+     * Prevent assignment of GPU-backed font resources.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     MenuText &operator=(const MenuText &) = delete;
 
     /**
@@ -98,6 +102,9 @@ public:
               const Matrix4 &projection) const;
 
     /**
+     * Measure a string in the fonts of the menus. Colour codes do not add width, and a character
+     * without a glyph advances by the width of a space.
+     *
      * @param text The string in UTF-8.
      * @param size The height of the text, in pixels of the 320 by 240 screen.
      * @param doubled Whether the size is of the 320 by 240 screen a frame of high resolution
@@ -108,29 +115,34 @@ public:
     int Width(std::string_view text, int size, bool doubled = true) const;
 
 private:
-    /** A rasterised menu font and its text gradients. */
+    // A rasterised menu font and its text gradients.
     struct Font {
-        std::unique_ptr<RenderTexture> image;          /*!< The glyph atlas. */
-        std::unique_ptr<RenderTexture> gradient;       /*!< The foreground gradient. */
-        std::unique_ptr<RenderTexture> shadowGradient; /*!< The shadow gradient. */
-        int cell = 0;                                  /*!< The atlas cell size. */
-        int padding = 0;                               /*!< The padding around each glyph. */
-        std::vector<int> glyphStarts; /*!< The horizontal start of each glyph in its cell. */
+        std::unique_ptr<RenderTexture> image; // The glyph atlas.
+        std::unique_ptr<RenderTexture> gradient;
+        std::unique_ptr<RenderTexture> shadowGradient;
+        int cell = 0;                 // The atlas cell size.
+        int padding = 0;              // The padding around each glyph.
+        std::vector<int> glyphStarts; // The horizontal start of each glyph in its cell.
     };
-    /** The fixed-width Japanese glyphs of the Japanese release, stored in atlas rows. */
+    // The fixed-width Japanese glyphs of the Japanese release, stored in atlas rows.
     struct JapaneseFont {
-        std::unique_ptr<RenderTexture> image;     /*!< The glyph atlas. */
-        int width = 0;                            /*!< The width of one glyph. */
-        int columns = 0;                          /*!< The number of atlas columns. */
-        std::unordered_map<char32_t, int> glyphs; /*!< Atlas positions indexed by code point. */
+        std::unique_ptr<RenderTexture> image; // The glyph atlas.
+        int width = 0;                        // The width of one glyph.
+        int columns = 0;
+        std::unordered_map<char32_t, int> glyphs; // Atlas positions indexed by code point.
     };
+    // Create empty fonts for Load() to fill.
     MenuText() = default;
+    // Choose the font a size of text draws with. The size is already doubled for a frame of high
+    // resolution. Sizes below 25 use the small font, and sizes from 25 use the large font.
     const Font &FontFor(int size) const;
 
-    Font m_large;
-    Font m_small;
-    std::unordered_map<char32_t, int> m_glyphs;
+    Font m_large;                               // The font FontFor() returns from 25.
+    Font m_small;                               // The font FontFor() returns below 25.
+    std::unordered_map<char32_t, int> m_glyphs; // Glyph indices by code point.
+    // The number of glyphs in the first atlas row. Glyphs from this index use the second row.
     int m_firstRowGlyphs = 0;
+    // The kana and kanji of the Japanese release, when fonts.json lists them.
     std::optional<JapaneseFont> m_japanese;
 };
 

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TEXTUREUPLOAD_H
 #define COASTLINE_TEXTUREUPLOAD_H
 
+/**
+ * @file
+ * The queued texture uploads and the routine that retrieves the painted pixels of an entry.
+ */
+
 #include "common/types.h"
 
 /** A texture upload receives numeric command data or a pixel buffer. */

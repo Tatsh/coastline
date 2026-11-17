@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The worker threads that run independent conversions of an import.
+ */
+
 #include <functional>
 #include <optional>
 #include <span>

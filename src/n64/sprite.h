@@ -49,7 +49,12 @@ typedef struct {
  */
 void LoadTextureFromRom(Sprite *sprite);
 
-/** An argument followed by a palette, in the releases whose sprite routines take one. */
+/**
+ * An argument followed by a palette, in the releases whose sprite routines take one.
+ *
+ * @param value The argument passed in every release.
+ * @param palette The palette, passed only in the Japanese and European releases.
+ */
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 #define WITH_PALETTE(value, palette) (value), (palette)
 #else

@@ -121,10 +121,19 @@ inline u32 GbiWord1(T value) {
 } // namespace coastline
 }
 
-/** The second word of a command for x, an address or an operand. */
+/**
+ * The second word of a command for x, an address or an operand.
+ *
+ * @param x A pointer, encoded as a Ptr32 offset, or an arithmetic or enumeration operand,
+ *     converted to u32.
+ */
 #define GBI_WORD1(x) (coastline::GbiWord1(x))
 #else
-/** The second word of a command for x, an address or an operand. */
+/**
+ * The second word of a command for x, an address or an operand.
+ *
+ * @param x The address or operand, cast to u32.
+ */
 #define GBI_WORD1(x) ((u32)(x))
 #endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL */
 
@@ -277,11 +286,25 @@ typedef union {
 #define G_BL_1 2       /*!< One. */
 #define G_BL_0 3       /*!< Zero. */
 
-/** The blender equation of the first cycle of a render mode. */
+/**
+ * The blender equation of the first cycle of a render mode.
+ *
+ * @param m1a The G_BL_CLR_* first colour input, placed at bit 30.
+ * @param m1b The G_BL_A_* or G_BL_0 alpha that weights the first colour, placed at bit 26.
+ * @param m2a The G_BL_CLR_* second colour input, placed at bit 22.
+ * @param m2b The G_BL_* alpha that weights the second colour, placed at bit 18.
+ */
 #define GBL_c1(m1a, m1b, m2a, m2b)                                                                 \
     ((u32)(m1a) << 30 | (u32)(m1b) << 26 | (u32)(m2a) << 22 | (u32)(m2b) << 18)
 
-/** The blender equation of the second cycle of a render mode. */
+/**
+ * The blender equation of the second cycle of a render mode.
+ *
+ * @param m1a The G_BL_CLR_* first colour input, placed at bit 28.
+ * @param m1b The G_BL_A_* or G_BL_0 alpha that weights the first colour, placed at bit 24.
+ * @param m2a The G_BL_CLR_* second colour input, placed at bit 20.
+ * @param m2b The G_BL_* alpha that weights the second colour, placed at bit 16.
+ */
 #define GBL_c2(m1a, m1b, m2a, m2b)                                                                 \
     ((u32)(m1a) << 28 | (u32)(m1b) << 24 | (u32)(m2a) << 20 | (u32)(m2b) << 16)
 
@@ -366,16 +389,34 @@ typedef union {
 /** The most texels one load block takes, less one. */
 #define G_TX_LDBLK_MAX_TXL 2047
 
-/** The 64-bit words of a row of a 4-bit texture, at least one. */
+/**
+ * The 64-bit words of a row of a 4-bit texture, at least one.
+ *
+ * @param txls The texels of the row.
+ */
 #define TXL2WORDS_4b(txls) ((txls) / 16 > 1 ? (txls) / 16 : 1)
 
-/** The step of the row counter of a load block for a 4-bit texture of a width. */
+/**
+ * The step of the row counter of a load block for a 4-bit texture of a width.
+ *
+ * @param width The width of the texture, in texels.
+ */
 #define CALC_DXT_4b(width) (((1 << G_TX_DXT_FRAC) + TXL2WORDS_4b(width) - 1) / TXL2WORDS_4b(width))
 
-/** The 64-bit words of a row of a texture with texels of b_txl bytes, at least one. */
+/**
+ * The 64-bit words of a row of a texture with texels of b_txl bytes, at least one.
+ *
+ * @param txls The texels of the row.
+ * @param b_txl The bytes of a texel.
+ */
 #define TXL2WORDS(txls, b_txl) ((txls) * (b_txl) / 8 > 1 ? (txls) * (b_txl) / 8 : 1)
 
-/** The step of the row counter of a load block for a texture with texels of b_txl bytes. */
+/**
+ * The step of the row counter of a load block for a texture with texels of b_txl bytes.
+ *
+ * @param width The width of the texture, in texels.
+ * @param b_txl The bytes of a texel.
+ */
 #define CALC_DXT(width, b_txl)                                                                     \
     (((1 << G_TX_DXT_FRAC) + TXL2WORDS(width, b_txl) - 1) / TXL2WORDS(width, b_txl))
 
@@ -424,7 +465,11 @@ typedef union {
     long long force_structure_alignment[2]; /*!< Aligns the viewport to 8 bytes for the RSP. */
 } Vp;
 
-/** The word gSPNumLights() sends for a number of directional lights. */
+/**
+ * The word gSPNumLights() sends for a number of directional lights.
+ *
+ * @param n The number of directional lights, without the ambient light.
+ */
 #define NUML(n) (((n) + 1) * 32 + 0x80000000)
 
 /** An ambient light: its color, twice. */
@@ -447,7 +492,13 @@ typedef struct {
     Light l[1]; /*!< The directional light. */
 } Lights1;
 
-/** Write a command of two words at pkt, which is evaluated once. */
+/**
+ * Write a command of two words at pkt, evaluating pkt once.
+ *
+ * @param pkt A pointer to the command to write, such as a display-list pointer it advances.
+ * @param c0 The first word, with the opcode in its top byte.
+ * @param c1 The second word.
+ */
 #if defined(TGR_PLATFORM) && TGR_BOSS_RALLY
 #define gDisplayListWords(pkt, c0, c1)                                                             \
     {                                                                                              \
@@ -464,32 +515,85 @@ typedef struct {
     }
 #endif /* defined(TGR_PLATFORM) && TGR_BOSS_RALLY */
 
-/** Write command cmd with no parameters. */
+/**
+ * Write command cmd with no parameters.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param cmd The opcode, placed in the top byte of the first word.
+ */
 #define gDPNoParam(pkt, cmd) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), 0)
-/** Write command cmd with data as its second word. */
+/**
+ * Write command cmd with data as its second word.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param cmd The opcode, placed in the top byte of the first word.
+ * @param data The address or operand of the second word.
+ */
 #define gImmp1(pkt, cmd, data) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), GBI_WORD1(data))
-/** Write data to the word at offset in the microcode state of index. */
+/**
+ * Write data to the word at offset in the microcode state of index.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param index The G_MW_* index of the block of microcode state, in the low byte.
+ * @param offset The G_MWO_* byte offset of the word in the block, in 16 bits.
+ * @param data The word to write.
+ */
 #define gMoveWd(pkt, index, offset, data)                                                          \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_MOVEWORD, 24, 8) | _SHIFTL(offset, 8, 16) | _SHIFTL(index, 0, 8),  \
                       GBI_WORD1(data))
-/** Replace len bits of an other mode word from bit sft with data. */
+/**
+ * Replace len bits of an other mode word from bit sft with data.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param cmd G_SETOTHERMODE_H or G_SETOTHERMODE_L, the word to change.
+ * @param sft The G_MDSFT_* shift of the first bit to replace.
+ * @param len The number of bits to replace.
+ * @param data The new bits, already shifted to sft.
+ */
 #define gSPSetOtherMode(pkt, cmd, sft, len, data)                                                  \
     gDisplayListWords(                                                                             \
         pkt, _SHIFTL(cmd, 24, 8) | _SHIFTL(sft, 8, 8) | _SHIFTL(len, 0, 8), GBI_WORD1(data))
 
-/** Load or multiply matrix m by the G_MTX_* flags of p. */
+/**
+ * Load or multiply matrix m by the G_MTX_* flags of p.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param m The address of the Mtx.
+ * @param p The G_MTX_* flags that select the stack, load or multiply, and push or not.
+ */
 #define gSPMatrix(pkt, m, p)                                                                       \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_MTX, 24, 8) | _SHIFTL(p, 16, 8) | _SHIFTL(sizeof(Mtx), 0, 16),     \
                       GBI_WORD1(m))
-/** Pop the modelview matrix; n is the matrix stack. */
+/**
+ * Pop the modelview matrix.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param n The matrix stack to pop, written as the second word.
+ */
 #define gSPPopMatrix(pkt, n) gImmp1(pkt, G_POPMTX, n)
-/** Call display list dl. */
+/**
+ * Call display list dl.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param dl The address of the display list to call.
+ */
 #define gSPDisplayList(pkt, dl) gDisplayListWords(pkt, _SHIFTL(G_DL, 24, 8), GBI_WORD1(dl))
-/** End the display list. */
+/**
+ * End the display list.
+ *
+ * @param pkt A pointer to the command to write.
+ */
 #define gSPEndDisplayList(pkt) gDPNoParam(pkt, G_ENDDL)
-/** Load n vertices into the vertex buffer of the F3DEX microcode from index v0. */
+/**
+ * Load n vertices into the vertex buffer of the F3DEX microcode from index v0.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param v The address of the first Vtx to load.
+ * @param n The number of vertices, at most 63.
+ * @param v0 The index of the vertex buffer the first vertex loads into.
+ */
 #define gSPVertex(pkt, v, n, v0)                                                                   \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_VTX, 24, 8) | _SHIFTL((v0) * 2, 16, 8) | _SHIFTL(n, 10, 6) |       \
@@ -508,24 +612,61 @@ typedef struct {
                    _SHIFTL((v2) * 2, 16, 8) | _SHIFTL((v0) * 2, 8, 8) | _SHIFTL((v1) * 2, 0, 8))
 #endif /* defined(TGR_PLATFORM) && TGR_BOSS_RALLY */
 
-/** Draw two triangles of the vertex buffer. */
+/**
+ * Draw two triangles of the vertex buffer.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param v00 The vertex buffer index of the first vertex of the first triangle.
+ * @param v01 The vertex buffer index of the second vertex of the first triangle.
+ * @param v02 The vertex buffer index of the third vertex of the first triangle.
+ * @param flag0 The vertex of the first triangle written first, 0, 1, or 2, for flat shading.
+ * @param v10 The vertex buffer index of the first vertex of the second triangle.
+ * @param v11 The vertex buffer index of the second vertex of the second triangle.
+ * @param v12 The vertex buffer index of the third vertex of the second triangle.
+ * @param flag1 The vertex of the second triangle written first, 0, 1, or 2, for flat shading.
+ */
 #define gSP2Triangles(pkt, v00, v01, v02, flag0, v10, v11, v12, flag1)                             \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_TRI2, 24, 8) | __gsSP1Triangle_w1f(v00, v01, v02, flag0),          \
                       __gsSP1Triangle_w1f(v10, v11, v12, flag1))
 
-/** Set the geometry mode bits of word. */
+/**
+ * Set the geometry mode bits of word.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param word The G_* geometry mode bits to set.
+ */
 #define gSPSetGeometryMode(pkt, word) gImmp1(pkt, G_SETGEOMETRYMODE, word)
-/** Clear the geometry mode bits of word. */
+/**
+ * Clear the geometry mode bits of word.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param word The G_* geometry mode bits to clear.
+ */
 #define gSPClearGeometryMode(pkt, word) gImmp1(pkt, G_CLEARGEOMETRYMODE, word)
-/** Set the texture scale s and t, the levels of detail, the tile, and whether texturing is on. */
+/**
+ * Set the texture scale s and t, the levels of detail, the tile, and whether texturing is on.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param s The horizontal scale of texture coordinates, in 0.16 fixed point.
+ * @param t The vertical scale of texture coordinates, in 0.16 fixed point.
+ * @param level The number of levels of detail beyond the first, in 3 bits.
+ * @param tile The tile to draw with, in 3 bits.
+ * @param on G_ON to turn texturing on, or G_OFF.
+ */
 #define gSPTexture(pkt, s, t, level, tile, on)                                                     \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_TEXTURE, 24, 8) | _SHIFTL(level, 11, 3) | _SHIFTL(tile, 8, 3) |    \
                           _SHIFTL(on, 0, 8),                                                       \
                       _SHIFTL(s, 16, 16) | _SHIFTL(t, 0, 16))
 
-/** Set the ratio of the clipping box to the screen with four commands. */
+/**
+ * Set the ratio of the clipping box to the screen with four commands.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the four commands.
+ * @param r The FRUSTRATIO_* ratio, written positive for the negative sides and negated for the
+ *     positive sides.
+ */
 #define gSPClipRatio(pkt, r)                                                                       \
     {                                                                                              \
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RNX, (u16)(r));                                         \
@@ -534,25 +675,52 @@ typedef struct {
         gMoveWd(pkt, G_MW_CLIP, G_MWO_CLIP_RPY, (u16) - (r));                                      \
     }
 
-/** Set the number of directional lights. */
+/**
+ * Set the number of directional lights.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param n The NUMLIGHTS_* number of directional lights.
+ */
 #define gSPNumLights(pkt, n) gMoveWd(pkt, G_MW_NUMLIGHT, G_MWO_NUMLIGHT, NUML(n))
 
-/** Set the colour of light n, from 1, as its two copies. */
+/**
+ * Set the colour of light n, from 1, as its two copies.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the two commands.
+ * @param n The LIGHT_* number of the light, from 1.
+ * @param col The colour, as red, green, and blue in the top three bytes of a word.
+ */
 #define gSPLightColor(pkt, n, col)                                                                 \
     {                                                                                              \
         gMoveWd(pkt, G_MW_LIGHTCOL, ((n) - 1) * 0x20, col);                                        \
         gMoveWd(pkt, G_MW_LIGHTCOL, ((n) - 1) * 0x20 + 4, col);                                    \
     }
 
-/** Set the normalisation of the perspective, which gu's perspective routines return. */
+/**
+ * Set the perspective normalisation factor a gu perspective routine returns.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param s The normalisation factor a perspective routine returned.
+ */
 #define gSPPerspNormalize(pkt, s) gMoveWd(pkt, G_MW_PERSPNORM, 0, s)
 
-/** Load a viewport. */
+/**
+ * Load a viewport.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param v The address of the Vp to load.
+ */
 #define gSPViewport(pkt, v)                                                                        \
     gDisplayListWords(                                                                             \
         pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_VIEWPORT, 16, 8) | sizeof(Vp), GBI_WORD1(v))
 
-/** Set the depths the fog starts and ends at, from 0 at the near plane to 1000 at the far. */
+/**
+ * Set the depths the fog starts and ends at, from 0 at the near plane to 1000 at the far.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param min The depth the fog starts at, less than max.
+ * @param max The depth the fog is complete at.
+ */
 #define gSPFogPosition(pkt, min, max)                                                              \
     gMoveWd(pkt,                                                                                   \
             G_MW_FOG,                                                                              \
@@ -560,10 +728,21 @@ typedef struct {
             (_SHIFTL((128000 / ((max) - (min))), 16, 16) |                                         \
              _SHIFTL(((500 - (min)) * 256 / ((max) - (min))), 0, 16)))
 
-/** Set the base of a segment. */
+/**
+ * Set the base of a segment.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param segment The number of the segment, from 0 to 15.
+ * @param base The physical address the segment starts at.
+ */
 #define gSPSegment(pkt, segment, base) gMoveWd(pkt, G_MW_SEGMENT, (segment) * 4, base)
 
-/** Load the look-at of the reflections, its x then its y. */
+/**
+ * Load the look-at of the reflections, its x then its y.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the two commands.
+ * @param la The address of the LookAt, with the y direction 16 bytes after the x direction.
+ */
 #define gSPLookAt(pkt, la)                                                                         \
     {                                                                                              \
         gDisplayListWords(pkt,                                                                     \
@@ -576,7 +755,12 @@ typedef struct {
                           GBI_WORD1(la) + 16);                                                     \
     }
 
-/** Load a matrix as the product of the model view and the projection, a row pair at a time. */
+/**
+ * Load a matrix as the product of the model view and the projection, a row pair at a time.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the four commands.
+ * @param m The address of the Mtx, loaded in four blocks of 16 bytes.
+ */
 #define gSPForceMatrix(pkt, m)                                                                     \
     {                                                                                              \
         gDisplayListWords(                                                                         \
@@ -592,54 +776,141 @@ typedef struct {
                           GBI_WORD1(m) + 48);                                                      \
     }
 
-/** Load a light into light slot n, from 1. The ambient light follows the directional ones. */
+/**
+ * Load a light into light slot n, from 1. The ambient light follows the directional ones.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param l The address of the Light or Ambient to load.
+ * @param n The LIGHT_* slot, from 1.
+ */
 #define gSPLight(pkt, l, n)                                                                        \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(((n) - 1) * 2 + G_MV_L0, 16, 8) |        \
                           _SHIFTL(sizeof(Light), 0, 16),                                           \
                       GBI_WORD1(l))
 
-/** Wait for the RDP pipeline to drain before a mode changes. */
+/**
+ * Wait for the RDP pipeline to drain before a mode changes.
+ *
+ * @param pkt A pointer to the command to write.
+ */
 #define gDPPipeSync(pkt) gDPNoParam(pkt, G_RDPPIPESYNC)
-/** Wait for the tile descriptors to settle before a tile changes. */
+/**
+ * Wait for the tile descriptors to settle before a tile changes.
+ *
+ * @param pkt A pointer to the command to write.
+ */
 #define gDPTileSync(pkt) gDPNoParam(pkt, G_RDPTILESYNC)
-/** Set the G_CYC_* cycle type. */
+/**
+ * Set the G_CYC_* cycle type.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_CYC_* cycle type.
+ */
 #define gDPSetCycleType(pkt, type)                                                                 \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_CYCLETYPE, 2, type)
-/** Set the G_TF_* texture filter. */
+/**
+ * Set the G_TF_* texture filter.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_TF_* texture filter.
+ */
 #define gDPSetTextureFilter(pkt, type)                                                             \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTFILT, 2, type)
-/** Set the G_TL_* texture level of detail. */
+/**
+ * Set the G_TL_* texture level of detail.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_TL_* texture level of detail mode.
+ */
 #define gDPSetTextureLOD(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLOD, 1, type)
-/** Set the G_TD_* texture detail. */
+/**
+ * Set the G_TD_* texture detail.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_TD_* texture detail mode.
+ */
 #define gDPSetTextureDetail(pkt, type)                                                             \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTDETAIL, 2, type)
-/** Set the G_TC_* texture conversion. */
+/**
+ * Set the G_TC_* texture conversion.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_TC_* texture conversion.
+ */
 #define gDPSetTextureConvert(pkt, type)                                                            \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTCONV, 3, type)
-/** Set the G_CK_* chroma key. */
+/**
+ * Set the G_CK_* chroma key.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_CK_* chroma key mode.
+ */
 #define gDPSetCombineKey(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_COMBKEY, 1, type)
-/** Set the G_CD_* colour dither. */
+/**
+ * Set the G_CD_* colour dither.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param mode The G_CD_* colour dither mode.
+ */
 #define gDPSetColorDither(pkt, mode)                                                               \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_RGBDITHER, 2, mode)
-/** Set the G_AD_* alpha dither. */
+/**
+ * Set the G_AD_* alpha dither.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param mode The G_AD_* alpha dither mode.
+ */
 #define gDPSetAlphaDither(pkt, mode)                                                               \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_ALPHADITHER, 2, mode)
-/** Set the G_AC_* alpha compare. */
+/**
+ * Set the G_AC_* alpha compare.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_AC_* alpha compare mode.
+ */
 #define gDPSetAlphaCompare(pkt, type)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_ALPHACOMPARE, 2, type)
-/** Set the G_ZS_* depth source. */
+/**
+ * Set the G_ZS_* depth source.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param src G_ZS_PIXEL for the depth of each pixel, or G_ZS_PRIM for gDPSetPrimDepth().
+ */
 #define gDPSetDepthSource(pkt, src) gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_ZSRCSEL, 1, src)
-/** Set the blend colour. */
+/**
+ * Set the blend colour.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param r The red component, from 0 to 255.
+ * @param g The green component, from 0 to 255.
+ * @param b The blue component, from 0 to 255.
+ * @param a The alpha component, from 0 to 255.
+ */
 #define gDPSetBlendColor(pkt, r, g, b, a)                                                          \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETBLENDCOLOR, 24, 8),                                             \
                       _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
-/** Set the depth of a primitive whose depth source is G_ZS_PRIM. */
+/**
+ * Set the depth of a primitive whose depth source is G_ZS_PRIM.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param z The depth, in 16 bits.
+ * @param dz The depth slope, in 16 bits.
+ */
 #define gDPSetPrimDepth(pkt, z, dz)                                                                \
     gDisplayListWords(pkt, _SHIFTL(G_SETPRIMDEPTH, 24, 8), _SHIFTL(z, 16, 16) | _SHIFTL(dz, 0, 16))
 
-/** Set the scissor rectangle: integer coordinates on Windows, 10.2 fixed point on N64. */
+/**
+ * Set the scissor rectangle, in integer coordinates on Windows and 10.2 fixed point on N64.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param mode The G_SC_* interlace mode, ignored by the Windows command.
+ * @param ulx The left edge, in pixels.
+ * @param uly The top edge, in pixels.
+ * @param lrx The right edge, in pixels.
+ * @param lry The bottom edge, in pixels.
+ */
 #if defined(TGR_PLATFORM) && TGR_BOSS_RALLY
 #define gDPSetScissor(pkt, mode, ulx, uly, lrx, lry)                                               \
     gDisplayListWords(                                                                             \
@@ -655,20 +926,58 @@ typedef struct {
                       _SHIFTL(mode, 24, 2) | _SHIFTL((s32)((f32)(lrx) * 4.0f), 12, 12) |           \
                           _SHIFTL((s32)((f32)(lry) * 4.0f), 0, 12))
 #endif /* defined(TGR_PLATFORM) && TGR_BOSS_RALLY */
-/** Set the render mode from the modes of the first and second cycles. */
+/**
+ * Set the render mode from the modes of the first and second cycles.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param c0 The G_RM_* render mode of the first cycle.
+ * @param c1 The G_RM_* render mode of the second cycle, combined with c0 by a bitwise or.
+ */
 #define gDPSetRenderMode(pkt, c0, c1)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_RENDERMODE, 29, (c0) | (c1))
-/** Set the environment colour. */
+/**
+ * Set the environment colour.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param r The red component, from 0 to 255.
+ * @param g The green component, from 0 to 255.
+ * @param b The blue component, from 0 to 255.
+ * @param a The alpha component, from 0 to 255.
+ */
 #define gDPSetEnvColor(pkt, r, g, b, a)                                                            \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETENVCOLOR, 24, 8),                                               \
                       _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
-/** Set the fog colour. */
+/**
+ * Set the fog colour.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param r The red component, from 0 to 255.
+ * @param g The green component, from 0 to 255.
+ * @param b The blue component, from 0 to 255.
+ * @param a The alpha component, from 0 to 255.
+ */
 #define gDPSetFogColor(pkt, r, g, b, a)                                                            \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETFOGCOLOR, 24, 8),                                               \
                       _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
-/** Set the format, texel size, row length, address, palette, and wrapping of a tile. */
+/**
+ * Set the format, texel size, row length, address, palette, and wrapping of a tile.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param fmt The G_IM_FMT_* format of the texels.
+ * @param siz The G_IM_SIZ_* size of a texel.
+ * @param line The length of a row, in 64-bit words.
+ * @param tmem The address in the texture memory, in 64-bit words.
+ * @param tile The tile to set, from 0 to 7.
+ * @param palette The palette of a 4-bit texture, from 0 to 15.
+ * @param cmt The G_TX_* wrap mode of the vertical coordinate.
+ * @param maskt The wrap period of the vertical coordinate as a power of two, or 0 for no wrap.
+ * @param shiftt The shift of the vertical coordinate, for a level of detail.
+ * @param cms The G_TX_* wrap mode of the horizontal coordinate.
+ * @param masks The wrap period of the horizontal coordinate as a power of two, or 0 for no wrap.
+ * @param shifts The shift of the horizontal coordinate, for a level of detail.
+ */
 #define gDPSetTile(                                                                                \
     pkt, fmt, siz, line, tmem, tile, palette, cmt, maskt, shiftt, cms, masks, shifts)              \
     gDisplayListWords(pkt,                                                                         \
@@ -678,7 +987,30 @@ typedef struct {
                           _SHIFTL(maskt, 14, 4) | _SHIFTL(shiftt, 10, 4) | _SHIFTL(cms, 8, 2) |    \
                           _SHIFTL(masks, 4, 4) | _SHIFTL(shifts, 0, 4))
 
-/** Set the colour combiner from the a, b, c and d inputs of (a - b) * c + d for each cycle. */
+/**
+ * Set the colour combiner from the a, b, c, and d inputs of (a - b) * c + d for each cycle.
+ *
+ * Each colour input is the suffix of a G_CCMUX_* name, such as TEXEL0, and each alpha input is
+ * the suffix of a G_ACMUX_* name.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param a0 The colour input a of the first cycle.
+ * @param b0 The colour input b of the first cycle.
+ * @param c0 The colour input c of the first cycle.
+ * @param d0 The colour input d of the first cycle.
+ * @param Aa0 The alpha input a of the first cycle.
+ * @param Ab0 The alpha input b of the first cycle.
+ * @param Ac0 The alpha input c of the first cycle.
+ * @param Ad0 The alpha input d of the first cycle.
+ * @param a1 The colour input a of the second cycle.
+ * @param b1 The colour input b of the second cycle.
+ * @param c1 The colour input c of the second cycle.
+ * @param d1 The colour input d of the second cycle.
+ * @param Aa1 The alpha input a of the second cycle.
+ * @param Ab1 The alpha input b of the second cycle.
+ * @param Ac1 The alpha input c of the second cycle.
+ * @param Ad1 The alpha input d of the second cycle.
+ */
 #define gDPSetCombineLERP(                                                                         \
     pkt, a0, b0, c0, d0, Aa0, Ab0, Ac0, Ad0, a1, b1, c1, d1, Aa1, Ab1, Ac1, Ad1)                   \
     gDisplayListWords(pkt,                                                                         \
@@ -692,31 +1024,77 @@ typedef struct {
                           _SHIFTL(G_ACMUX_##Ad0, 9, 3) | _SHIFTL(G_CCMUX_##d1, 6, 3) |             \
                           _SHIFTL(G_ACMUX_##Ab1, 3, 3) | _SHIFTL(G_ACMUX_##Ad1, 0, 3))
 
-/** Wait for a texture load to finish. */
+/**
+ * Wait for a texture load to finish.
+ *
+ * @param pkt A pointer to the command to write.
+ */
 #define gDPLoadSync(pkt) gDPNoParam(pkt, G_RDPLOADSYNC)
-/** Wait for the RDP to finish the frame and raise its interrupt. */
+/**
+ * Wait for the RDP to finish the frame and raise its interrupt.
+ *
+ * @param pkt A pointer to the command to write.
+ */
 #define gDPFullSync(pkt) gDPNoParam(pkt, G_RDPFULLSYNC)
-/** Set the depth buffer to i. */
+/**
+ * Set the depth buffer to i.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param i The address of the depth buffer.
+ */
 #define gDPSetDepthImage(pkt, i) gDisplayListWords(pkt, _SHIFTL(G_SETZIMG, 24, 8), GBI_WORD1(i))
-/** Set the colour buffer to i, of format f, texel size s, and width w. */
+/**
+ * Set the colour buffer to i, of format f, texel size s, and width w.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param f The G_IM_FMT_* format of the pixels.
+ * @param s The G_IM_SIZ_* size of a pixel.
+ * @param w The width of the buffer, in pixels, from 1 to 4096.
+ * @param i The address of the colour buffer.
+ */
 #define gDPSetColorImage(pkt, f, s, w, i)                                                          \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETCIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
                           _SHIFTL((w) - 1, 0, 12),                                                 \
                       GBI_WORD1(i))
-/** A colour of RGBA 5551 from components of 8 bits and an alpha of 1 bit. */
+/**
+ * A colour of RGBA 5551 from components of 8 bits and an alpha of 1 bit.
+ *
+ * @param r The red component, from 0 to 255, reduced to its top 5 bits.
+ * @param g The green component, from 0 to 255, reduced to its top 5 bits.
+ * @param b The blue component, from 0 to 255, reduced to its top 5 bits.
+ * @param a The alpha, of which only bit 0 is used.
+ */
 #define GPACK_RGBA5551(r, g, b, a)                                                                 \
     ((((r) << 8) & 0xF800) | (((g) << 3) & 0x7C0) | (((b) >> 2) & 0x3E) | ((a) & 0x1))
 
-/** A depth and its slope, as the depth buffer stores them. */
+/**
+ * A depth and its slope, as the depth buffer stores them.
+ *
+ * @param z The depth, such as G_MAXFIXED, placed above the low 2 bits.
+ * @param dz The depth slope, in the low 2 bits.
+ */
 #define GPACK_ZDZ(z, dz) ((z) << 2 | (dz))
 
 /** The farthest depth. */
 #define G_MAXFIXED 0x3FFF
 
-/** Set the fill colour, a 32-bit word of one or two packed pixels. */
+/**
+ * Set the fill colour, a 32-bit word of one or two packed pixels.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param d The fill word, such as two GPACK_RGBA5551() pixels or two GPACK_ZDZ() depths.
+ */
 #define gDPSetFillColor(pkt, d) gDisplayListWords(pkt, _SHIFTL(G_SETFILLCOLOR, 24, 8), (u32)(d))
-/** Fill a rectangle, its corners inclusive, with the fill colour. */
+/**
+ * Fill a rectangle, its corners inclusive, with the fill colour.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param ulx The left edge, in pixels.
+ * @param uly The top edge, in pixels.
+ * @param lrx The right edge, in pixels.
+ * @param lry The bottom edge, in pixels.
+ */
 #if defined(TGR_PLATFORM) && TGR_BOSS_RALLY
 #define gDPFillRectangle(pkt, ulx, uly, lrx, lry)                                                  \
     gDisplayListWords(pkt,                                                                         \
@@ -729,23 +1107,60 @@ typedef struct {
                       _SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(lrx, 14, 10) | _SHIFTL(lry, 2, 10),     \
                       _SHIFTL(ulx, 14, 10) | _SHIFTL(uly, 2, 10))
 #endif /* defined(TGR_PLATFORM) && TGR_BOSS_RALLY */
-/** Set the G_TT_* texture palette. */
+/**
+ * Set the G_TT_* texture palette.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_TT_* palette mode.
+ */
 #define gDPSetTextureLUT(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLUT, 2, type)
-/** Set the G_TP_* texture perspective correction. */
+/**
+ * Set the G_TP_* texture perspective correction.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param type The G_TP_* perspective correction mode.
+ */
 #define gDPSetTexturePersp(pkt, type)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTPERSP, 1, type)
-/** Set the primitive colour with the minimum level of detail m and its fraction l. */
+/**
+ * Set the primitive colour with the minimum level of detail m and its fraction l.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param m The minimum level of detail, in 8 bits.
+ * @param l The fraction of the level of detail, in 8 bits.
+ * @param r The red component, from 0 to 255.
+ * @param g The green component, from 0 to 255.
+ * @param b The blue component, from 0 to 255.
+ * @param a The alpha component, from 0 to 255.
+ */
 #define gDPSetPrimColor(pkt, m, l, r, g, b, a)                                                     \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETPRIMCOLOR, 24, 8) | _SHIFTL(m, 8, 8) | _SHIFTL(l, 0, 8),        \
                       _SHIFTL(r, 24, 8) | _SHIFTL(g, 16, 8) | _SHIFTL(b, 8, 8) | _SHIFTL(a, 0, 8))
-/** Set the texture image to i, of format f, texel size s, and width w. */
+/**
+ * Set the texture image to i, of format f, texel size s, and width w.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param f The G_IM_FMT_* format of the texels.
+ * @param s The G_IM_SIZ_* size of a texel.
+ * @param w The width of the image, in texels, from 1 to 4096.
+ * @param i The address of the image.
+ */
 #define gDPSetTextureImage(pkt, f, s, w, i)                                                        \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETTIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
                           _SHIFTL((w) - 1, 0, 12),                                                 \
                       GBI_WORD1(i))
-/** Load texels uls to lrs of the texture image through a tile, with row step dxt. */
+/**
+ * Load texels uls to lrs of the texture image through a tile, with row step dxt.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param tile The tile to load through, usually G_TX_LOADTILE.
+ * @param uls The first texel, horizontally.
+ * @param ult The first texel, vertically.
+ * @param lrs The index of the last texel, limited to G_TX_LDBLK_MAX_TXL.
+ * @param dxt The step of the row counter for each 64-bit word, from CALC_DXT() or CALC_DXT_4b().
+ */
 #define gDPLoadBlock(pkt, tile, uls, ult, lrs, dxt)                                                \
     gDisplayListWords(                                                                             \
         pkt,                                                                                       \
@@ -753,17 +1168,37 @@ typedef struct {
         _SHIFTL(tile, 24, 3) |                                                                     \
             _SHIFTL((lrs) < G_TX_LDBLK_MAX_TXL ? (lrs) : G_TX_LDBLK_MAX_TXL, 12, 12) |             \
             _SHIFTL(dxt, 0, 12))
-/** Set the extent of tile t, in 10.2 fixed point. */
+/**
+ * Set the extent of tile t, in 10.2 fixed point.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param t The tile to set, from 0 to 7.
+ * @param uls The left texel coordinate.
+ * @param ult The top texel coordinate.
+ * @param lrs The right texel coordinate.
+ * @param lrt The bottom texel coordinate.
+ */
 #define gDPSetTileSize(pkt, t, uls, ult, lrs, lrt)                                                 \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETTILESIZE, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),  \
                       _SHIFTL(t, 24, 3) | _SHIFTL(lrs, 12, 12) | _SHIFTL(lrt, 0, 12))
-/** Load count + 1 colors of a palette through a tile. */
+/**
+ * Load count + 1 colours of a palette through a tile.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param tile The tile to load through, whose texture memory address is the palette's.
+ * @param count The number of colours, less one.
+ */
 #define gDPLoadTLUTCmd(pkt, tile, count)                                                           \
     gDisplayListWords(                                                                             \
         pkt, _SHIFTL(G_LOADTLUT, 24, 8), _SHIFTL(tile, 24, 3) | _SHIFTL(count, 14, 10))
 
-/** Load a palette of 256 colors into the upper half of the texture memory. */
+/**
+ * Load a palette of 256 colours into the upper half of the texture memory.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the six commands.
+ * @param dram The address of the palette of 16-bit RGBA colours.
+ */
 #define gDPLoadTLUT_pal256(pkt, dram)                                                              \
     {                                                                                              \
         gDPSetTextureImage(pkt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, dram);                             \
@@ -774,7 +1209,13 @@ typedef struct {
         gDPPipeSync(pkt);                                                                          \
     }
 
-/** Load a palette of 16 colors into one of the sixteen palettes of the upper texture memory. */
+/**
+ * Load a palette of 16 colours into one of the sixteen palettes of the upper texture memory.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the six commands.
+ * @param pal The palette to load, from 0 to 15.
+ * @param dram The address of the palette of 16-bit RGBA colours.
+ */
 #define gDPLoadTLUT_pal16(pkt, pal, dram)                                                          \
     {                                                                                              \
         gDPSetTextureImage(pkt, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, dram);                             \
@@ -785,7 +1226,16 @@ typedef struct {
         gDPPipeSync(pkt);                                                                          \
     }
 
-/** Place a tile of a size at the first specular highlight. */
+/**
+ * Place a tile of a size at the first specular highlight.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param tile The tile to place.
+ * @param hilite A pointer to the Hilite whose first texture coordinates, in 10.2 fixed point,
+ *     give the top left corner.
+ * @param width The width of the highlight texture, in texels.
+ * @param height The height of the highlight texture, in texels.
+ */
 #define gDPSetHilite1Tile(pkt, tile, hilite, width, height)                                        \
     gDPSetTileSize(pkt,                                                                            \
                    tile,                                                                           \
@@ -794,13 +1244,37 @@ typedef struct {
                    ((((width) - 1) * 4) + (hilite)->h.x1) & 0xFFF,                                 \
                    ((((height) - 1) * 4) + (hilite)->h.y1) & 0xFFF)
 
-/** Load a rectangle of texels. The coordinates are in 10.2 fixed point. */
+/**
+ * Load a rectangle of texels. The coordinates are in 10.2 fixed point.
+ *
+ * @param pkt A pointer to the command to write.
+ * @param t The tile to load through, usually G_TX_LOADTILE.
+ * @param uls The left texel coordinate.
+ * @param ult The top texel coordinate.
+ * @param lrs The right texel coordinate.
+ * @param lrt The bottom texel coordinate.
+ */
 #define gDPLoadTile(pkt, t, uls, ult, lrs, lrt)                                                    \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_LOADTILE, 24, 8) | _SHIFTL(uls, 12, 12) | _SHIFTL(ult, 0, 12),     \
                       _SHIFTL(t, 24, 3) | _SHIFTL(lrs, 12, 12) | _SHIFTL(lrt, 0, 12))
 
-/** Load a 4-bit texture into the texture memory and set up the render tile to draw it. */
+/**
+ * Load a 4-bit texture into the texture memory and set up the render tile to draw it.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the seven commands.
+ * @param timg The address of the texture image.
+ * @param fmt The G_IM_FMT_* format of the texels.
+ * @param width The width of the texture, in texels.
+ * @param height The height of the texture, in texels.
+ * @param pal The palette of the render tile, from 0 to 15.
+ * @param cms The G_TX_* wrap mode of the horizontal coordinate.
+ * @param cmt The G_TX_* wrap mode of the vertical coordinate.
+ * @param masks The wrap period of the horizontal coordinate as a power of two, or 0 for no wrap.
+ * @param maskt The wrap period of the vertical coordinate as a power of two, or 0 for no wrap.
+ * @param shifts The shift of the horizontal coordinate, for a level of detail.
+ * @param shiftt The shift of the vertical coordinate, for a level of detail.
+ */
 #define gDPLoadTextureBlock_4b(                                                                    \
     pkt, timg, fmt, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)                    \
     {                                                                                              \
@@ -843,7 +1317,24 @@ typedef struct {
                        ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
     }
 
-/** Load an 8-bit or 16-bit texture into the texture memory and set up the render tile. */
+/**
+ * Load an 8-bit or 16-bit texture into the texture memory and set up the render tile.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the seven commands.
+ * @param timg The address of the texture image.
+ * @param fmt The G_IM_FMT_* format of the texels.
+ * @param siz G_IM_SIZ_8b or G_IM_SIZ_16b, the name pasted to the _LOAD_BLOCK, _INCR, _SHIFT,
+ *     _BYTES, and _LINE_BYTES constants.
+ * @param width The width of the texture, in texels.
+ * @param height The height of the texture, in texels.
+ * @param pal The palette of the render tile, from 0 to 15.
+ * @param cms The G_TX_* wrap mode of the horizontal coordinate.
+ * @param cmt The G_TX_* wrap mode of the vertical coordinate.
+ * @param masks The wrap period of the horizontal coordinate as a power of two, or 0 for no wrap.
+ * @param maskt The wrap period of the vertical coordinate as a power of two, or 0 for no wrap.
+ * @param shifts The shift of the horizontal coordinate, for a level of detail.
+ * @param shiftt The shift of the vertical coordinate, for a level of detail.
+ */
 #define gDPLoadTextureBlock(                                                                       \
     pkt, timg, fmt, siz, width, height, pal, cms, cmt, masks, maskt, shifts, shiftt)               \
     {                                                                                              \
@@ -890,7 +1381,26 @@ typedef struct {
                        ((height) - 1) << G_TEXTURE_IMAGE_FRAC);                                    \
     }
 
-/** Load a rectangle of a 4-bit texture into the texture memory and set up the render tile. */
+/**
+ * Load a rectangle of a 4-bit texture into the texture memory and set up the render tile.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the seven commands.
+ * @param timg The address of the texture image.
+ * @param fmt The G_IM_FMT_* format of the texels.
+ * @param width The width of the whole texture, in texels.
+ * @param height The height of the whole texture, in texels.
+ * @param uls The left texel of the rectangle.
+ * @param ult The top texel of the rectangle.
+ * @param lrs The right texel of the rectangle, inclusive.
+ * @param lrt The bottom texel of the rectangle, inclusive.
+ * @param pal The palette of the render tile, from 0 to 15.
+ * @param cms The G_TX_* wrap mode of the horizontal coordinate.
+ * @param cmt The G_TX_* wrap mode of the vertical coordinate.
+ * @param masks The wrap period of the horizontal coordinate as a power of two, or 0 for no wrap.
+ * @param maskt The wrap period of the vertical coordinate as a power of two, or 0 for no wrap.
+ * @param shifts The shift of the horizontal coordinate, for a level of detail.
+ * @param shiftt The shift of the vertical coordinate, for a level of detail.
+ */
 #define gDPLoadTextureTile_4b(pkt,                                                                 \
                               timg,                                                                \
                               fmt,                                                                 \
@@ -951,7 +1461,20 @@ typedef struct {
                        (lrt) << G_TEXTURE_IMAGE_FRAC);                                             \
     }
 
-/** Draw a textured rectangle in screen coordinates of 10.2 fixed point. */
+/**
+ * Draw a textured rectangle in screen coordinates of 10.2 fixed point.
+ *
+ * @param pkt The display-list pointer, evaluated once for each of the three commands.
+ * @param xl The left edge.
+ * @param yl The top edge.
+ * @param xh The right edge.
+ * @param yh The bottom edge.
+ * @param tile The tile to draw with.
+ * @param s The horizontal texture coordinate at the top left corner, in 10.5 fixed point.
+ * @param t The vertical texture coordinate at the top left corner, in 10.5 fixed point.
+ * @param dsdx The change of s for each pixel to the right, in 5.10 fixed point.
+ * @param dtdy The change of t for each pixel down, in 5.10 fixed point.
+ */
 #define gSPTextureRectangle(pkt, xl, yl, xh, yh, tile, s, t, dsdx, dtdy)                           \
     {                                                                                              \
         gDisplayListWords(pkt,                                                                     \

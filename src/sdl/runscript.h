@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The commands of a `run-script` file and their parser.
+ */
+
 #include <cstddef>
 #include <cstdint>
 #include <expected>

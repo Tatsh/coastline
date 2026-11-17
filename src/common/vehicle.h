@@ -166,6 +166,7 @@ struct Vehicle {
     f32 engineRpm;                   /*!< The revolutions of the engine a minute. */
     f32 gearRatios[CAR_GEAR_RATIOS]; /*!< The ratio of each gear, from the physics spec of the
                                           car. */
+    /** The torque curve, read as an array or as its four coefficients. */
     union {
         f32 torqueCurve[4]; /*!< The torque curve, from the physics spec of the car. */
         struct {
@@ -287,6 +288,7 @@ struct Vehicle {
     s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES]
                        [3]; /*!< How far the vertices of each spray move a second, in 127ths of a
                                  unit. */
+    /** The surfaces of the spray segments, read by wheel and segment or as one list. */
     union {
         s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS]; /*!< The surface each segment was
                                                                        thrown from, or -1 when it

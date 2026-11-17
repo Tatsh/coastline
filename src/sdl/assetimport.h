@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The batch import of a disc and its ROM images into generated asset packs, and the dependency
+ * file of the imported sources.
+ */
+
 #include <filesystem>
 #include <optional>
 #include <span>

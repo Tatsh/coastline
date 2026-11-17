@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The text of the PC menus, drawn with the glyphs of the menu fonts, and its entry from the
+ * keyboard.
+ */
+
 #include <cstdlib>
 #include <cstring>
 
@@ -106,7 +112,10 @@ public:
      */
     virtual void DrawTextAltFont();
 
-    /** @return Borrowed internal text, valid until text mutation or object destruction. */
+    /**
+     * Get the text of the menu item.
+     * @return Borrowed internal text, valid until text mutation or object destruction.
+     */
     const char *GetText() const {
         return szText;
     }
@@ -142,7 +151,10 @@ public:
     void SetNumber(int value) {
         _itoa(value, szText, 10);
     }
-    /** @return The stored text flag bits, including bit zero for centring. */
+    /**
+     * Get the flags of the text.
+     * @return The stored text flag bits, including bit zero for centring.
+     */
     unsigned GetFlags() const {
         return dwFlags;
     }
@@ -162,11 +174,17 @@ public:
     unsigned char SetStyle(unsigned char value) {
         return bStyle = value;
     }
-    /** @return The stored drawing style. */
+    /**
+     * Get the style DrawGlyph() selects the atlas image of the primary font with.
+     * @return The stored drawing style.
+     */
     unsigned char GetStyle() const {
         return bStyle;
     }
-    /** @return The stored text width in menu pixels. */
+    /**
+     * Get the width the last measurement or SetWidth() stored.
+     * @return The stored text width in menu pixels.
+     */
     short GetWidth() const {
         return nWidth;
     }
@@ -178,7 +196,10 @@ public:
     short SetWidth(short value) {
         return nWidth = value;
     }
-    /** @return The stored text height in menu pixels. */
+    /**
+     * Get the height the last measurement or SetHeight() stored.
+     * @return The stored text height in menu pixels.
+     */
     short GetHeight() const {
         return nHeight;
     }
@@ -199,11 +220,17 @@ public:
     float SetX(float value) {
         return fX = value;
     }
-    /** @return The stored horizontal position in menu pixels. */
+    /**
+     * Get the horizontal position DrawText() and DrawTextAltFont() draw at.
+     * @return The stored horizontal position in menu pixels.
+     */
     float GetX() const {
         return fX;
     }
-    /** @return The stored vertical position in menu pixels. */
+    /**
+     * Get the vertical position DrawText() and DrawTextAltFont() draw at.
+     * @return The stored vertical position in menu pixels.
+     */
     float GetY() const {
         return fY;
     }
@@ -232,7 +259,10 @@ public:
     short SetInputMaxWidth(short value) {
         return nInputMaxWidth = value;
     }
-    /** @return The stored caret marker, with nonzero enabling caret drawing. */
+    /**
+     * Get whether the text draws a blinking caret after its last glyph.
+     * @return The stored caret marker, with nonzero enabling caret drawing.
+     */
     int GetDrawCaret() const {
         return bDrawCaret;
     }
@@ -244,11 +274,15 @@ public:
     int SetDrawCaret(int value) {
         return bDrawCaret = value;
     }
-    /** @return The stored left menu-pixel bound; bounds must be initialised first. */
+    /**
+     * Get the left bound ComputeCenteredX() centres from.
+     * @return The stored left menu-pixel bound; bounds must be initialised first.
+     */
     LONG GetBoundsLeft() const {
         return rcBounds.left;
     }
     /**
+     * Get the bounds of the text.
      * @return A borrowed reference to bounds storage, valid until destruction and changed by
      * setters.
      */
@@ -263,7 +297,10 @@ public:
     LONG SetBoundsLeft(LONG value) {
         return rcBounds.left = value;
     }
-    /** @return The stored top menu-pixel bound; bounds must be initialised first. */
+    /**
+     * Get the top bound of the text.
+     * @return The stored top menu-pixel bound; bounds must be initialised first.
+     */
     LONG GetBoundsTop() const {
         return rcBounds.top;
     }
@@ -275,7 +312,10 @@ public:
     LONG SetBoundsTop(LONG value) {
         return rcBounds.top = value;
     }
-    /** @return The stored right menu-pixel bound; bounds must be initialised first. */
+    /**
+     * Get the right bound ComputeCenteredX() centres to.
+     * @return The stored right menu-pixel bound; bounds must be initialised first.
+     */
     LONG GetBoundsRight() const {
         return rcBounds.right;
     }
@@ -295,7 +335,10 @@ public:
     LONG SetBoundsBottom(LONG value) {
         return rcBounds.bottom = value;
     }
-    /** @return The stored application item data, initialised by callers before querying. */
+    /**
+     * Get the value a caller attached with SetItemData().
+     * @return The stored application item data, initialised by callers before querying.
+     */
     unsigned GetItemData() const {
         return dwItemData;
     }
@@ -309,40 +352,48 @@ public:
     }
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x1005b730
-     * @ghidraAddress BRGlide: 0x10054550
-     */
+    // Copy the glyph rectangle nImage of g_aMenuGlyphRects in the primary font to the menu
+    // surface, with the coordinates truncated to integers. bStyle selects the atlas image, 2 for
+    // style 0, 3 for style 1, 4 for style 2, 52 for style 4, and 0 for other styles. nStyle is not
+    // read, and the routine always returns 1.
+    // @ghidraAddress BRD3D: 0x1005b730
+    // @ghidraAddress BRGlide: 0x10054550
     virtual int DrawGlyph(short nImage, float x, float y, int nStyle);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b7e0
-     * @ghidraAddress BRGlide: 0x10054600
-     */
+    // Draw nothing and return 0. The routine occupies a slot of the virtual table that no caller
+    // uses, and its parameters are not read.
+    // @ghidraAddress BRD3D: 0x1005b7e0
+    // @ghidraAddress BRGlide: 0x10054600
     virtual int DrawGlyphNoOp(short nImage, float x, float y);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b7a0
-     * @ghidraAddress BRGlide: 0x100545c0
-     */
+    // Copy the glyph rectangle nImage of g_aMenuAltGlyphRects in the alternate font from atlas
+    // image 5 to the menu surface, with the coordinates truncated to integers. nStyle is not read,
+    // and the routine always returns 1.
+    // @ghidraAddress BRD3D: 0x1005b7a0
+    // @ghidraAddress BRGlide: 0x100545c0
     virtual int DrawGlyphAltFont(short nImage, float x, float y, int nStyle);
-    /**
-     * @ghidraAddress BRD3D: 0x1005b250
-     * @ghidraAddress BRGlide: 0x10054070
-     */
+    // Draw the underscore glyph of the primary font as the caret once 120 milliseconds have
+    // accumulated on a timer shared by every MenuFont, then restart the timer.
+    // @ghidraAddress BRD3D: 0x1005b250
+    // @ghidraAddress BRGlide: 0x10054070
     virtual void DrawThrottledMenuGlyph(float x, float y);
 
+    // Measure the text with the glyph table of either font, for MeasureText() and
+    // MeasureTextAltFont(). The alternate font is four pixels narrower for each glyph.
     inline void MeasureMenuText(bool alternate);
+    // Draw the text glyph by glyph, for DrawText(), DrawMenuItemText(), and DrawTextAltFont().
+    // Flag bit zero replaces x with ComputeCenteredX(), and an enabled caret follows the text. The
+    // alternate font is six pixels narrower for each glyph, and useFontY draws at fY in place of y.
     inline void DrawMenuText(float x, float y, bool alternate, bool useFontY);
 
-    unsigned dwFlags;
-    unsigned char bStyle;
-    char szText[1024];
-    short nWidth;
-    short nHeight;
-    float fX;
-    float fY;
-    float fZ;
-    short nInputMaxWidth;
-    int bDrawCaret;
-    RECT rcBounds;
-    unsigned dwItemData;
+    unsigned dwFlags;     // The flags of the text, bit zero centring it between the bounds.
+    unsigned char bStyle; // The style that selects the atlas image of DrawGlyph(), 1 at first.
+    char szText[1024];    // The text, terminated by a zero byte.
+    short nWidth;         // The width of the text in menu pixels.
+    short nHeight;        // The height of the tallest glyph in menu pixels.
+    float fX;             // The horizontal position in menu pixels.
+    float fY;             // The vertical position in menu pixels.
+    float fZ;             // Written by SetZ() and the constructor, and not read.
+    short nInputMaxWidth; // The width past which HandleTextInput() does not accept characters.
+    int bDrawCaret;       // Whether a blinking caret follows the text.
+    RECT rcBounds;        // The rectangle ComputeCenteredX() centres the text in.
+    unsigned dwItemData;  // A value of the caller, not read by MenuFont.
 };

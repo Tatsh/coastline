@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RACE_SPECIALS_H
 #define COASTLINE_RACE_SPECIALS_H
 
+/**
+ * @file
+ * The animated objects of a track: the aeroplane, the waterfalls, and the rotating instances.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

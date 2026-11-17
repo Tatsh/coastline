@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The attachment of the Windows game to the console of the process that started it.
+ */
+
 namespace coastline {
 
 /**

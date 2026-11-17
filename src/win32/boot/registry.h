@@ -1,6 +1,11 @@
 #ifndef COASTLINE_LAUNCHER_REGISTRY_H
 #define COASTLINE_LAUNCHER_REGISTRY_H
 
+/**
+ * @file
+ * The installation directory of Boss Rally as the registry records it.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

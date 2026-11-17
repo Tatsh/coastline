@@ -95,13 +95,21 @@ int CHK_FileExists(const char *pszPath);
 GameFile *CHK_FReadOpen(const char *pszPath);
 
 /**
- * Open a file in the requested mode, reporting a failure before ending the process.
+ * Open a file in the requested mode. A file that does not open is reported to the debugger, and
+ * ends the process.
+ *
+ * @param path The path of the file, copied into the returned record.
+ * @param mode The `fopen` mode.
+ * @return The open file.
  * @ghidraAddress SetVideo: 0x00401230
  */
 GameFile *CHK_FWriteOpen(const char *path, const char *mode);
 
 /**
- * Write a string, reporting a failure before ending the process.
+ * Write a string. A failed write is reported to the debugger, and ends the process.
+ *
+ * @param text The null-terminated text to write.
+ * @param file The open file.
  * @ghidraAddress SetVideo: 0x00401310
  */
 void CHK_FPutS(const char *text, GameFile *file);

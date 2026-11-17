@@ -1,6 +1,11 @@
 #ifndef COASTLINE_FADE_COMMANDS_H
 #define COASTLINE_FADE_COMMANDS_H
 
+/**
+ * @file
+ * The display-list commands of screen fades.
+ */
+
 #include "common/render.h"
 
 #if TGR_BOSS_RALLY

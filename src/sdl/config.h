@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The settings of BossRally.ini and the parsing of an aspect-ratio setting.
+ */
+
 #include <array>
 #include <cstddef>
 #include <filesystem>
@@ -44,6 +49,8 @@ public:
     bool Save(const std::filesystem::path &path) const;
 
     /**
+     * Read the text of a key.
+     *
      * @param section The section name.
      * @param key The key name.
      * @return The value, or nothing when the key is absent.
@@ -51,6 +58,8 @@ public:
     std::optional<std::string> Get(std::string_view section, std::string_view key) const;
 
     /**
+     * Read a key as a decimal integer. The whole value must parse, with no surrounding text.
+     *
      * @param section The section name.
      * @param key The key name.
      * @param fallback The value for an absent or malformed key.
@@ -59,6 +68,8 @@ public:
     long GetInteger(std::string_view section, std::string_view key, long fallback) const;
 
     /**
+     * Read a key as the index of one of @p count choices.
+     *
      * @param section The section name.
      * @param key The key name.
      * @param count The number of choices.
@@ -69,6 +80,8 @@ public:
     GetIndex(std::string_view section, std::string_view key, std::size_t count, int fallback) const;
 
     /**
+     * Read a key as a floating-point number.
+     *
      * @param section The section name.
      * @param key The key name.
      * @param fallback The value for an absent or malformed key.
@@ -77,6 +90,8 @@ public:
     float GetFloat(std::string_view section, std::string_view key, float fallback) const;
 
     /**
+     * Read a key as a Boolean. The words false, no, and off read as false, ignoring case.
+     *
      * @param section The section name.
      * @param key The key name.
      * @param fallback The value for an absent or malformed key.
@@ -94,12 +109,15 @@ public:
     void Set(std::string_view section, std::string_view key, std::string value);
 
 private:
+    // Remove the Video and Game keys whose values are out of range or malformed. The sizes,
+    // rates, sample counts, scales, gain, and aspect ratio are checked, and InternalWidth and
+    // InternalHeight are removed together when only one is set or the size is under 320 by 240.
     void ResetInvalidSettings();
-    /** Compare INI section and key names without case. */
+    // Compare INI section and key names without case.
     struct CaseInsensitiveLess {
-        /** Permit lookups with string views without allocating a string. */
+        // Permit lookups with string views without allocating a string.
         using is_transparent = void;
-        /** @return Whether @p left sorts before @p right without case. */
+        // Compare two names lexicographically by their lowercase characters.
         bool operator()(std::string_view left, std::string_view right) const;
     };
     using Section = std::map<std::string, std::string, CaseInsensitiveLess>;

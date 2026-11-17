@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_DIRECTIONALMATRIX_H
 #define COASTLINE_EAR_DIRECTIONALMATRIX_H
 
+/**
+ * @file
+ * The directional matrices of the EAR library with their registry and exports. A matrix gives the
+ * pan and the gain of each direction of an event.
+ */
+
 #include <stdint.h>
 
 #pragma pack(push, 1)
@@ -124,6 +130,8 @@ CopyDirectionalMatrixEntry(uint16_t matrix, uint16_t direction, EarDirectionalMa
 void __stdcall GrowMatrixRegistry(void);
 
 /**
+ * Forward a matrix registration to EAR_DLL_RegisterMatrix().
+ *
  * @param flags The built-in matrices.
  * @return Whether the matrices were registered.
  * @ghidraAddress EAR: 0x1000ebd0
@@ -141,6 +149,8 @@ int __stdcall EarRegisterMatrixExportWrapper(uint32_t flags);
 int __stdcall EAR_DLL_RegisterMatrix(uint32_t flags);
 
 /**
+ * Forward a matrix shutdown to EAR_DLL_ShutDownMatrix().
+ *
  * @param matrix The matrix, or 0 for every matrix.
  * @return Whether the matrix was shut down.
  * @ghidraAddress EAR: 0x1000f5f0
@@ -165,24 +175,32 @@ int __stdcall EAR_DLL_ShutDownMatrix(uint32_t matrix);
 int __stdcall RegisterBuiltinDirectionalMatrix1(void);
 
 /**
+ * Register the built-in matrix of 4 directions as matrix 4.
+ *
  * @return Whether the matrix is registered.
  * @ghidraAddress EAR: 0x10010992
  */
 int __stdcall RegisterBuiltinDirectionalMatrix4(void);
 
 /**
+ * Register the built-in matrix of 16 directions as matrix 16.
+ *
  * @return Whether the matrix is registered.
  * @ghidraAddress EAR: 0x10010d4e
  */
 int __stdcall RegisterBuiltinDirectionalMatrix16(void);
 
 /**
+ * Register the built-in matrix of 32 directions as matrix 32.
+ *
  * @return Whether the matrix is registered.
  * @ghidraAddress EAR: 0x100110ee
  */
 int __stdcall RegisterBuiltinDirectionalMatrix32(void);
 
 /**
+ * Register the built-in matrix of 64 directions as matrix 64.
+ *
  * @return Whether the matrix is registered.
  * @ghidraAddress EAR: 0x10011a55
  */

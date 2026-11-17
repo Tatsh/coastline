@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The intro sequence an asset pack defines in place of the regional splash screens.
+ */
+
 #include <filesystem>
 #include <memory>
 
@@ -29,7 +34,11 @@ public:
     ~IntroSequence();
     /** Prevent copying renderer-bound resources. */
     IntroSequence(const IntroSequence &) = delete;
-    /** Prevent assigning renderer-bound resources. */
+    /**
+     * Prevent assigning renderer-bound resources.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     IntroSequence &operator=(const IntroSequence &) = delete;
     /** Start again at the first available entry. */
     void Restart();
@@ -58,15 +67,25 @@ public:
      * @param height Output height in pixels; the bar is two pixels high.
      */
     void DrawProgress(SceneRenderer &renderer, float width, float height) const;
-    /** @return Whether the active movie or timed image has a progress bar enabled. */
+    /**
+     * Report the progress bar of the current entry. The bar requires videoControls.progressBar
+     * and a movie or image with a positive duration.
+     *
+     * @return Whether the active movie or timed image has a progress bar enabled.
+     */
     bool ShowsProgress() const;
-    /** @return Whether current movie audio replaces menu music. */
+    /**
+     * Report a movie entry in playback.
+     *
+     * @return Whether current movie audio replaces menu music.
+     */
     bool PlayingVideo() const;
 
 private:
     struct State;
+    // Take the entries Load() validated.
     explicit IntroSequence(std::unique_ptr<State> state);
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The entries and the resources of the current entry.
 };
 
 } // namespace coastline

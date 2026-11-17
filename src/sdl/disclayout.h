@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The resolution of the track layout of a disc image from its metadata or its sectors.
+ */
+
 #include "importer.h"
 
 namespace coastline {

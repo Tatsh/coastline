@@ -30,6 +30,7 @@ extern "C" {
 /** The bytes of the texels of a decal, at 4 bits a texel. */
 #define DECAL_BUFFER_SIZE 0x800
 
+/** @cond */
 /**
  * The picture of a whole car on the menu of the clear tool.
  *
@@ -49,6 +50,7 @@ extern Sprite g_texPaintWholeCar;
  * @ghidraAddress JPN: 0x8028ed80
  */
 extern Sprite g_texPanelLeftDoor;
+/** @endcond */
 
 /** @cond */
 /**
@@ -124,6 +126,7 @@ extern Sprite g_texPanel8;
 extern Sprite g_texPanel9;
 /** @endcond */
 
+/** @cond */
 /**
  * The lights drawn over the buttons of panels 8 and 9.
  *
@@ -133,6 +136,7 @@ extern Sprite g_texPanel9;
  * @ghidraAddress JPN: 0x8028ef60
  */
 extern Sprite g_texPanel8Overlay;
+/** @endcond */
 
 /** @cond */
 /**
@@ -144,6 +148,7 @@ extern Sprite g_texPanel8Overlay;
 extern Sprite g_texPanel9Overlay;
 /** @endcond */
 
+/** @cond */
 /**
  * The brush sizes of the round brush, top to bottom.
  *
@@ -174,6 +179,7 @@ extern Sprite g_texBrushSizeSquare;
  * @ghidraAddress JPN: 0x8028f160
  */
 extern Sprite g_texPaintToolMirror;
+/** @endcond */
 
 /** @cond */
 /**
@@ -217,6 +223,7 @@ extern Sprite g_texPaintTextCursor;
 extern Sprite g_texPaintEyedropperCursor;
 /** @endcond */
 
+/** @cond */
 /**
  * The keyboard of the text tool.
  *
@@ -246,14 +253,17 @@ extern Sprite g_texKeyboardBackground;
  * @ghidraAddress JPN: 0x8028fca4
  */
 extern Sprite *g_apPaintToolIcons[PAINT_TOOLS];
+/** @endcond */
 
 #if TGR_REGION == TGR_REGION_JP
+/** @cond */
 /**
  * The palette of the pictures of the buttons of the paint shop, read from the cartridge.
  *
  * @ghidraAddress JPN: 0x8028f020
  */
 extern u16 g_awPaintShopButtonPalette[16];
+/** @endcond */
 
 /** The palette of the buttons on the cartridge. The link script places it. */
 extern u8 _paintShopPaletteSegmentRomStart[];
@@ -262,6 +272,7 @@ extern u8 _paintShopPaletteSegmentRomStart[];
 extern u8 _paintShopPaletteSegmentRomEnd[];
 #endif /* TGR_REGION == TGR_REGION_JP */
 
+/** @cond */
 /**
  * The texels of the decal before the last edit.
  *
@@ -321,6 +332,7 @@ extern u8 g_bEyedropperActive;
  * @ghidraAddress JPN: 0x8028fdd8
  */
 extern Vec3f s_aPanelViewDirections[DECAL_SLOTS];
+/** @endcond */
 
 /** @cond */
 /**
@@ -332,6 +344,7 @@ extern Vec3f s_aPanelViewDirections[DECAL_SLOTS];
 extern s8 g_bPaintShopInitialized;
 /** @endcond */
 
+/** @cond */
 /**
  * The texels of the decal a mirror copies from.
  *
@@ -341,6 +354,7 @@ extern s8 g_bPaintShopInitialized;
  * @ghidraAddress JPN: 0x8028fec4
  */
 extern u8 *s_pMirrorSource;
+/** @endcond */
 
 /** @cond */
 /**
@@ -352,6 +366,7 @@ extern u8 *s_pMirrorSource;
 extern u8 g_bPakDialogActive;
 /** @endcond */
 
+/** @cond */
 /**
  * Whether the file of the decals is created first.
  *
@@ -391,6 +406,7 @@ extern u8 g_bMirrorTargetPanel;
  * @ghidraAddress JPN: 0x8036afb0
  */
 extern u8 g_bPakRumbleSwapped;
+/** @endcond */
 
 /** @cond */
 /**
@@ -418,6 +434,7 @@ extern s32 g_dwPakError;
 extern s32 g_dwPakFileNo;
 /** @endcond */
 
+/** @cond */
 /**
  * The bytes of the chunk last moved.
  *
@@ -427,6 +444,7 @@ extern s32 g_dwPakFileNo;
  * @ghidraAddress JPN: 0x8036afbc
  */
 extern s32 g_dwPakChunkSize;
+/** @endcond */
 
 /** @cond */
 /**
@@ -438,6 +456,7 @@ extern s32 g_dwPakChunkSize;
 extern u8 g_bPakDialogState;
 /** @endcond */
 
+/** @cond */
 /**
  * The decal being moved.
  *
@@ -447,6 +466,7 @@ extern u8 g_bPakDialogState;
  * @ghidraAddress JPN: 0x8036afc1
  */
 extern u8 g_bPakDecalIndex;
+/** @endcond */
 
 /** @cond */
 /**
@@ -458,6 +478,7 @@ extern u8 g_bPakDecalIndex;
 extern u8 g_bPakWaitFrames;
 /** @endcond */
 
+/** @cond */
 /**
  * The text typed.
  *
@@ -467,6 +488,7 @@ extern u8 g_bPakWaitFrames;
  * @ghidraAddress JPN: 0x8036b008
  */
 extern char g_szDecalText[24];
+/** @endcond */
 
 /**
  * Draw the car beside the decal, turning to the decal slot when it changes.

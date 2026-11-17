@@ -1,6 +1,11 @@
 #ifndef COASTLINE_AMBIENT_SOUND_H
 #define COASTLINE_AMBIENT_SOUND_H
 
+/**
+ * @file
+ * The ambient sound of the track nearest the camera.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

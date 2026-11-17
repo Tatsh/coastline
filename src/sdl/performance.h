@@ -49,6 +49,8 @@ inline std::optional<std::size_t> UniqueGpuIndex(std::string_view active,
 }
 
 /**
+ * Parse the resident set size from the Linux statm file.
+ *
  * @param text A line of /proc/self/statm.
  * @return The resident pages, the second number of the line, or nothing when the line has no
  * second number.
@@ -72,6 +74,8 @@ inline std::optional<std::uint64_t> StatmResidentPages(std::string_view text) {
 }
 
 /**
+ * Sum the Pss lines of the Linux smaps file for the GAME RAM statistic.
+ *
  * @param text The contents of /proc/self/smaps.
  * @param executable The path of the program, as /proc/self/exe links to it.
  * @return The proportional set size in bytes of the memory of the game: the mappings without a
@@ -184,6 +188,8 @@ public:
     }
 
     /**
+     * Report the averages and peaks of the last completed one-second window.
+     *
      * @return The latest snapshot, absent until one second elapses. The reference remains valid
      * for this collector's lifetime; Record() can replace its value.
      */
@@ -192,14 +198,16 @@ public:
     }
 
 private:
-    std::optional<Snapshot> m_snapshot;
-    std::optional<std::uint64_t> m_previous;
-    std::uint64_t m_start = 0;
-    double m_workTotal = 0.0;
-    std::uint64_t m_workCount = 0;
-    double m_intervalTotal = 0.0;
-    std::uint64_t m_intervals = 0;
+    std::optional<Snapshot> m_snapshot;      // The last completed window, absent before one.
+    std::optional<std::uint64_t> m_previous; // The timestamp of the last frame, in ns.
+    std::uint64_t m_start = 0;               // The timestamp the current window began, in ns.
+    double m_workTotal = 0.0;                // The summed frame work of the window, in ns.
+    std::uint64_t m_workCount = 0;           // The frames whose work the window has summed.
+    double m_intervalTotal = 0.0;            // The summed frame intervals of the window, in ns.
+    std::uint64_t m_intervals = 0;           // The frame intervals the window has summed.
+    // The longest frame work since the collector started, in nanoseconds. It is never reset.
     std::uint64_t m_worstWork = 0;
+    // The longest frame interval since the collector started, in nanoseconds. It is never reset.
     std::uint64_t m_worstInterval = 0;
 };
 
@@ -217,7 +225,11 @@ public:
     ~PerformanceStats();
     /** Prevent copying the collector's GPU sampling thread. */
     PerformanceStats(const PerformanceStats &) = delete;
-    /** Prevent assignment of the collector's GPU sampling thread. */
+    /**
+     * Prevent assignment of the collector's GPU sampling thread.
+     *
+     * @return This collector; the operator is deleted and never called.
+     */
     PerformanceStats &operator=(const PerformanceStats &) = delete;
 
     /**
@@ -228,6 +240,8 @@ public:
     void Frame(std::uint64_t workNanoseconds);
 
     /**
+     * Format the frame rate, frame times, processor, memory, and GPU statistics for the overlay.
+     *
      * @param gameGpuBytes The bytes of the textures and buffers the game has created.
      * @return The lines of the overlay in capitals, with PCT for a percent sign, each statistic
      * omitted until it is known and where the system does not report it.
@@ -237,11 +251,13 @@ public:
 private:
     class Sampler;
 
-    std::unique_ptr<Sampler> m_sampler;
+    std::unique_ptr<Sampler> m_sampler; // The thread sampling memory and GPU use.
     FrameTimings m_frameTimings;
-    std::uint64_t m_secondStart = 0;
-    std::optional<double> m_secondStartCpu; // The seconds of the processor at the second's start.
-    std::optional<double> m_cpuPercent;     // Of one core, over the second before.
+    std::uint64_t m_secondStart = 0; // The timestamp the processor window began, in ns.
+    // The processor seconds of the process at the start of the window.
+    std::optional<double> m_secondStartCpu;
+    // The processor use of the window before, in percent of one core.
+    std::optional<double> m_cpuPercent;
 };
 
 } // namespace coastline

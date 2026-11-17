@@ -38,6 +38,7 @@ extern "C" {
 extern Vec3f g_avFrustumPoints[FRUSTUM_POINTS];
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The bounds of the covered cells.
  *
@@ -49,6 +50,7 @@ extern Vec3f g_avFrustumPoints[FRUSTUM_POINTS];
  * @ghidraAddress BRGlide: 0x10ac2c58
  */
 extern s32 g_dwVisibleGridMinCol;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**
@@ -64,6 +66,7 @@ extern s32 g_dwVisibleGridMinCol;
 extern s32 g_dwVisibleGridMinRow;
 
 #if !TGR_BOSS_RALLY
+/** @cond */
 /**
  * The last column of the cells covered by the view frustum.
  *
@@ -75,6 +78,7 @@ extern s32 g_dwVisibleGridMinRow;
  * @ghidraAddress BRGlide: 0x10ac2c50
  */
 extern s32 g_dwVisibleGridMaxCol;
+/** @endcond */
 #endif /* !TGR_BOSS_RALLY */
 
 /**

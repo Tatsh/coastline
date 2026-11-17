@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * Validation of saved race times and of the options notes, season notes, and ghost recordings of
+ * the Controller Pak before the game loads their values.
+ */
+
 #include <array>
 #include <cstddef>
 #include <cstdint>

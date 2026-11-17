@@ -1,6 +1,11 @@
 #ifndef COASTLINE_ASSET_DMA_H
 #define COASTLINE_ASSET_DMA_H
 
+/**
+ * @file
+ * Cartridge reads by DMA and the stepwise decompression of compressed assets from the cartridge.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus
@@ -114,6 +119,7 @@ u32 DecompressFromRom(void *dst, char *romOffset, DecompressJob *job);
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
 #endif
 
+/** @cond */
 /**
  * The words the DMA reads sizes and chunk lengths into.
  *
@@ -125,6 +131,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
  * @ghidraAddress BRGlide: 0x106e79c8
  */
 extern u32 g_dwDmaAssetSizeBuffer;
+/** @endcond */
 
 /** @cond */
 /**

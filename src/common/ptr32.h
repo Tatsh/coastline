@@ -148,7 +148,11 @@ public:
 
 #else
 
-/** A pointer of 32 bits to T. */
+/**
+ * A pointer of 32 bits to T.
+ *
+ * @param T The type pointed to.
+ */
 #define TGR_PTR(T) T *
 
 #endif

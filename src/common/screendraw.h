@@ -1,6 +1,11 @@
 #ifndef COASTLINE_SCREENDRAW_H
 #define COASTLINE_SCREENDRAW_H
 
+/**
+ * @file
+ * The viewport, the scissor, and the screen fills and rectangle outlines of the display list.
+ */
+
 #include "common/types.h"
 
 #ifdef __cplusplus

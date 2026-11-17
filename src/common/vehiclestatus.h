@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VEHICLE_STATUS_H
 #define COASTLINE_VEHICLE_STATUS_H
 
+/**
+ * @file
+ * The race timers, HUD message timers, wrong-way warning, and grid position of a vehicle.
+ */
+
 #include "common/vehiclefwd.h"
 
 #ifdef __cplusplus

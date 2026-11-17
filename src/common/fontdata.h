@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The glyph tables, glyph offsets, and glyph texture handles of the PC menu and HUD fonts.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

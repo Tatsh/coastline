@@ -76,6 +76,7 @@ typedef struct RigidBody {
     RigidBodyState stepStates[2]; /*!< The states of the steps of the integration. */
     struct TrackTriangle *ground; /*!< The triangle of the track under a wheel, or NULL. */
     u8 surface; /*!< The surface of the ground triangle, a TRACK_SURFACE_ value. */
+    /** The normal of the ground triangle as a vector and as an array of components. */
     union {
         Vec3f groundNormal;            /*!< The normal of the plane of the ground triangle. */
         f32 groundNormalComponents[3]; /*!< The normal components for indexed wheel physics. */

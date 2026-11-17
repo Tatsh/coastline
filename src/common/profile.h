@@ -52,7 +52,14 @@ typedef struct {
     f32 raceRecords[16];  /*!< The 16 best-race record slots, in seconds, or 0 when unset. */
 } PlayerProfile;
 
-/** Initialise profile options and clear records for the available tracks. */
+/**
+ * Initialise profile options and clear records for the available tracks. The championship starts
+ * at its first season and round with the default unlocks, an automatic gearbox, the first
+ * handling, the second suspension, and the third tyres.
+ *
+ * @param profile The profile to initialise.
+ * @param trackCount The number of entries of the lap and race records to set to 0.
+ */
 void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount);
 
 /**

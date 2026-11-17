@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_WAVECHUNKS_H
 #define COASTLINE_EAR_WAVECHUNKS_H
 
+/**
+ * @file
+ * The RIFF chunks and wave formats the EAR library reads, with a portable RIFF reader outside
+ * Windows.
+ */
+
 #include <stdint.h>
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

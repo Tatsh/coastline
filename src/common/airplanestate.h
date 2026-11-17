@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The flight state of the aeroplane that crosses a track during a race, with the macros of its
+ * original global names.
+ */
+
 #include "common/vecmath.h"
 
 #ifdef __cplusplus

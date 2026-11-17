@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The decoder of ISZ disc images.
+ */
+
 #include "decodeddisc.h"
 
 namespace coastline {

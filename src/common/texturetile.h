@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The tile record of texture scans and loaded texture entries.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_DISTANCE_H
 #define COASTLINE_EAR_DISTANCE_H
 
+/**
+ * @file
+ * The distance units of the EAR library and the distance attenuation of events.
+ */
+
 #include <stdint.h>
 
 #include "eventparameters.h"

@@ -60,6 +60,7 @@ extern DirectPlayInfo *g_pDirectPlayInfo;
  */
 extern DPID g_dwNetCarSetupSelectedPlayerId;
 
+/** @cond */
 /**
  * The service providers, indexed by IPX, TCP/IP, modem, and serial in that order.
  *
@@ -67,6 +68,7 @@ extern DPID g_dwNetCarSetupSelectedPlayerId;
  * @ghidraAddress BRGlide: 0x10ac3080
  */
 extern ServiceProvider g_aServiceProviders[SERVICE_PROVIDER_COUNT];
+/** @endcond */
 
 /**
  * The index in g_aServiceProviders of the service provider chosen.
@@ -90,6 +92,7 @@ extern "C" {
  */
 int GetSelectedServiceProvider(GUID **ppGuid);
 
+/** @cond */
 /**
  * The time of the worker thread of network play, written at the start of a packet.
  *
@@ -97,6 +100,7 @@ int GetSelectedServiceProvider(GUID **ppGuid);
  * @ghidraAddress BRGlide: 0x1184c070
  */
 extern unsigned g_dwNetWorkerCurrentTime;
+/** @endcond */
 
 /**
  * Send a message of DirectPlay under g_DirectPlaySendCritSec.
@@ -205,6 +209,7 @@ extern "C" {
  */
 void ResetNetworkStreamWithTimestamp(NetStream *pStream);
 
+/** @cond */
 /**
  * The time network play started counting frames from, in milliseconds.
  *
@@ -212,6 +217,7 @@ void ResetNetworkStreamWithTimestamp(NetStream *pStream);
  * @ghidraAddress BRGlide: 0x1021c908
  */
 extern unsigned g_dwNetClockBaseMs;
+/** @endcond */
 
 /**
  * Get the frames of network play since g_dwNetClockBaseMs, at three for each tenth of a second.
@@ -222,6 +228,7 @@ extern unsigned g_dwNetClockBaseMs;
  */
 unsigned GetElapsedFrameCount(void);
 
+/** @cond */
 /**
  * The frame of the last key frame written to a stream.
  *
@@ -229,6 +236,7 @@ unsigned GetElapsedFrameCount(void);
  * @ghidraAddress BRGlide: 0x1021ce40
  */
 extern unsigned g_dwNetLastKeyframeFrame;
+/** @endcond */
 
 /**
  * Empty a stream and write the current frame of network play at its start.
@@ -239,6 +247,7 @@ extern unsigned g_dwNetLastKeyframeFrame;
  */
 void WriteTimestampToStream(NetStream *pStream);
 
+/** @cond */
 /**
  * The frame a network race starts on.
  *
@@ -246,6 +255,7 @@ void WriteTimestampToStream(NetStream *pStream);
  * @ghidraAddress BRGlide: 0x10226a30
  */
 extern unsigned g_dwNetRaceStartFrame;
+/** @endcond */
 
 /**
  * Destroy the local player of DirectPlay, when there is one.
@@ -323,6 +333,7 @@ extern int g_dwLobbyIsHost;
  */
 extern int g_dwSessionEnumPending;
 
+/** @cond */
 /**
  * The timer of the main window that drives network play.
  *
@@ -378,6 +389,7 @@ extern DWORD g_dwDirectPlayReceiveThreadId;
  * @ghidraAddress BRGlide: 0x1027333c
  */
 extern HANDLE g_hDirectPlayReceiveThread;
+/** @endcond */
 
 /**
  * Create DirectPlay, connecting through a lobby when one launched the game, and start the receive
@@ -661,6 +673,7 @@ BOOL WINAPI EnumConnectionsCallback_StoreServiceProvider(const GUID *pGuidServic
  */
 void ShowNetworkErrorMessage(const char *pszFormat, HRESULT hResult);
 
+/** @cond */
 /**
  * The name of an error GetDirectPlayErrorString() does not know, written in hexadecimal.
  *
@@ -668,6 +681,7 @@ void ShowNetworkErrorMessage(const char *pszFormat, HRESULT hResult);
  * @ghidraAddress BRGlide: 0x10ac3070
  */
 extern char g_szDirectPlayErrorBuffer[16];
+/** @endcond */
 
 /**
  * Give the name of a DirectPlay error.
@@ -696,6 +710,7 @@ void InitializeDirectPlayForDesktopWindow(void);
  */
 extern int g_dwDirectPlaySessionActive;
 
+/** @cond */
 /**
  * The ticks a request of a pause of a network game has waited, 0 for no request.
  *
@@ -703,6 +718,7 @@ extern int g_dwDirectPlaySessionActive;
  * @ghidraAddress BRGlide: 0x10226624
  */
 extern int g_nNetPauseRequestTicks;
+/** @endcond */
 
 /**
  * Request a pause from the other players of a network game, when no request waits.
@@ -713,6 +729,7 @@ extern int g_nNetPauseRequestTicks;
  */
 bool RequestNetworkPause(void);
 
+/** @cond */
 /**
  * The ticks a request of the end of a pause of a network game has waited, 0 for no request.
  *
@@ -728,6 +745,7 @@ extern int g_nNetUnpauseRequestTicks;
  * @ghidraAddress BRGlide: 0x102265d8
  */
 extern int g_bNetReadyToStart;
+/** @endcond */
 
 /**
  * Mark the local player ready to start a network race.
@@ -738,6 +756,7 @@ extern int g_bNetReadyToStart;
  */
 bool SetNetworkReadyToStartFlag(void);
 
+/** @cond */
 /**
  * Whether the messages received are processed.
  *
@@ -745,6 +764,7 @@ bool SetNetworkReadyToStartFlag(void);
  * @ghidraAddress BRGlide: 0x1021c900
  */
 extern int g_bNetReceiveEnabled;
+/** @endcond */
 
 /**
  * The slot of the local player of a network game, -1 before one is assigned.
@@ -846,6 +866,7 @@ extern unsigned g_dwNetRaceStartTimeMs;
  * @param nMessage The message.
  * @param wParam The first parameter of the message.
  * @param lParam The second parameter of the message.
+ * @return 0 for every message.
  * @ghidraAddress BRD3D: 0x1003c3a0
  * @ghidraAddress BRGlide: 0x10035a30
  */
@@ -1014,6 +1035,7 @@ extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
  */
 int GetPlayerPingMs(int nSlot);
 
+/** @cond */
 /**
  * The order of the players of a network race.
  *
@@ -1021,6 +1043,7 @@ int GetPlayerPingMs(int nSlot);
  * @ghidraAddress BRGlide: 0x1021ce00
  */
 extern int g_adwNetRaceOrder[NET_PEER_SLOT_COUNT];
+/** @endcond */
 
 /**
  * The player of the session in a slot of a peer, read under the mutex of the slot.
@@ -1062,6 +1085,7 @@ int GetNormalizedSlotStatusFlags(int nSlot);
  */
 void SetSlotStatusThreadSafe(int nSlot, int dwStatus);
 
+/** @cond */
 /**
  * The line of status of network play the game shows. Its size is not recovered yet.
  *
@@ -1077,6 +1101,7 @@ extern char g_szNetStatusString[];
  * @ghidraAddress BRGlide: 0x10226a38
  */
 extern int g_bNetStatusStringDirty;
+/** @endcond */
 
 /**
  * Read a peer's selected car and RGB colour under its slot mutex.
@@ -1106,6 +1131,7 @@ void SetGlobalStatusString(const char *pszStatus);
 /** The number of entries of g_anDepartedPlayerSlotStack and g_anJoinedPlayerSlotStack. */
 #define PLAYER_SLOT_STACK_SIZE 16
 
+/** @cond */
 /**
  * The slots of the players that departed, for the race to remove.
  *
@@ -1177,6 +1203,7 @@ extern HANDLE g_hNetUnpauseMutex;
  * @ghidraAddress BRGlide: 0x1021ce54
  */
 extern HANDLE g_hNetReadyMutex;
+/** @endcond */
 
 /**
  * The mutex of the key frames of a network race.
@@ -1186,6 +1213,7 @@ extern HANDLE g_hNetReadyMutex;
  */
 extern HANDLE g_hNetKeyframeMutex;
 
+/** @cond */
 /**
  * The mutex of the stack of players that joined.
  *
@@ -1241,6 +1269,7 @@ extern HANDLE g_hNetWorkerStopEvent;
  * @ghidraAddress BRGlide: 0x1184c07c
  */
 extern HANDLE g_hNetWorkerThread;
+/** @endcond */
 
 /**
  * Stop the thread that works for the host of a network game, wait for it, and close it and its
@@ -1251,6 +1280,7 @@ extern HANDLE g_hNetWorkerThread;
  */
 void StopNetworkWorkerThread(void);
 
+/** @cond */
 /**
  * The identifier of the worker thread of network play.
  *
@@ -1266,6 +1296,7 @@ extern DWORD g_dwNetWorkerThreadId;
  * @ghidraAddress BRGlide: 0x11849ea8
  */
 extern DWORD g_dwNetWorkerNextTickTime;
+/** @endcond */
 
 /**
  * Move the players of a network game that are ready to the start.
@@ -1303,6 +1334,7 @@ void BuildNetworkPlayerStatusPackets(void);
  * Send the streams of the players of a network game.
  *
  * @param pInfo The session.
+ * @return 0, or -1 when a send to a remote player fails.
  * @ghidraAddress BRD3D: 0x10072170
  * @ghidraAddress BRGlide: 0x1006b0e0
  */
@@ -1378,6 +1410,7 @@ void StartNetworkWorkerThread(void);
  */
 bool InitializeNetworkThreading(void);
 
+/** @cond */
 /**
  * The time the network session started, in milliseconds.
  *
@@ -1385,6 +1418,7 @@ bool InitializeNetworkThreading(void);
  * @ghidraAddress BRGlide: 0x117b3248
  */
 extern DWORD g_dwNetSessionStartTime;
+/** @endcond */
 
 /**
  * Get the time since the network session started.
@@ -1572,6 +1606,7 @@ struct NetPlayerSlot {
 /** The number of entries of g_aNetPlayerSlots. */
 #define NET_PLAYER_SLOT_COUNT 16
 
+/** @cond */
 /**
  * The network players of a race.
  *
@@ -1587,6 +1622,7 @@ extern NetPlayerSlot g_aNetPlayerSlots[NET_PLAYER_SLOT_COUNT];
  * @ghidraAddress BRGlide: 0x117b3258
  */
 extern NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT_COUNT];
+/** @endcond */
 
 /** @cond */
 /**
@@ -1853,6 +1889,7 @@ void ShutdownDirectPlay(void);
  */
 void FreeServiceProviderConnectionData(void);
 
+/** @cond */
 /**
  * The number of DirectPlay objects that exist.
  *
@@ -1860,6 +1897,7 @@ void FreeServiceProviderConnectionData(void);
  * @ghidraAddress BRGlide: 0x10ac4094
  */
 extern int g_dwDirectPlayInstanceCount;
+/** @endcond */
 
 /**
  * Exit the session of DirectPlay.

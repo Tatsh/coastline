@@ -1,6 +1,11 @@
 #ifndef COASTLINE_PLATFORM_WIN_SNAPSHOT_OPS_H
 #define COASTLINE_PLATFORM_WIN_SNAPSHOT_OPS_H
 
+/**
+ * @file
+ * The interpolation and rendering of captured race frames, and the reset flag of the frame timer.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

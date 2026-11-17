@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The keyboard, gamepads, and mouse wheel, read as the controller ports of the console.
+ */
+
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -37,17 +42,34 @@ public:
     ~InputBindings();
     /** Copying is disabled because SDL events address one active input context. */
     InputBindings(const InputBindings &) = delete;
-    /** Assignment is disabled because the active input context has a stable address. */
+    /**
+     * Assignment is disabled because the active input context has a stable address.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     InputBindings &operator=(const InputBindings &) = delete;
 
-    /** @return The active input owner registered with SDL, or null outside its lifetime. */
+    /**
+     * Look up the instance stored in a global property of SDL. The free functions of this header
+     * forward to it.
+     *
+     * @return The active input owner registered with SDL, or null outside its lifetime.
+     */
     static InputBindings *Active();
 
-    /** @return The input owner's configured bindings. */
+    /**
+     * Access the bindings for a change, such as a new preset of the options menu.
+     *
+     * @return The input owner's configured bindings.
+     */
     ControlBindings &Controls() {
         return m_controls;
     }
-    /** @return The input owner's configured bindings. */
+    /**
+     * Access the bindings for reading.
+     *
+     * @return The input owner's configured bindings.
+     */
     const ControlBindings &Controls() const {
         return m_controls;
     }
@@ -62,7 +84,12 @@ public:
     void IgnoreKeyUntilReleased(SDL_Scancode scancode);
     /** @copydoc coastline::SetSecondControllerState */
     void SetSecondControllerState(const ControllerState &state);
-    /** @return The latest sample of the second controller. */
+    /**
+     * Read the state SetSecondControllerState() last stored. ReadSecondControllerPad() reads it
+     * for the race.
+     *
+     * @return The latest sample of the second controller.
+     */
     ControllerState SecondControllerState() const;
     /** @copydoc coastline::TakeMouseWheel */
     int TakeMouseWheel();
@@ -78,6 +105,8 @@ public:
     void HandleEvent(const SDL_Event &event);
 
     /**
+     * Read the gamepads and the keyboard of each player into the controller ports.
+     *
      * @param players The number of players the screen reads, 1 or 2. In single-player mode,
      * devices assigned to either player drive the first port.
      * @param race Whether a race reads the second port, through the race actions of the Controls
@@ -88,13 +117,19 @@ public:
     std::array<ControllerState, CONTROLLER_PORTS> Poll(std::size_t players, bool race) const;
 
 private:
+    // Open a gamepad and append it to the connection order, logging its number and name. A
+    // failure to open logs a warning. Returns false when the gamepad is already open or fails to
+    // open.
     bool OpenGamepad(SDL_JoystickID id);
-    ControlBindings m_controls;
-    std::vector<int> m_scriptedKeys;
+    ControlBindings m_controls;      // The bindings of the Controls section.
+    std::vector<int> m_scriptedKeys; // The scancodes SetScriptedKeys() reports as down.
+    // The scancodes IsKeyDown() reports as up until IsKeyDown() finds them released.
     std::vector<int> m_ignoredKeys;
-    ControllerState m_secondController;
-    std::vector<SDL_Gamepad *> m_gamepads;
+    ControllerState m_secondController;    // The state SetSecondControllerState() stored.
+    std::vector<SDL_Gamepad *> m_gamepads; // In the order they connected.
+    // The wheel in DirectInput units not yet returned by TakeMouseWheel().
     float m_mouseWheel = 0.0f;
+    // The input history and haptics of the race, registered for the lifetime of the bindings.
     RaceInputContext m_raceInput;
 };
 
@@ -136,6 +171,8 @@ std::int8_t ScaleStickAxis(std::int16_t axis);
 void SetScriptedKeys(std::vector<int> scancodes);
 
 /**
+ * Read a key of the keyboard. A call that finds an ignored key released stops ignoring it.
+ *
  * @param scancode The key.
  * @return Whether the key is down on the keyboard or reported by SetScriptedKeys(), and not
  * ignored by IgnoreKeyUntilReleased(). Without active bindings, only physical input is read.
@@ -159,6 +196,8 @@ void IgnoreKeyUntilReleased(SDL_Scancode scancode);
 void SetSecondControllerState(const ControllerState &state);
 
 /**
+ * Consume the whole units of the mouse wheel. Without active bindings, the result is 0.
+ *
  * @return The wheel of the mouse scrolled since the last call, in the units of the third axis of a
  * DirectInput mouse (120 a notch, positive away from the user). A fraction of a unit is retained
  * for the next call.

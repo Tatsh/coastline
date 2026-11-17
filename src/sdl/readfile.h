@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * Reading a whole file into memory.
+ */
+
 #include <cstdint>
 #include <filesystem>
 #include <optional>

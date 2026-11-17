@@ -1,6 +1,12 @@
 #ifndef COASTLINE_RENDERBACKEND_H
 #define COASTLINE_RENDERBACKEND_H
 
+/**
+ * @file
+ * The routines and texture entries of the selected render backend, through which the race submits
+ * display lists and creates textures.
+ */
+
 struct GbiCommand;
 
 #ifdef __cplusplus
@@ -295,7 +301,11 @@ typedef struct {
     int precipitation[PRECIPITATION_TEXTURE_COUNT]; /*!< Texture entries for precipitation. */
 } SdlRenderBackendState;
 
-/** @return Renderer storage for the active SDL texture collection. */
+/**
+ * Get the render backend state of the active engine textures. The engine textures must be active.
+ *
+ * @return Renderer storage for the active SDL texture collection.
+ */
 SdlRenderBackendState *GetSdlRenderBackendState(void);
 
 /** @copydoc SdlRenderBackendState::submitDisplayList */

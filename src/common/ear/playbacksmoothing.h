@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_PLAYBACKSMOOTHING_H
 #define COASTLINE_EAR_PLAYBACKSMOOTHING_H
 
+/**
+ * @file
+ * The number of smoothing passes the EAR library applies to the gain and pan updates of a
+ * playback.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus

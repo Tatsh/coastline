@@ -48,27 +48,28 @@ public:
     void Draw(SceneRenderer &renderer, const MenuText &text) const;
 
 private:
-    /** A caption displayed during the credits race. */
+    // A caption displayed during the credits race.
     struct Caption {
-        std::string title;              /*!< The caption heading. */
-        float duration;                 /*!< The display duration in seconds. */
-        std::vector<std::string> lines; /*!< The lines below the heading. */
+        std::string title;              // The caption heading.
+        float duration;                 // The display duration in seconds.
+        std::vector<std::string> lines; // The lines below the heading.
     };
 
-    /** A line in the scrolling end credits. */
+    // A line in the scrolling end credits.
     struct ScrollLine {
-        int y;            /*!< The current vertical position. */
-        int size;         /*!< The text size. */
-        int gap;          /*!< The spacing after the line. */
-        std::string text; /*!< The line text. */
+        int y; // The current vertical position.
+        int size;
+        int gap; // The spacing after the line.
+        std::string text;
     };
 
+    // Report whether the race is the caption race of the credits with a caption still to show.
     bool CaptionsShow() const;
 
-    std::vector<Caption> m_captions;
-    std::size_t m_caption = 0;
-    float m_captionTimer = 0.0f;
-    std::vector<ScrollLine> m_scrollLines;
+    std::vector<Caption> m_captions;       // The captions read from the release, in order.
+    std::size_t m_caption = 0;             // The index of the caption on display.
+    float m_captionTimer = 0.0f;           // The seconds the current caption has been displayed.
+    std::vector<ScrollLine> m_scrollLines; // The lines of the scrolling end credits.
 };
 
 } // namespace coastline

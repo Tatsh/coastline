@@ -1,6 +1,11 @@
 #ifndef COASTLINE_CAMERA_CHANGE_H
 #define COASTLINE_CAMERA_CHANGE_H
 
+/**
+ * @file
+ * The flag of a vehicle that marks a change of its camera.
+ */
+
 #include "common/vehiclefwd.h"
 
 #ifdef __cplusplus

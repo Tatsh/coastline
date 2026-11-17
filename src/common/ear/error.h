@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_ERROR_H
 #define COASTLINE_EAR_ERROR_H
 
+/**
+ * @file
+ * The last error of the EAR library, its messages, and its exports.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -16,6 +21,8 @@ extern "C" {
 void __stdcall SetEarLastError(uint32_t error);
 
 /**
+ * Forward the query of the last error to EAR_DLL_GetLastError().
+ *
  * @return The last EAR error through the export without clearing it.
  * @ghidraAddress EAR: 0x1000c960
  */
@@ -28,6 +35,8 @@ uint32_t __stdcall EarGetLastErrorExportWrapper(void);
 void __stdcall EarShowLastErrorExportWrapper(void);
 
 /**
+ * Read the error stored by the last SetEarLastError().
+ *
  * @return The last stored EAR error without clearing it; zero indicates no error.
  * @ghidraAddress EAR: 0x1000c96a
  */

@@ -1,6 +1,11 @@
 #ifndef COASTLINE_PARTICLE_COMMANDS_H
 #define COASTLINE_PARTICLE_COMMANDS_H
 
+/**
+ * @file
+ * Display list commands that load the particle texture and set the render modes of particles.
+ */
+
 #include "common/system.h"
 #include "common/weather.h"
 

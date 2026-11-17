@@ -61,6 +61,7 @@ extern void (*g_pfnPresentFrame)(void);
 #define RENDER_BACKEND_MODE RENDER_BACKEND_MODE_GLIDE
 #endif
 
+/** @cond */
 /**
  * The mode of the renderer, 0 before one is set.
  *
@@ -76,6 +77,7 @@ extern int g_dwRenderBackendMode;
  * @ghidraAddress BRGlide: 0x106b7ab4
  */
 extern int (*g_pfnRenderDeviceReset)(void);
+/** @endcond */
 
 /**
  * Release the render device, if one is set. The Glide library does not call it.
@@ -263,6 +265,7 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
 int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId);
 #endif /* TGR_BRD3D */
 
+/** @cond */
 /**
  * The next free entry of g_afModelVertexPool.
  *
@@ -270,6 +273,7 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
  * @ghidraAddress BRGlide: 0x100a751c
  */
 extern ConvertedModelVertex *g_pModelDataPoolCursor;
+/** @endcond */
 
 /**
  * Make the size of the frame the size of the framebuffer of the configuration.
@@ -297,6 +301,7 @@ struct VertexConvCacheEntry {
 /** The number of entries of g_aVertexConvCache. */
 #define VERTEX_CONV_CACHE_SIZE 0x800
 
+/** @cond */
 /**
  * The runs of vertices converted.
  *
@@ -312,6 +317,7 @@ extern VertexConvCacheEntry g_aVertexConvCache[VERTEX_CONV_CACHE_SIZE];
  * @ghidraAddress BRGlide: 0x105b76f4
  */
 extern int g_dwVertexConvCacheCount;
+/** @endcond */
 
 /**
  * Add a run of vertices converted to g_aVertexConvCache while it has room.
@@ -331,6 +337,8 @@ union ModelVertexData;
 /**
  * Byte-swap the positions, flags, and texture coordinates of loaded Nintendo 64 vertices.
  *
+ * @param pVertices The vertices, swapped in place.
+ * @param nCount The number of vertices.
  * @ghidraAddress BRD3D: 0x1002bdd0
  * @ghidraAddress BRGlide: 0x10018e90
  */
@@ -340,6 +348,8 @@ void ByteSwapVertexArray(Vtx *pVertices, int nCount);
  * Convert Nintendo 64 vertex positions and texture coordinates to floats in the model data pool.
  * Normal components are divided by 128.
  *
+ * @param pVertices The vertices, already in the byte order of the host.
+ * @param nCount The number of vertices, added to g_dwConvertedVertexCount.
  * @return The first converted vertex in the pool.
  * @ghidraAddress BRD3D: 0x1002be30
  * @ghidraAddress BRGlide: 0x10018ef0
@@ -349,6 +359,10 @@ ConvertedModelVertex *ConvertVerticesToFloat(const Vtx *pVertices, int nCount);
 /**
  * Reuse converted vertices for a previously seen source array, or convert and cache them.
  *
+ * @param pVertices The source pointer, replaced by the converted vertices. A null source is
+ * ignored.
+ * @param nCount The number of vertices, 0 to convert nothing. A cached entry matches only the
+ * same source and count.
  * @ghidraAddress BRD3D: 0x1002bd50
  * @ghidraAddress BRGlide: 0x10018e10
  */
@@ -357,6 +371,8 @@ void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount);
 /**
  * Relocate a display-list vertex command's source address and cache its converted vertices.
  *
+ * @param pCommand The vertex command. Its second word takes the high byte of g_dwOldBaseAddress
+ * before relocation, and bits 10 to 15 of its first word give the vertex count.
  * @ghidraAddress BRD3D: 0x1002c150
  * @ghidraAddress BRGlide: 0x10019210
  */
@@ -405,6 +421,7 @@ bool LookupTextureMapEntry(unsigned dwAddress, int *pnWidth, int *pnHeight);
 /** The number of entries of g_aTextureUploadQueue. */
 #define TEXTURE_UPLOAD_QUEUE_SIZE 256
 
+/** @cond */
 /**
  * The textures to upload, a ring from g_dwTextureUploadQueueTail to g_dwTextureUploadQueueHead.
  *
@@ -436,6 +453,7 @@ extern int g_dwTextureUploadQueueTail;
  * @ghidraAddress BRGlide: 0x118ed1b8
  */
 extern HANDLE g_hTextureUploadQueueMutex;
+/** @endcond */
 
 /**
  * Empty the queue of textures to upload and create its mutex.
@@ -453,6 +471,7 @@ void InitializeTextureUploadQueue(void);
  */
 void DestroyTextureUploadQueue(void);
 
+/** @cond */
 /**
  * Whether the data of a texture is copied when its pointers are relocated.
  *
@@ -460,6 +479,7 @@ void DestroyTextureUploadQueue(void);
  * @ghidraAddress BRGlide: 0x105b16e8
  */
 extern int g_dwCopyTextureDataOnRelocate;
+/** @endcond */
 
 /**
  * The category of the textures loaded next. Its values are not recovered yet.
@@ -547,6 +567,7 @@ extern int g_dwMaxTexHeightLowQuality;
  */
 void SelectTextureQualityFromVideoMemory(void);
 
+/** @cond */
 /**
  * The backend callback that creates an N64 image texture after calculating its load size.
  *
@@ -566,10 +587,26 @@ extern unsigned (*g_pfnCreateTextureFromN64ImageAutoLoadSize)(const unsigned cha
                                                               int,
                                                               int,
                                                               int);
+/** @endcond */
 
 /**
  * Calculate the image load size from @p nWidth and delegate texture creation to the renderer.
  *
+ * @param pImage The image bytes of the console.
+ * @param pPalette The palette bytes of the console, or nullptr for an image without one.
+ * @param nWidth The width in texels. The bytes of a row are calculated from the width rounded up
+ * to a power of two.
+ * @param nHeight The height in texels.
+ * @param nSize The texel size of the console (G_IM_SIZ).
+ * @param nFormat The image format of the console (G_IM_FMT).
+ * @param nOption6 Whether to mirror the texture across S.
+ * @param nOption7 Whether to mirror the texture across T.
+ * @param nOption8 Whether to clamp S.
+ * @param nOption9 Whether to clamp T.
+ * @param nOption10 The shift of S of the tile.
+ * @param nOption11 The shift of T of the tile.
+ * @param nOption12 Whether the maximum texture dimensions of the texture quality apply.
+ * @param nOption13 The row mask for swapped texture words.
  * @return The renderer's texture entry identifier.
  * @ghidraAddress BRD3D: 0x10028bf0
  * @ghidraAddress BRGlide: 0x10027f00
@@ -592,6 +629,7 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
 /**
  * Duplicate a texture entry with both texture-coordinate scales halved.
  *
+ * @param nTexture The texture entry to copy. The copy shares its device texture.
  * @return The new texture entry identifier.
  * @ghidraAddress BRD3D: 0x10024ae0
  */
@@ -668,8 +706,10 @@ void ProcessTextureUploadQueueEntry(void);
  */
 void EnqueueTextureUploadEntry(int nEntry, TextureUploadData payload);
 
+/** @cond */
 /** The 4-by-4 intensity pixels of the current weather shade. @ghidraAddress BRD3D: 0x104d51c0 */
 extern unsigned char g_abWeatherShadeTexture[16];
+/** @endcond */
 
 /**
  * The device texture identifier of the current weather shade.
@@ -947,12 +987,14 @@ int CloneTextureEntryWithNewImageData(int nEntry,
  */
 int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage);
 
+/** @cond */
 /**
  * Allocation label for the device texture table.
  *
  * @ghidraAddress BRD3D: 0x100a7e20
  */
 extern const char g_szTidFromTextureAppendAmid[];
+/** @endcond */
 
 /**
  * Create device textures for animated track frames and replace their image offsets with entries.
@@ -1002,6 +1044,23 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight);
 /**
  * Create a device texture from an N64 image and its load options.
  *
+ * @param pImage The image bytes of the console.
+ * @param pPalette The palette bytes of the console, or nullptr for an image without one.
+ * @param nWidth The width in texels, padded to a power of two for decoding.
+ * @param nHeight The height in texels, padded to a power of two for decoding.
+ * @param nLineBytes The bytes of a row of the tile.
+ * @param nSize The texel size of the console (G_IM_SIZ).
+ * @param nFormat The image format of the console (G_IM_FMT).
+ * @param nOption7 Whether to mirror the texture across S.
+ * @param nOption8 Whether to mirror the texture across T.
+ * @param nOption9 Whether to clamp S.
+ * @param nOption10 Whether to clamp T.
+ * @param nOption11 The shift of S of the tile.
+ * @param nOption12 The shift of T of the tile.
+ * @param nOption13 Whether the maximum texture dimensions of the texture quality apply. The
+ * Glide renderer does not read it.
+ * @param nOption14 The row mask for swapped texture words.
+ * @return The texture entry identifier.
  * @ghidraAddress BRD3D: 0x10027c60
  * @ghidraAddress BRGlide: 0x100272f0
  */

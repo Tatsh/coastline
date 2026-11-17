@@ -118,14 +118,15 @@ void FatalErrorWithMessage(const char *pszFormat, ...);
 /** A pod file the game reads, and the writer of one. */
 class PodArchive {
 private:
+    // Clear the directory, file, and path members and zero the header, without freeing.
     void ClearPodArchive();
 
-    PodFileHelper helper;       /*!< The routines of the files. */
-    PodHeader header;           /*!< The header of the file. */
-    PodEntry *pEntries;         /*!< The directory, from new. */
-    FILE *pFile;                /*!< The file. */
-    char szPath[POD_PATH_SIZE]; /*!< The path of the file. */
-    unsigned dwDirectorySize;   /*!< The size of the directory in bytes. */
+    PodFileHelper helper;
+    PodHeader header;
+    PodEntry *pEntries; // The directory, from new.
+    FILE *pFile;
+    char szPath[POD_PATH_SIZE];
+    unsigned dwDirectorySize; // In bytes.
 
 public:
     /**
@@ -137,55 +138,28 @@ public:
     virtual ~PodArchive();
 
 private:
-    /**
-     * Make the name of an entry from a path: the name of the file, in capitals, padded with zeros
-     * to #POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
-     *
-     * @param pszPath The path.
-     * @param pszName Receives the name, #POD_ENTRY_NAME_SIZE bytes.
-     * @ghidraAddress BRD3D: 0x100085f0
-     * @ghidraAddress BRGlide: 0x100087d0
-     */
+    // Write the file name of a path to pszName as an entry name, in capitals and padded with zeros
+    // to POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
+    // @ghidraAddress BRD3D: 0x100085f0
+    // @ghidraAddress BRGlide: 0x100087d0
     virtual void CleanupName(const char *pszPath, char *pszName);
 
-    /**
-     * Find the entry of a path.
-     *
-     * @param pszPath The path.
-     * @return The index of the entry, or -1.
-     * @ghidraAddress BRD3D: 0x10008670
-     * @ghidraAddress BRGlide: 0x10008850
-     */
+    // Find the index of the entry of a path, or -1.
+    // @ghidraAddress BRD3D: 0x10008670
+    // @ghidraAddress BRGlide: 0x10008850
     virtual int FindPodIndexByName(const char *pszPath);
 
-    /**
-     * Find the entry of a path, which must exist.
-     *
-     * @param pszPath The path.
-     * @return The index of the entry.
-     * @ghidraAddress BRD3D: 0x10008750
-     * @ghidraAddress BRGlide: 0x10008930
-     */
+    // Find the index of the entry of a path. The entry must exist.
+    // @ghidraAddress BRD3D: 0x10008750
+    // @ghidraAddress BRGlide: 0x10008930
     virtual int GetPodIndexByName(const char *pszPath);
 
-    /**
-     * The size of the data of an entry.
-     *
-     * @param nIndex The index of the entry.
-     * @return The size.
-     * @ghidraAddress BRD3D: 0x10008780
-     * @ghidraAddress BRGlide: 0x10008960
-     */
+    // @ghidraAddress BRD3D: 0x10008780
+    // @ghidraAddress BRGlide: 0x10008960
     virtual unsigned GetPodLength(unsigned nIndex);
 
-    /**
-     * Read the data of an entry.
-     *
-     * @param nIndex The index of the entry.
-     * @param pBuffer Receives the data.
-     * @ghidraAddress BRD3D: 0x100087b0
-     * @ghidraAddress BRGlide: 0x10008990
-     */
+    // @ghidraAddress BRD3D: 0x100087b0
+    // @ghidraAddress BRGlide: 0x10008990
     virtual void ReadPodBytesFromFile(unsigned nIndex, void *pBuffer);
 
 public:
@@ -201,35 +175,19 @@ public:
     virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
 
 private:
-    /**
-     * Read the data of an entry.
-     *
-     * @param nIndex The index of the entry.
-     * @param pBuffer Receives the data.
-     * @return pBuffer.
-     * @ghidraAddress BRD3D: 0x10008850
-     * @ghidraAddress BRGlide: 0x10008a30
-     */
+    // Read the data of an entry into pBuffer and return pBuffer.
+    // @ghidraAddress BRD3D: 0x10008850
+    // @ghidraAddress BRGlide: 0x10008a30
     virtual void *LoadPodEntryByIndex(unsigned nIndex, void *pBuffer);
 
-    /**
-     * Read the data of the entry of a path into memory from new.
-     *
-     * @param pszPath The path.
-     * @return The data.
-     * @ghidraAddress BRD3D: 0x10008890
-     * @ghidraAddress BRGlide: 0x10008a70
-     */
+    // Read the data of the entry of a path into memory from new.
+    // @ghidraAddress BRD3D: 0x10008890
+    // @ghidraAddress BRGlide: 0x10008a70
     virtual void *AllocAndLoadPodByName(const char *pszPath);
 
-    /**
-     * Read the data of an entry into memory from new.
-     *
-     * @param nIndex The index of the entry.
-     * @return The data.
-     * @ghidraAddress BRD3D: 0x10008810
-     * @ghidraAddress BRGlide: 0x100089f0
-     */
+    // Read the data of an entry into memory from new.
+    // @ghidraAddress BRD3D: 0x10008810
+    // @ghidraAddress BRGlide: 0x100089f0
     virtual void *AllocAndLoadPodByIndex(unsigned nIndex);
 
 public:
@@ -243,36 +201,22 @@ public:
     virtual void OpenPodFile();
 
 private:
-    /**
-     * Create a pod file to write, after the space of its header, and clear the entries of the
-     * writer.
-     *
-     * @param pszPath The path of the file.
-     * @ghidraAddress BRD3D: 0x100089c0
-     * @ghidraAddress BRGlide: 0x10008ba0
-     */
+    // Create a pod file to write, after the space of its header, and clear the entries of the
+    // writer.
+    // @ghidraAddress BRD3D: 0x100089c0
+    // @ghidraAddress BRGlide: 0x10008ba0
     virtual void CreatePodFile(const char *pszPath);
 
-    /**
-     * Write the data of an entry to the pod file being written.
-     *
-     * @param pszPath The path the name of the entry comes from.
-     * @param pData The data.
-     * @param dwSize The size of the data.
-     * @param bAttrA The first attribute of the entry.
-     * @param bAttrB The second attribute of the entry.
-     * @ghidraAddress BRD3D: 0x10008a00
-     * @ghidraAddress BRGlide: 0x10008be0
-     */
+    // Write the data of an entry to the pod file being written. The name of the entry comes from
+    // pszPath.
+    // @ghidraAddress BRD3D: 0x10008a00
+    // @ghidraAddress BRGlide: 0x10008be0
     virtual void
     AddPodEntry(const char *pszPath, const void *pData, unsigned dwSize, char bAttrA, char bAttrB);
 
-    /**
-     * Write the directory and the header of the pod file being written, and close it.
-     *
-     * @ghidraAddress BRD3D: 0x10008aa0
-     * @ghidraAddress BRGlide: 0x10008c80
-     */
+    // Write the directory and the header of the pod file being written, and close it.
+    // @ghidraAddress BRD3D: 0x10008aa0
+    // @ghidraAddress BRGlide: 0x10008c80
     virtual void FinalizePodFile();
 
 public:

@@ -15,27 +15,21 @@
 /** A stream of the bytes and bits of a packet, read and written from the most significant bit. */
 class NetStream {
 private:
-    int nReadBit;           /*!< The bits read of the byte at nReadPos. */
-    int nReadPos;           /*!< The byte read next. */
-    int nWriteBit;          /*!< The bits written of the byte at nWritePos. */
-    int nWritePos;          /*!< The byte written next, and the end of the data to read. */
-    unsigned char *pBuffer; /*!< The bytes, abBuffer or a buffer attached. */
-    unsigned char abBuffer[NET_STREAM_BUFFER_SIZE]; /*!< The bytes of a stream of its own. */
+    int nReadBit;           // The bits read of the byte at nReadPos.
+    int nReadPos;           // The byte read next.
+    int nWriteBit;          // The bits written of the byte at nWritePos.
+    int nWritePos;          // The byte written next, and the end of the data to read.
+    unsigned char *pBuffer; // The bytes, abBuffer or a buffer attached.
+    unsigned char abBuffer[NET_STREAM_BUFFER_SIZE]; // Bytes without an attached buffer.
 
-    /**
-     * Move the reading to the next whole byte.
-     *
-     * @ghidraAddress BRD3D: 0x10073d20
-     * @ghidraAddress BRGlide: 0x1006cf60
-     */
+    // Move the reading to the next whole byte.
+    // @ghidraAddress BRD3D: 0x10073d20
+    // @ghidraAddress BRGlide: 0x1006cf60
     void StreamAlignReadByte();
 
-    /**
-     * Move the writing to the next whole byte.
-     *
-     * @ghidraAddress BRD3D: 0x10073f20
-     * @ghidraAddress BRGlide: 0x1006d160
-     */
+    // Move the writing to the next whole byte.
+    // @ghidraAddress BRD3D: 0x10073f20
+    // @ghidraAddress BRGlide: 0x1006d160
     void StreamFlushWriteByte();
 
 public:
@@ -284,6 +278,17 @@ bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer);
  * Write a player's state, options, and owner, followed by a name or countdown for states that
  * include them.
  *
+ * @param pStream The stream written to.
+ * @param bPlayer The slot of the player the status describes, written as the first byte.
+ * @param nState The state of the slot, in its low 6 bits. States 0 to 2 add the name, and state 4
+ * adds the low 24 bits of g_dwNetRaceStartCountdownTime.
+ * @param nStatusValue The status value of the slot, written as its low byte.
+ * @param bOptionA The first status option of the slot.
+ * @param bOptionB The second status option of the slot.
+ * @param bOptionC The third status option of the slot.
+ * @param szPlayerName The name of the player, written as 24 bytes padded with zeros. Bytes past
+ * the 24th are omitted, and the field is unterminated when the name fills it.
+ * @param dwOwner The DirectPlay player that controls the slot, written as 32 bits.
  * @return Whether the packet fit within the maximum network packet size.
  * @ghidraAddress BRD3D: 0x10071f40
  * @ghidraAddress BRGlide: 0x1006aeb0
@@ -301,6 +306,8 @@ bool WritePlayerStatusPacket(NetStream *pStream,
 /**
  * Write the maximum player count, track, weather, allowed cars, and tyre and suspension settings.
  *
+ * @param pStream The stream written to.
+ * @param bPlayer The slot of the recipient, written in the low 5 bits of the tag byte 0xe0.
  * @return Whether the settings packet fit within the maximum network packet size.
  * @ghidraAddress BRD3D: 0x10072080
  * @ghidraAddress BRGlide: 0x1006aff0
@@ -320,6 +327,8 @@ struct KeyframeState;
 /**
  * Decode a full network vehicle keyframe from the bit stream into @p pState.
  *
+ * @param pState Receives the decoded state.
+ * @param pStream The stream, read from its bit position.
  * @ghidraAddress BRD3D: 0x10006ec0
  * @ghidraAddress BRGlide: 0x10007230
  */
@@ -328,6 +337,8 @@ void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
 /**
  * Accumulate vehicle state over three frames and send full or delta snapshots on schedule.
  *
+ * @param state The local vehicle state of the frame. A send replaces its light and effect fields
+ * with the largest values of the accumulated frames.
  * @return Whether the update was deferred or its network send succeeded.
  * @ghidraAddress BRD3D: 0x10005130
  * @ghidraAddress BRGlide: 0x100054a0
@@ -360,6 +371,7 @@ extern int g_dwVehicleStateSendCounter;
 /**
  * Send a complete vehicle keyframe as an unreliable network packet.
  *
+ * @param state The vehicle state, also stored as the outgoing snapshot of the local player.
  * @return Whether the send succeeded.
  * @ghidraAddress BRD3D: 0x10004c60
  * @ghidraAddress BRGlide: 0x10004fd0
@@ -369,6 +381,8 @@ unsigned SendKeyframePacket(KeyframeState *state);
 /**
  * Send a vehicle keyframe compressed against @p base as an unreliable network packet.
  *
+ * @param state The vehicle state, also stored as the outgoing snapshot of the local player.
+ * @param base The last complete keyframe sent, the base of the decoding by the receiver.
  * @return Whether the send succeeded.
  * @ghidraAddress BRD3D: 0x10004e50
  * @ghidraAddress BRGlide: 0x100051c0
@@ -378,6 +392,8 @@ unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base);
 /**
  * Encode orientation, position, motion, progress, lights, and effects as a full keyframe.
  *
+ * @param stream The stream, written from its bit position.
+ * @param state The vehicle state to encode.
  * @ghidraAddress BRD3D: 0x100061a0
  * @ghidraAddress BRGlide: 0x10006510
  */
@@ -386,6 +402,10 @@ void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
 /**
  * Interpolate or predict the vehicle state of a remote player from buffered snapshots.
  *
+ * @param state Receives the state, with a normalised orientation and a clamped position. With
+ * fewer than two snapshots, only its engine speed is set, to 400.
+ * @param slotIndex The slot of the player in g_aNetPeerSlots. For the slot of the local player,
+ * only the normalisation and the clamping change @p state.
  * @return Zero when a remote slot has fewer than two snapshots; one otherwise.
  * @ghidraAddress BRD3D: 0x100054a0
  * @ghidraAddress BRGlide: 0x10005810
@@ -395,6 +415,9 @@ unsigned GetInterpolatedRemoteVehicleState(KeyframeState *state, int slotIndex);
 /**
  * Encode a keyframe against @p base, shortening position and progress fields.
  *
+ * @param stream The stream, written from its bit position.
+ * @param state The vehicle state to encode.
+ * @param base The keyframe the position and progress differences are taken from.
  * @ghidraAddress BRD3D: 0x10006830
  * @ghidraAddress BRGlide: 0x10006ba0
  */
@@ -403,6 +426,9 @@ void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, Keyfr
 /**
  * Reconstruct position and progress relative to @p pBase from a delta keyframe.
  *
+ * @param pState Receives the decoded state.
+ * @param pBase The keyframe the delta was encoded against.
+ * @param pStream The stream, read from its bit position.
  * @ghidraAddress BRD3D: 0x100073e0
  * @ghidraAddress BRGlide: 0x10007750
  */

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The game log, written by an SDL log callback to game.log.
+ */
+
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -36,15 +41,25 @@ public:
     ~GameLog();
     /** Copying is disabled because this log registers a callback tied to its lifetime. */
     GameLog(const GameLog &) = delete;
-    /** Assignment is disabled because callback restoration follows construction order. */
+    /**
+     * Assignment is disabled because callback restoration follows construction order.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     GameLog &operator=(const GameLog &) = delete;
 
-    /** @return Whether the log file is open. */
+    /**
+     * Report whether construction opened the file. A closed log still forwards messages to the
+     * previous callback.
+     *
+     * @return Whether the log file is open.
+     */
     bool IsOpen() const;
 
 private:
     friend void StopGameLog();
     struct State;
+    // The file, its mutex, the previous callback, and the home directories written as ~.
     std::unique_ptr<State> m_state;
 };
 

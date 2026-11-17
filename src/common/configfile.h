@@ -19,14 +19,23 @@ union ConfigLoadArgument {
     unsigned value;   /*!< The flag, or the byte count for a custom read. */
     const char *path; /*!< The path for an unrecognised configuration type. */
 
-    /** Construct a flag argument indicating whether failure is allowed. */
+    /**
+     * Construct a flag argument indicating whether failure is allowed.
+     *
+     * @param bAllowFailure Whether a failed load is tolerated, stored as 1 or 0.
+     */
     ConfigLoadArgument(bool bAllowFailure) : value(bAllowFailure ? 1 : 0) {
     }
-    /** Construct an argument containing a custom path. */
+    /**
+     * Construct an argument with a custom path.
+     *
+     * @param pszPath The path, borrowed for the duration of the load.
+     */
     ConfigLoadArgument(const char *pszPath) : path(pszPath) {
     }
 };
 
+/** @cond */
 /**
  * The first persisted configuration value, unused after loading.
  *
@@ -42,6 +51,7 @@ extern int g_dwConfigValue0;
  * @ghidraAddress BRGlide: 0x100ad764
  */
 extern int g_dwConfigValue1;
+/** @endcond */
 
 /**
  * Whether the speed display uses miles per hour.
@@ -51,6 +61,7 @@ extern int g_dwConfigValue1;
  */
 extern int g_bSpeedUnitsMph;
 
+/** @cond */
 /**
  * The path used for binary configuration reads.
  *
@@ -58,6 +69,7 @@ extern int g_bSpeedUnitsMph;
  * @ghidraAddress BRGlide: 0x100b55d8
  */
 extern const char g_szCRallyConfigDat[];
+/** @endcond */
 
 #ifdef __cplusplus
 extern "C" {

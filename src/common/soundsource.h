@@ -1,6 +1,11 @@
 #ifndef COASTLINE_SOUND_SOURCE_H
 #define COASTLINE_SOUND_SOURCE_H
 
+/**
+ * @file
+ * The tracking of the nearest sound source of the track.
+ */
+
 #include "common/render.h"
 
 #ifdef __cplusplus

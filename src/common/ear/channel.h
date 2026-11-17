@@ -1,6 +1,12 @@
 #ifndef COASTLINE_EAR_CHANNEL_H
 #define COASTLINE_EAR_CHANNEL_H
 
+/**
+ * @file
+ * The channels of the EAR library and their exports. A channel groups events under a shared gain,
+ * priority level, and event limits.
+ */
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -85,6 +91,8 @@ extern "C" {
 #endif
 
 /**
+ * Forward a channel registration to EAR_DLL_RegisterChannel().
+ *
  * @param channel The channel.
  * @param flags The flags of the channel.
  * @param gainPercent The gain of the channel, in percent.
@@ -117,6 +125,8 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
                                       uint32_t playbackLimits);
 
 /**
+ * Forward a channel shutdown to EAR_DLL_ShutDownChannel().
+ *
  * @param channel The channel, 0 for every channel, with 0x10000 for the shutdown of the library.
  * @return 0.
  * @ghidraAddress EAR: 0x1000f0a0
@@ -134,6 +144,8 @@ int __stdcall EarShutDownChannelExportWrapper(uint32_t channel);
 int __stdcall EAR_DLL_ShutDownChannel(uint32_t channel);
 
 /**
+ * Forward the clearing of a channel to EAR_DLL_ClearChannel().
+ *
  * @param channel The channel, 0 for every channel.
  * @param keepActive Whether the active events stop rather than being deleted.
  * @return Whether an active event was stopped.
@@ -152,6 +164,8 @@ int __stdcall EarClearChannelExportWrapper(uint32_t channel, int keepActive);
 int __stdcall EAR_DLL_ClearChannel(uint32_t channel, int keepActive);
 
 /**
+ * Forward a channel control to EAR_DLL_ChangeChannelControl().
+ *
  * @param channel The channel, 0 for every channel.
  * @param control The control.
  * @return The result of the control.

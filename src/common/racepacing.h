@@ -1,6 +1,12 @@
 #ifndef COASTLINE_PLATFORM_WIN_RACE_PACING_H
 #define COASTLINE_PLATFORM_WIN_RACE_PACING_H
 
+/**
+ * @file
+ * The pacing of the game frames of a race at 30 a second in the PC release, and the drawing of
+ * interpolated snapshots between them.
+ */
+
 #include "common/frameclock.h"
 #include "common/framestatistics.h"
 #include "common/snapshotops.h"
@@ -16,6 +22,7 @@ extern "C" {
  */
 extern int g_dwRaceFrameCounter;
 
+/** @cond */
 /**
  * The time of the preceding game loop, in milliseconds.
  * @ghidraAddress BRD3D: 0x106909e8
@@ -58,6 +65,7 @@ extern unsigned g_dwLastRaceRenderTime;
  * @ghidraAddress BRGlide: 0x100a95b8
  */
 extern const unsigned g_adwRaceFrameIntervals[3];
+/** @endcond */
 
 /** Record the duration of the preceding game loop. */
 static inline void UpdateRaceFrameStatistics(void) {

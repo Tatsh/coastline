@@ -1,6 +1,11 @@
 #ifndef COASTLINE_HUDASSETS_H
 #define COASTLINE_HUDASSETS_H
 
+/**
+ * @file
+ * The pixel data of the HUD fonts, the HUD textures, and the built-in environment textures.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "common/vehicleview.h"
 #endif

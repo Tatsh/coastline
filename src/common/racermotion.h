@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RACER_MOTION_H
 #define COASTLINE_RACER_MOTION_H
 
+/**
+ * @file
+ * The motion of a racer each frame, by its vehicle or along the route without one.
+ */
+
 #include "common/racerslot.h"
 
 #if TGR_BOSS_RALLY
@@ -13,11 +18,20 @@
 extern "C" {
 #endif
 
-/** Drive an assigned vehicle or advance an unassigned racer along the route. */
+/**
+ * Drive an assigned vehicle or advance an unassigned racer along the route.
+ *
+ * @param slot The racer to move.
+ */
 void UpdateRacerSlotMotion(RacerSlot *slot);
 
 #if TGR_BOSS_RALLY
-/** Whether network play disables an unassigned racer. */
+/**
+ * Whether network play disables an unassigned racer.
+ *
+ * @param slot The racer.
+ * @return Non-zero during network play when the racer has no vehicle.
+ */
 static inline s32 IsNetworkRacerMotionDisabled(RacerSlot *slot) {
     return g_dwNetworkPlayMode && RACER_SLOT_GET(slot, Vehicle) == NULL;
 }

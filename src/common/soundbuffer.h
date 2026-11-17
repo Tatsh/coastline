@@ -55,6 +55,7 @@ extern IDirectSoundBuffer *g_pDirectSoundPrimaryBuffer;
 extern WAVEFORMATEX *g_pDirectSoundWaveFormat;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
+/** @cond */
 /**
  * The users of DirectSound. The last ShutdownDirectSound() releases it.
  *
@@ -62,6 +63,7 @@ extern WAVEFORMATEX *g_pDirectSoundWaveFormat;
  * @ghidraAddress BRGlide: 0x1184c45c
  */
 extern int g_dwDirectSoundRefCount;
+/** @endcond */
 
 /** A sound buffer of a sample, in a list. The layout is not recovered past the members below. */
 struct SoundBufferNode {
@@ -93,6 +95,7 @@ struct SoundBufferNode {
     SoundBufferNode *pNext; /*!< The next node of the list. */
 };
 
+/** @cond */
 /**
  * The head of the list of the sound buffers. Only its first member and its link are read here.
  *
@@ -100,6 +103,7 @@ struct SoundBufferNode {
  * @ghidraAddress BRGlide: 0x1184c2a8
  */
 extern SoundBufferNode g_SoundBufferListHead;
+/** @endcond */
 
 /**
  * Create the buffer of DirectSound of a sample, static with control of the frequency, the pan,
@@ -133,6 +137,7 @@ HRESULT ReleaseSoundBuffer(SoundBufferNode *pNode);
  */
 HRESULT StopSoundBuffer(SoundBufferNode *pNode);
 
+/** @cond */
 /**
  * The sound buffers of the channels of the sound effects.
  *
@@ -140,6 +145,7 @@ HRESULT StopSoundBuffer(SoundBufferNode *pNode);
  * @ghidraAddress BRGlide: 0x1184c268
  */
 extern SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+/** @endcond */
 
 /**
  * Report whether the buffer of a channel plays, when sound is on.
@@ -181,6 +187,7 @@ void SetSoundBankEntryIndex(int nVoice, int nIndex);
  */
 void ResetSoundBankTables(void);
 
+/** @cond */
 /**
  * The number of entries of g_aSoundChannelBuffers that are loaded.
  *
@@ -188,6 +195,7 @@ void ResetSoundBankTables(void);
  * @ghidraAddress BRGlide: 0x1184c260
  */
 extern int g_dwLoadedSoundSampleCount;
+/** @endcond */
 
 /** The sets of sounds of LoadSoundSet(). */
 enum {
@@ -327,6 +335,7 @@ bool StopSoundVoice(int nSample, int nVoice);
  */
 bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels);
 
+/** @cond */
 /**
  * The settings last applied to the buffer of each channel.
  *
@@ -334,6 +343,7 @@ bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels);
  * @ghidraAddress BRGlide: 0x1184c080
  */
 extern SoundChannelState g_aSoundChannelState[SOUND_CHANNEL_COUNT];
+/** @endcond */
 
 /**
  * Set the levels of the two sides of the buffer of a channel and record them, when sound is on.
@@ -346,6 +356,7 @@ extern SoundChannelState g_aSoundChannelState[SOUND_CHANNEL_COUNT];
  */
 bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels);
 
+/** @cond */
 /**
  * The scale of a frequency of each channel, from the sample assigned to it.
  *
@@ -353,6 +364,7 @@ bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels);
  * @ghidraAddress BRGlide: 0x1184c1e8
  */
 extern double g_adChannelFrequencyScale[SOUND_CHANNEL_COUNT];
+/** @endcond */
 
 /**
  * Stop the buffer of a channel and give the channel the buffer of a sample for it, when sound is

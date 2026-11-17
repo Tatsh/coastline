@@ -56,88 +56,80 @@ class DisplayMode;
 /** A DirectDraw driver the game found. */
 class DirectDrawDriver {
 private:
-    unsigned dwFlags;               /*!< #DIRECTDRAW_DRIVER_USABLE | #DIRECTDRAW_DRIVER_PRIMARY. */
-    GUID guid;                      /*!< The GUID of the driver. */
-    char *pszName;                  /*!< The name of the driver, allocated. */
-    char *pszDescription;           /*!< The description of the driver, allocated. */
-    DDCAPS hardwareCaps;            /*!< What the hardware of the driver does. */
-    DDCAPS softwareCaps;            /*!< What the emulation of the driver does. */
-    int nDisplayModeCount;          /*!< The display modes of the driver. */
-    DisplayMode *pDisplayModesHead; /*!< The first display mode. */
-    DisplayMode *pDisplayModesTail; /*!< The last display mode. */
-    int nD3DDeviceCount;            /*!< The Direct3D devices of the driver. */
-    D3DDeviceNode *pD3DDevicesHead; /*!< The first Direct3D device. */
-    D3DDeviceNode *pD3DDevicesTail; /*!< The last Direct3D device. */
-    DirectDrawDriver *pPrev;        /*!< The driver found before. */
-    DirectDrawDriver *pNext;        /*!< The next driver found. */
+    unsigned dwFlags; // #DIRECTDRAW_DRIVER_USABLE | #DIRECTDRAW_DRIVER_PRIMARY.
+    GUID guid;
+    char *pszName;        // Allocated.
+    char *pszDescription; // Allocated.
+    DDCAPS hardwareCaps;
+    DDCAPS softwareCaps; // What the emulation of the driver does.
+    int nDisplayModeCount;
+    DisplayMode *pDisplayModesHead;
+    DisplayMode *pDisplayModesTail;
+    int nD3DDeviceCount;
+    D3DDeviceNode *pD3DDevicesHead;
+    D3DDeviceNode *pD3DDevicesTail;
+    DirectDrawDriver *pPrev;
+    DirectDrawDriver *pNext;
 
-    /**
-     * Find the display modes of the driver.
-     *
-     * @param pDirectDraw2 The DirectDraw interface of the driver.
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1001b320
-     */
+    // Find the display modes of the driver. Returns `S_OK`, or the error of DirectDraw.
+    // @ghidraAddress BRD3D: 0x1001b320
     HRESULT EnumerateDisplayModes(IDirectDraw2 *pDirectDraw2);
 
-    /**
-     * Free the display modes of the driver.
-     *
-     * @ghidraAddress BRD3D: 0x1001b3b0
-     */
+    // Free the display modes of the driver.
+    // @ghidraAddress BRD3D: 0x1001b3b0
     void FlushDirectDrawModeEnumerationList();
 
-    /**
-     * Find the Direct3D devices of the driver.
-     *
-     * @param pDirect3D2 The Direct3D interface of the driver.
-     * @return `S_OK`, or the error of Direct3D.
-     * @ghidraAddress BRD3D: 0x1001b510
-     */
+    // Find the Direct3D devices of the driver. Returns `S_OK`, or the error of Direct3D.
+    // @ghidraAddress BRD3D: 0x1001b510
     HRESULT EnumerateD3DDevices(IDirect3D2 *pDirect3D2);
 
-    /**
-     * Free the Direct3D devices of the driver.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1001b5a0
-     */
+    // Free the Direct3D devices of the driver. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1001b5a0
     int FlushDirect3DDeviceList();
 
 public:
-    /** @return The driver's capability flags. */
+    /** Read whether the driver is usable and whether it is the primary driver.
+     * @return #DIRECTDRAW_DRIVER_USABLE and #DIRECTDRAW_DRIVER_PRIMARY bits. */
     unsigned GetFlags() const {
         return dwFlags;
     }
-    /** @return The driver's GUID. */
+    /** Read the GUID DirectDraw reported for the driver.
+     * @return The GUID, stored in the driver. */
     const GUID *GetGuid() const {
         return &guid;
     }
-    /** @return The driver's displayed name. */
+    /** Read the name DirectDraw reported for the driver.
+     * @return The name, allocated by the driver. */
     const char *GetName() const {
         return pszName;
     }
-    /** @return The number of display modes. */
+    /** Count the display modes found for the driver.
+     * @return The number of display modes. */
     unsigned GetDisplayModeCount() const {
         return static_cast<unsigned>(nDisplayModeCount);
     }
-    /** @return The first display mode. */
+    /** Read the start of the list of display modes.
+     * @return The first display mode, or `nullptr` when none was found. */
     DisplayMode *GetDisplayModesHead() const {
         return pDisplayModesHead;
     }
-    /** @return The previous driver in the list. */
+    /** Read the driver found before this one.
+     * @return The previous driver in the list, or `nullptr` at the start. */
     DirectDrawDriver *GetPrevious() const {
         return pPrev;
     }
-    /** @return The next driver in the list. */
+    /** Read the driver found after this one.
+     * @return The next driver in the list, or `nullptr` at the end. */
     DirectDrawDriver *GetNext() const {
         return pNext;
     }
-    /** Link the preceding @p driver. */
+    /** Link the preceding @p driver.
+     * @param driver The previous driver, or `nullptr`. */
     void SetPrevious(DirectDrawDriver *driver) {
         pPrev = driver;
     }
-    /** Link the following @p driver. */
+    /** Link the following @p driver.
+     * @param driver The next driver, or `nullptr`. */
     void SetNext(DirectDrawDriver *driver) {
         pNext = driver;
     }
@@ -292,51 +284,55 @@ class RenderHost;
 /** A Direct3D device of a driver. The layout after softwareDesc is not recovered yet. */
 class D3DDeviceNode {
 private:
-    unsigned dwFlags;           /*!< Flags of the device, of which bits 0 and 1 start clear. */
-    GUID guid;                  /*!< The GUID of the device. */
-    char *pszDescription;       /*!< The description of the device, allocated. */
-    char *pszName;              /*!< The name of the device, allocated. */
-    D3DDEVICEDESC hardwareDesc; /*!< What the hardware of the device does. */
-    D3DDEVICEDESC softwareDesc; /*!< What the emulation of the device does. */
-    int nTextureFormatCount;    /*!< The texture formats of the device. */
-    DisplayMode *pTextureFormatsHead; /*!< The first texture format, a surface description. */
-    DisplayMode *pTextureFormatsTail; /*!< The last texture format. */
-    D3DDeviceNode *pPrev;             /*!< The device of the driver before. */
-    D3DDeviceNode *pNext;             /*!< The next device of the driver. */
+    unsigned dwFlags; // Bits 0 and 1 start clear.
+    GUID guid;
+    char *pszDescription; // Allocated.
+    char *pszName;        // Allocated.
+    D3DDEVICEDESC hardwareDesc;
+    D3DDEVICEDESC softwareDesc; // What the emulation of the device does.
+    int nTextureFormatCount;
+    DisplayMode *pTextureFormatsHead; // Each texture format is a surface description.
+    DisplayMode *pTextureFormatsTail;
+    D3DDeviceNode *pPrev;
+    D3DDeviceNode *pNext;
 
-    /**
-     * Free the texture formats of the device.
-     *
-     * @ghidraAddress BRD3D: 0x1001afb0
-     */
+    // Free the texture formats of the device.
+    // @ghidraAddress BRD3D: 0x1001afb0
     void FlushTextureFormatList();
 
 public:
-    /** @return The device's GUID. */
+    /** Read the GUID Direct3D reported for the device, passed to CreateDevice().
+     * @return The GUID, stored in the device. */
     GUID *GetGuid() {
         return &guid;
     }
-    /** @return The device's hardware capabilities. */
+    /** Read what the hardware of the device supports.
+     * @return The hardware description, stored in the device. */
     const D3DDEVICEDESC *GetHardwareDescription() const {
         return &hardwareDesc;
     }
-    /** @return The device's software capabilities. */
+    /** Read what the emulation of the device supports.
+     * @return The software description, stored in the device. */
     const D3DDEVICEDESC *GetSoftwareDescription() const {
         return &softwareDesc;
     }
-    /** @return The previous device in the list. */
+    /** Read the device found before this one.
+     * @return The previous device in the list, or `nullptr` at the start. */
     D3DDeviceNode *GetPrevious() const {
         return pPrev;
     }
-    /** @return The next device in the list. */
+    /** Read the device found after this one.
+     * @return The next device in the list, or `nullptr` at the end. */
     D3DDeviceNode *GetNext() const {
         return pNext;
     }
-    /** Link the preceding @p device. */
+    /** Link the preceding @p device.
+     * @param device The previous device, or `nullptr`. */
     void SetPrevious(D3DDeviceNode *device) {
         pPrev = device;
     }
-    /** Link the following @p device. */
+    /** Link the following @p device.
+     * @param device The next device, or `nullptr`. */
     void SetNext(D3DDeviceNode *device) {
         pNext = device;
     }
@@ -422,36 +418,37 @@ public:
 /** A display mode of a driver. The layout after desc is not recovered yet. */
 class DisplayMode {
 private:
-    DDSURFACEDESC desc; /*!< The description of the mode. */
-    DisplayMode *pPrev; /*!< The mode of the driver before. */
-    DisplayMode *pNext; /*!< The next mode of the driver. */
+    DDSURFACEDESC desc;
+    DisplayMode *pPrev;
+    DisplayMode *pNext;
 
-    /**
-     * The bits of a pixel of the mode.
-     *
-     * @return The bits, or 0 for a description without a pixel format.
-     * @ghidraAddress BRD3D: 0x1001ac60
-     */
+    // The bits of a pixel of the mode, or 0 for a description without a pixel format.
+    // @ghidraAddress BRD3D: 0x1001ac60
     int GetSurfaceDescBitDepth();
 
 public:
-    /** Replace the mode's DirectDraw surface description. */
+    /** Replace the mode's DirectDraw surface description.
+     * @param description The description DirectDraw reported for the mode, copied. */
     void SetDescription(const DDSURFACEDESC &description) {
         desc = description;
     }
-    /** @return The previous display mode in the list. */
+    /** Read the mode found before this one.
+     * @return The previous display mode in the list, or `nullptr` at the start. */
     DisplayMode *GetPrevious() const {
         return pPrev;
     }
-    /** @return The next display mode in the list. */
+    /** Read the mode found after this one.
+     * @return The next display mode in the list, or `nullptr` at the end. */
     DisplayMode *GetNext() const {
         return pNext;
     }
-    /** Link the preceding @p mode. */
+    /** Link the preceding @p mode.
+     * @param mode The previous mode, or `nullptr`. */
     void SetPrevious(DisplayMode *mode) {
         pPrev = mode;
     }
-    /** Link the following @p mode. */
+    /** Link the following @p mode.
+     * @param mode The next mode, or `nullptr`. */
     void SetNext(DisplayMode *mode) {
         pNext = mode;
     }
@@ -499,18 +496,22 @@ public:
 /** A Direct3D material and the description it was set from. */
 class D3DMaterial {
 private:
-    D3DMATERIAL desc;              /*!< The description of the material. */
-    D3DMATERIALHANDLE hMaterial;   /*!< The handle of the material on the device. */
-    IDirect3DMaterial2 *pMaterial; /*!< The material of Direct3D. */
-    int bDirty;                    /*!< Whether desc changed since it was given to pMaterial. */
+    D3DMATERIAL desc;
+    D3DMATERIALHANDLE hMaterial;
+    IDirect3DMaterial2 *pMaterial;
+    int bDirty; // Whether desc changed since it was given to pMaterial.
 
 public:
-    /** @return The material handle for the device. */
+    /** Read the handle the device gave the material, for render states and the viewport.
+     * @return The material handle. */
     D3DMATERIALHANDLE GetMaterialHandle() const {
         return hMaterial;
     }
 
-    /** Set the diffuse red, green, and blue components and mark the material dirty. */
+    /** Set the diffuse red, green, and blue components and mark the material dirty.
+     * @param red The red component, from 0 to 1.
+     * @param green The green component, from 0 to 1.
+     * @param blue The blue component, from 0 to 1. */
     void SetDiffuseColor(float red, float green, float blue) {
         desc.dcvDiffuse.r = red;
         desc.dcvDiffuse.g = green;
@@ -518,12 +519,14 @@ public:
         bDirty = 1;
     }
 
-    /** Set the material's colour-ramp size. */
+    /** Set the material's colour-ramp size without marking the material dirty.
+     * @param size The entries of the colour ramp. */
     void SetRampSize(DWORD size) {
         desc.dwRampSize = size;
     }
 
-    /** Apply the material description to the Direct3D material. */
+    /** Apply the material description to the Direct3D material and clear the dirty mark.
+     * @return The result of SetMaterial(). */
     HRESULT ApplyDescription() {
         bDirty = 0;
         return pMaterial->SetMaterial(&desc);
@@ -557,14 +560,15 @@ public:
 /** A texture of Direct3D created from an image in memory. */
 class D3DTexture {
 private:
-    IDirectDrawSurface *pSysMemSurface; /*!< The surface the image is written to. */
-    IDirectDrawSurface *pDeviceSurface; /*!< The texture surface, pSysMemSurface in software. */
-    IUnknown *pUnknown8;                /*!< Released with the surfaces. */
-    D3DTEXTUREHANDLE hTexture;          /*!< The handle of the texture on the device. */
-    [[maybe_unused]] unsigned char abUnknown10[0x10];
+    IDirectDrawSurface *pSysMemSurface; // The surface the image is written to.
+    IDirectDrawSurface *pDeviceSurface; // The texture surface, pSysMemSurface in software.
+    IUnknown *pUnknown8;                // Released with the surfaces.
+    D3DTEXTUREHANDLE hTexture;
+    [[maybe_unused]] unsigned char abUnknown10[0x10]; // Not accessed by the renderer.
 
 public:
-    /** @return The texture handle for the device. */
+    /** Read the handle the device gave the texture, for the texture render state.
+     * @return The texture handle. */
     D3DTEXTUREHANDLE GetTextureHandle() const {
         return hTexture;
     }
@@ -651,260 +655,207 @@ IDirectDraw *GetDirectDrawFromD3DDevice(IDirect3DDevice2 *pDevice);
 /** The DirectDraw and Direct3D objects of a window. */
 class DirectDrawRenderer {
 private:
-    [[maybe_unused]] int anUnknown0[2];  /* +0x00 */
-    D3DMaterial *pMaterial;              /*!< The material of the viewport. */
-    int dwDeviceInit;                    /*!< Whether the device has a depth buffer. */
-    int dwSize;                          /*!< The size of the renderer. */
-    int dwFlags;                         /*!< Options of the renderer. Bit 2 is set by default. */
-    [[maybe_unused]] int nUnknown18;     /* +0x18 */
-    int dwRenderStateFlags;              /*!< The objects created, #RENDERER_STATE_READY for all. */
-    HWND hWnd;                           /*!< The window drawn into. */
-    int nGdiModeRefCount;                /*!< How many times the screen was given to GDI. */
-    [[maybe_unused]] int nUnknown28;     /* +0x28 */
-    DirectDrawDriver *pDriver;           /*!< The driver selected. */
-    DisplayMode *pMode;                  /*!< The display mode selected. */
-    D3DDeviceNode *pDevice;              /*!< The Direct3D device selected. */
-    IDirectDraw *pDirectDraw;            /*!< The DirectDraw object of the driver. */
-    IDirectDraw2 *pDirectDraw2;          /*!< The second interface of pDirectDraw. */
-    IDirect3D2 *pDirect3D2;              /*!< The Direct3D interface of pDirectDraw. */
-    IDirectDrawSurface *pPrimarySurface; /*!< The front buffer. */
-    IDirectDrawPalette *pPrimaryPalette; /*!< The palette of the front buffer. */
-    unsigned nPaletteEntryCount;         /*!< The entries of the two palette buffers. */
-    PALETTEENTRY *pGdiPaletteEntries;    /*!< The palette of GDI, set while GDI has the screen. */
-    PALETTEENTRY *pGamePaletteEntries;   /*!< The palette of the game, saved for GDI. */
-    IDirectDrawSurface *pBackBuffer;     /*!< The surface the device draws into. */
-    IDirectDrawSurface *pZBuffer;        /*!< The depth buffer attached to pBackBuffer. */
-    IDirect3DDevice2 *pD3DDevice;        /*!< The Direct3D device. */
-    IDirect3DViewport2 *pViewport;       /*!< The viewport of pD3DDevice. */
-    [[maybe_unused]] int anUnknown68[4]; /* +0x68 */
-    RECT rcViewport;                     /*!< The rectangle of the viewport. */
-    RenderHost *pHost;                   /*!< The host told when the device changes. */
+    [[maybe_unused]] int anUnknown0[2]; // +0x00, zeroed on construction and not accessed.
+    D3DMaterial *pMaterial;             // The material of the viewport.
+    int dwDeviceInit;                   // Whether the device has a depth buffer.
+    int dwSize;
+    int dwFlags;                     // Bit 2 is set by default.
+    [[maybe_unused]] int nUnknown18; // +0x18, zeroed on construction and not accessed.
+    int dwRenderStateFlags;          // The objects created, #RENDERER_STATE_READY for all.
+    HWND hWnd;
+    int nGdiModeRefCount;            // How many times the screen was given to GDI.
+    [[maybe_unused]] int nUnknown28; // +0x28, zeroed on construction and not accessed.
+    DirectDrawDriver *pDriver;
+    DisplayMode *pMode;
+    D3DDeviceNode *pDevice;
+    IDirectDraw *pDirectDraw;
+    IDirectDraw2 *pDirectDraw2;          // The second interface of pDirectDraw.
+    IDirect3D2 *pDirect3D2;              // The Direct3D interface of pDirectDraw.
+    IDirectDrawSurface *pPrimarySurface; // The front buffer.
+    IDirectDrawPalette *pPrimaryPalette;
+    unsigned nPaletteEntryCount;       // The entries of each of the two palette buffers.
+    PALETTEENTRY *pGdiPaletteEntries;  // The palette of GDI, set while GDI has the screen.
+    PALETTEENTRY *pGamePaletteEntries; // The palette of the game, saved for GDI.
+    IDirectDrawSurface *pBackBuffer;   // The surface the device draws into.
+    IDirectDrawSurface *pZBuffer;      // The depth buffer attached to pBackBuffer.
+    IDirect3DDevice2 *pD3DDevice;
+    IDirect3DViewport2 *pViewport;       // The viewport of pD3DDevice.
+    [[maybe_unused]] int anUnknown68[4]; // +0x68, zeroed on construction and not accessed.
+    RECT rcViewport;
+    RenderHost *pHost; // The host told when the device changes.
 
+    // Record a display mode that was set. The viewport covers it, the screen and framebuffer
+    // globals take its size (in pixels) and depth, and bit 2 of dwRenderStateFlags is set.
     inline void RecordDisplayMode(int nWidth, int nHeight, int nBitDepth);
+    // Create a depth buffer of the size of the back buffer and attach it, at the depth of pDesc
+    // in `DDSCAPS_VIDEOMEMORY` or `DDSCAPS_SYSTEMMEMORY`. A depth buffer that is not created or
+    // not attached is released and does not fail the call. Returns `S_OK`, or the error of
+    // reading the description of the back buffer.
     inline HRESULT
     CreateDepthBuffer(const D3DDEVICEDESC *pDesc, DWORD dwMemoryCaps, bool *pbAttached);
 
-    /**
-     * Tell the window that the objects are going and release them.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000a350
-     */
+    // Tell the window that the objects are going and release them. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000a350
     int DestroyDirectDrawRendererObjects();
 
-    /**
-     * Create the DirectDraw objects of the window: select the driver, the device, and the mode,
-     * create the DirectDraw objects, set the cooperative level and the display mode, create the
-     * chain of flipped surfaces and the render device, and tell the window with
-     * #WM_RENDERER_CREATED. A step that fails releases the objects.
-     *
-     * @return `S_OK`, #RENDERER_E_NOT_READY without a window, or the error of the step that
-     * failed.
-     * @ghidraAddress BRD3D: 0x1000a2c0
-     */
+    // Create the DirectDraw objects of the window. The routine selects the driver, the device,
+    // and the mode, creates the DirectDraw objects, sets the cooperative level and the display
+    // mode, creates the chain of flipped surfaces and the render device, and tells the window
+    // with #WM_RENDERER_CREATED. A step that fails releases the objects. Returns `S_OK`,
+    // #RENDERER_E_NOT_READY without a window, or the error of the step that failed.
+    // @ghidraAddress BRD3D: 0x1000a2c0
     HRESULT InitializeDirectDraw();
 
-    /**
-     * Find the driver of pDriver again, or the default, and the device and the mode of pDevice and
-     * pMode on it, enumerating the drivers first when they are not.
-     *
-     * @return `S_OK`, #RENDERER_E_NOT_CREATED without a driver, #RENDERER_E_NOT_IN_GDI_MODE
-     * without a device and a mode, or the error of the enumeration.
-     * @ghidraAddress BRD3D: 0x1000a390
-     */
+    // Find the driver of pDriver again, or the default, and the device and the mode of pDevice and
+    // pMode on it, enumerating the drivers first when they are not. Returns `S_OK`,
+    // #RENDERER_E_NOT_CREATED without a driver, #RENDERER_E_NOT_IN_GDI_MODE without a device and
+    // a mode, or the error of the enumeration.
+    // @ghidraAddress BRD3D: 0x1000a390
     HRESULT SelectDriverDeviceAndMode();
 
-    /**
-     * Create the DirectDraw object of the driver and its second and Direct3D interfaces.
-     *
-     * @return `S_OK`, or the error of the step that failed.
-     * @ghidraAddress BRD3D: 0x1000a480
-     */
+    // Create the DirectDraw object of the driver and its second and Direct3D interfaces.
+    // @ghidraAddress BRD3D: 0x1000a480
     HRESULT CreateDirectDrawObjects();
 
-    /**
-     * Release the DirectDraw object and its interfaces.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000a540
-     */
+    // Release the DirectDraw object and its interfaces. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000a540
     int ReleaseDirectDrawObjects();
 
-    /**
-     * Take the screen for the window alone.
-     *
-     * @return `S_OK`, the error of DirectDraw, or #RENDERER_E_NOT_READY without a window.
-     * @ghidraAddress BRD3D: 0x1000a590
-     */
+    // Take the screen for the window alone. Returns #RENDERER_E_NOT_READY without a window.
+    // @ghidraAddress BRD3D: 0x1000a590
     HRESULT SetCooperativeLevel();
 
-    /**
-     * Set the display mode selected.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000a5d0
-     */
+    // Set the display mode selected.
+    // @ghidraAddress BRD3D: 0x1000a5d0
     HRESULT SetDisplayMode();
 
-    /**
-     * Give the display back its mode.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000a800
-     */
+    // Give the display back its mode. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000a800
     int RestoreDisplayMode();
 
-    /**
-     * Create the front buffer and its back buffers.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000a820
-     */
+    // Create the front buffer and its back buffers.
+    // @ghidraAddress BRD3D: 0x1000a820
     HRESULT CreatePrimaryFlipChain();
 
-    /**
-     * Create the palette of the front buffer when the mode has one.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000a8d0
-     */
+    // Create the palette of the front buffer when the mode has one.
+    // @ghidraAddress BRD3D: 0x1000a8d0
     HRESULT InitializePrimaryPalette();
 
-    /**
-     * Release the front buffer and its palette.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000a8a0
-     */
+    // Release the front buffer and its palette. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000a8a0
     int ReleasePrimarySurface();
 
-    /**
-     * Release the palette of the front buffer and free its entries.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000ab20
-     */
+    // Release the palette of the front buffer and free its entries. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000ab20
     int ReleasePrimaryPalette();
 
-    /**
-     * Create the Direct3D device and its viewport.
-     *
-     * @return `S_OK`, or the error of Direct3D.
-     * @ghidraAddress BRD3D: 0x1000ab70
-     */
+    // Create the Direct3D device and its viewport.
+    // @ghidraAddress BRD3D: 0x1000ab70
     HRESULT InitializeRenderDevice();
 
-    /**
-     * Create the viewport of the device and attach it, with its material.
-     *
-     * @return `S_OK`, or the error of Direct3D.
-     * @ghidraAddress BRD3D: 0x1000adf0
-     */
+    // Create the viewport of the device and attach it, with its material.
+    // @ghidraAddress BRD3D: 0x1000adf0
     HRESULT CreateAndAttachViewport();
 
-    /**
-     * Set the viewport of the device and the state it draws with.
-     *
-     * @return `S_OK`, or the error of Direct3D.
-     * @ghidraAddress BRD3D: 0x1000afb0
-     */
+    // Set the viewport of the device and the state it draws with.
+    // @ghidraAddress BRD3D: 0x1000afb0
     HRESULT InitializeViewportAndRenderContext();
 
-    /**
-     * Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
-     * first.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000ad70
-     */
+    // Release the Direct3D device, its viewport, and the back and depth buffers, telling the host
+    // first. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000ad70
     int DestroyD3DDevice();
 
-    /**
-     * Release the viewport of the device and its material.
-     *
-     * @return 0.
-     * @ghidraAddress BRD3D: 0x1000aea0
-     */
+    // Release the viewport of the device and its material. Always returns 0.
+    // @ghidraAddress BRD3D: 0x1000aea0
     int ReleaseViewportAndMaterial();
 
-    /**
-     * Give the screen to GDI, with its palette, so a menu or a dialog can show.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000b170
-     */
+    // Give the screen to GDI, with its palette, for a menu or a dialog to show.
+    // @ghidraAddress BRD3D: 0x1000b170
     HRESULT RestoreGdiPaletteAndFlipToGdi();
 
-    /**
-     * Take the screen back from GDI with the palette of the game.
-     *
-     * @return `S_OK`, or the error of DirectDraw.
-     * @ghidraAddress BRD3D: 0x1000b1f0
-     */
+    // Take the screen back from GDI with the palette of the game.
+    // @ghidraAddress BRD3D: 0x1000b1f0
     HRESULT RestoreGamePaletteEntries();
 
 public:
-    /** @return The renderer's active material. */
+    /** Read the material the viewport uses as its background.
+     * @return The material, or `nullptr` before the device is created. */
     D3DMaterial *GetMaterial() const {
         return pMaterial;
     }
-    /** @return The device initialisation state. */
+    /** Read whether a depth buffer was attached when the device was created.
+     * @return 1 with a depth buffer, or 0 without. */
     int GetDeviceInit() const {
         return dwDeviceInit;
     }
-    /** @return The renderer flags. */
+    /** Read the options of the renderer. Bit 2 requests a depth buffer and is set by default.
+     * @return The option bits. */
     int GetFlags() const {
         return dwFlags;
     }
-    /** Add @p flags to the renderer flags. */
+    /** Add @p flags to the renderer flags.
+     * @param flags The option bits to set. */
     void AddFlags(int flags) {
         dwFlags |= flags;
     }
-    /** Remove @p flags from the renderer flags. */
+    /** Remove @p flags from the renderer flags.
+     * @param flags The option bits to clear. */
     void RemoveFlags(int flags) {
         dwFlags &= ~flags;
     }
-    /** @return The active render-state flags. */
+    /** Read which objects of the renderer were created.
+     * @return The bits of the created objects, #RENDERER_STATE_READY when all exist. */
     int GetRenderStateFlags() const {
         return dwRenderStateFlags;
     }
-    /** @return The count of requests to display GDI mode. */
+    /** Read how many times the screen was given to GDI and not yet taken back.
+     * @return The count of outstanding GDI mode requests. */
     int GetGdiModeRefCount() const {
         return nGdiModeRefCount;
     }
-    /** @return The selected DirectDraw driver. */
+    /** Read the driver the renderer selected.
+     * @return The driver, or `nullptr` before one is selected. */
     DirectDrawDriver *GetDriver() const {
         return pDriver;
     }
-    /** @return The selected display mode. */
+    /** Read the display mode the renderer set, replaced by a fallback mode when one was used.
+     * @return The mode, or `nullptr` before one is selected. */
     DisplayMode *GetMode() const {
         return pMode;
     }
-    /** @return The selected Direct3D device. */
+    /** Read the Direct3D device the renderer selected.
+     * @return The device, or `nullptr` before one is selected. */
     D3DDeviceNode *GetDevice() const {
         return pDevice;
     }
-    /** @return The DirectDraw 2 interface. */
+    /** Read the second DirectDraw interface of the driver, without adding a reference.
+     * @return The interface, or `nullptr` before it is created. */
     IDirectDraw2 *GetDirectDraw2() const {
         return pDirectDraw2;
     }
-    /** @return The Direct3D 2 interface. */
+    /** Read the Direct3D interface of the DirectDraw object, without adding a reference.
+     * @return The interface, or `nullptr` before it is created. */
     IDirect3D2 *GetDirect3D2() const {
         return pDirect3D2;
     }
-    /** @return The primary DirectDraw surface. */
+    /** Read the front buffer, without adding a reference.
+     * @return The primary surface, or `nullptr` before it is created. */
     IDirectDrawSurface *GetPrimarySurface() const {
         return pPrimarySurface;
     }
-    /** @return The back buffer. */
+    /** Read the surface the device draws into, without adding a reference.
+     * @return The back buffer, or `nullptr` before it is created. */
     IDirectDrawSurface *GetBackBuffer() const {
         return pBackBuffer;
     }
-    /** @return The Direct3D device interface. */
+    /** Read the Direct3D device, without adding a reference.
+     * @return The device, or `nullptr` before it is created. */
     IDirect3DDevice2 *GetD3DDevice() const {
         return pD3DDevice;
     }
-    /** @return The Direct3D viewport. */
+    /** Read the viewport of the Direct3D device, without adding a reference.
+     * @return The viewport, or `nullptr` before it is created. */
     IDirect3DViewport2 *GetViewport() const {
         return pViewport;
     }
@@ -1038,18 +989,16 @@ public:
 /** What the game draws through: the renderer of the main window. */
 class RenderHost {
 private:
-    DirectDrawRenderer *pRenderer; /*!< The renderer, set by SetRenderer(). */
+    DirectDrawRenderer *pRenderer; // Set by SetRenderer().
 
-    /**
-     * Whether the renderer is ready and has Direct3D, a device, and a viewport.
-     *
-     * @return `S_OK`, or `E_FAIL`.
-     * @ghidraAddress BRD3D: 0x100011b0
-     */
+    // Whether the renderer is ready and has Direct3D, a device, and a viewport, as `S_OK` or
+    // `E_FAIL`.
+    // @ghidraAddress BRD3D: 0x100011b0
     HRESULT ValidateObjectRenderResources();
 
 public:
-    /** @return The renderer of the main window. */
+    /** Read the renderer of the main window.
+     * @return The renderer set by SetRenderer(), or `nullptr` before one is set. */
     DirectDrawRenderer *GetRenderer() const {
         return pRenderer;
     }
@@ -1270,7 +1219,14 @@ bool FindDesktopDisplayModeAndDevice(DirectDrawDriver *pDriver,
 
 /**
  * Resolve a device by GUID and optional display mode, using the reported fallback on failure.
+ * Without a mode, the fallback is the device the game prefers. With a mode, it is the last device
+ * that supports the mode. When the search does not report a fallback, the GUID pointer itself is
+ * returned as a device, as the original reuses its argument slot.
  *
+ * @param pDriver The driver to search, or `nullptr`.
+ * @param pDeviceGuid The GUID of the device, or `nullptr`.
+ * @param pMode The display mode the device must support, or `nullptr` for any.
+ * @return The device, the fallback, or `nullptr` without a driver.
  * @ghidraAddress BRD3D: 0x1001a5d0
  */
 extern "C" D3DDeviceNode *

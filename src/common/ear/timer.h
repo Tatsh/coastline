@@ -1,6 +1,11 @@
 #ifndef COASTLINE_EAR_TIMER_H
 #define COASTLINE_EAR_TIMER_H
 
+/**
+ * @file
+ * The periodic timer that drives the EAR playback engine, and its clock.
+ */
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 // Multimedia declarations require the core Windows SDK types first.

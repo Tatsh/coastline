@@ -100,6 +100,7 @@ extern u8 *g_pInflateHeapBase;
 extern u8 *g_pInflateHeapEnd;
 /** @endcond */
 
+/** @cond */
 /**
  * The state of the allocator inflateInit2_() gives zlib.
  *
@@ -109,6 +110,7 @@ extern u8 *g_pInflateHeapEnd;
  * @ghidraAddress JPN: 0x80369c38
  */
 extern InflateAllocator g_inflateAllocator;
+/** @endcond */
 
 /**
  * The frames to wait before the display returns after inflateInit2_() blanks it to use the frame

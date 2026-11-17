@@ -1,6 +1,11 @@
 #ifndef COASTLINE_TRACKDISPLAYLIST_H
 #define COASTLINE_TRACKDISPLAYLIST_H
 
+/**
+ * @file
+ * The colour combiner of the track display lists.
+ */
+
 #include "common/displaylistops.h"
 
 #if TGR_BOSS_RALLY
@@ -11,7 +16,12 @@
 extern "C" {
 #endif
 
-/** Set the combiner of the track: the two levels of a texture mixed and then shaded. */
+/**
+ * Set the combiner of the track. The two levels of a texture are mixed by the level-of-detail
+ * fraction and then shaded.
+ *
+ * @param pkt The display list command to write.
+ */
 static inline void SetTrackCombiner(DisplayListCommand *pkt) {
 #if TGR_BOSS_RALLY
     PackCombineMode(pkt,

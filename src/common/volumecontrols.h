@@ -1,6 +1,11 @@
 #ifndef COASTLINE_VOLUME_CONTROLS_H
 #define COASTLINE_VOLUME_CONTROLS_H
 
+/**
+ * @file
+ * The steps of the music and sound effect volumes.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The window of the game, its GPU device and frame texture, the display options, and the GPU
+ * resource wrappers that count the bytes the game allocates on the device.
+ */
+
 #include <filesystem>
 #include <functional>
 #include <future>
@@ -75,7 +81,7 @@ struct DisplayOptions {
     bool fixedFrame = false;
     /** Whether the frame expands from 320x240 to the selected aspect ratio. */
     bool lowestFrame = false;
-    /** The width over the height the frame keeps in a window and in the full screen, with bars
+    /** The width over the height the frame retains in a window and in the full screen, with bars
      * around it, or 0 for the shape of the window. */
     float aspectRatio = 0.0f;
     /** Whether the GPU device checks its use, with the validation layers of Vulkan when they are
@@ -95,8 +101,8 @@ struct DisplayOptions {
      * systems, rather than presenting to the mailbox at the refresh rate of the display. */
     bool fifo = false;
     int antialias = 1; /*!< The samples of each pixel: 1 for none, or 2, 4, or 8. */
-    /** The most samples of anisotropic filtering of the textures of models, which are then
-     * mipmapped, from 2 to 16, or 0 for neither. */
+    /** The most samples of anisotropic filtering of the mipmapped textures of models, from 2 to
+     * 16, or 0 for neither mipmaps nor anisotropic filtering. */
     int anisotropy = 0;
     TextureFilter textureFilter = TextureFilter::Modern; /*!< How textures are filtered. */
     /** Whether the alpha of the texels a model cuts covers the samples of a multisampled pixel. */
@@ -107,7 +113,7 @@ struct DisplayOptions {
 
 /**
  * The window of the game and the GPU device that draws into it. Each frame is drawn into a
- * texture of its own, which is scaled to the window when presented and can be read back.
+ * separate texture. The texture is scaled to the window when presented and can be read back.
  */
 class GpuWindow {
 public:
@@ -127,31 +133,53 @@ public:
     ~GpuWindow();
     /** Prevent copying the window and GPU device. */
     GpuWindow(const GpuWindow &) = delete;
-    /** Prevent assignment of the window and GPU device. */
+    /**
+     * Prevent assignment of the window and GPU device.
+     *
+     * @return This window; the operator is deleted and never returns.
+     */
     GpuWindow &operator=(const GpuWindow &) = delete;
 
     /**
+     * Report whether menus draw their background across a wide frame.
+     *
      * @return Whether wide menu background rendering is enabled. Automatic mode requires a 16:9
      * internal frame, allowing at most one pixel of width rounding error.
      */
     bool WideMenus() const;
 
-    /** @return The configured multiplier of the race camera's field of view. */
+    /**
+     * Report the field-of-view setting of the options.
+     *
+     * @return The configured multiplier of the race camera's field of view.
+     */
     float FieldOfViewScale() const {
         return m_options.fieldOfViewScale;
     }
 
-    /** @return The race draw-distance multiplier, from 1 to 4. */
+    /**
+     * Report the draw-distance setting, clamped by ApplyLiveOptions().
+     *
+     * @return The race draw-distance multiplier, from 1 to 4.
+     */
     float DrawDistanceScale() const {
         return m_options.drawDistanceScale;
     }
 
-    /** @return Whether console particle textures, opacity, and skid-mark rules are selected. */
+    /**
+     * Report whether the races draw the particle effects of the console.
+     *
+     * @return Whether console particle textures, opacity, and skid-mark rules are selected.
+     */
     bool N64Effects() const {
         return m_options.n64Effects;
     }
 
-    /** @return Whether car windows use N64 RSP reflection coordinates instead of PC mapping. */
+    /**
+     * Report which reflection mapping the car windows use.
+     *
+     * @return Whether car windows use N64 RSP reflection coordinates instead of PC mapping.
+     */
     bool N64WindowReflections() const {
         return m_options.n64WindowReflections;
     }
@@ -172,17 +200,28 @@ public:
      */
     bool ApplyRendererOptions(const DisplayOptions &options);
 
-    /** @return The window. */
+    /**
+     * Give the SDL window for event and property queries.
+     *
+     * @return The window, managed by this object.
+     */
     SDL_Window *Window() const {
         return m_window.get();
     }
 
-    /** @return The GPU device. */
+    /**
+     * Give the GPU device for creating resources and command buffers.
+     *
+     * @return The GPU device, managed by this object.
+     */
     SDL_GPUDevice *Device() const {
         return m_device.get();
     }
 
     /**
+     * Report the GPU memory the game has allocated through CreateGpuTexture(), CreateGpuBuffer(),
+     * and CreateGpuTransferBuffer().
+     *
      * @return Bytes of the GPU device's textures, buffers, and transfer buffers created by the game
      * and not released, excluding allocations internal to the driver.
      */
@@ -190,18 +229,34 @@ public:
         return m_gpuMemoryBytes;
     }
 
-    /** @return The actual adapter reported by SDL. */
+    /**
+     * Read the adapter name from the properties of the GPU device.
+     *
+     * @return The actual adapter reported by SDL, or `unknown` when SDL does not report one.
+     */
     std::string DeviceName() const;
 
-    /** @return The requested GPU-selection preference used when the device was created. */
+    /**
+     * Report the adapter preference of the options.
+     *
+     * @return The requested GPU-selection preference used when the device was created.
+     */
     const std::string &GpuPreference() const {
         return m_options.gpuPreference;
     }
 
-    /** @return Whether the active adapter is identified as NVIDIA. */
+    /**
+     * Report whether NVML may be loaded to sample the utilisation of the adapter.
+     *
+     * @return Whether the active adapter is identified as NVIDIA.
+     */
     bool NvmlAllowed() const;
 
-    /** @return The requested output aspect ratio, or zero to fill the window. */
+    /**
+     * Report the aspect ratio the frame is fitted to in the window.
+     *
+     * @return The requested output aspect ratio, or zero to fill the window.
+     */
     float AspectRatio() const {
         return m_options.aspectRatio;
     }
@@ -213,17 +268,29 @@ public:
      */
     void SetFramerateUnlocked(bool unlocked);
 
-    /** @return Whether software and presentation pacing are disabled. */
+    /**
+     * Report whether the frame rate is unlocked.
+     *
+     * @return Whether software and presentation pacing are disabled.
+     */
     bool FramerateUnlocked() const {
         return m_options.unlockedFramerate;
     }
 
-    /** @return Cumulative nanoseconds spent acquiring and submitting presentation buffers. */
+    /**
+     * Report the time Present() has waited on the swapchain since the window was created.
+     *
+     * @return Cumulative nanoseconds spent acquiring and submitting presentation buffers.
+     */
     Uint64 PresentationWaitNanoseconds() const {
         return m_presentationWait;
     }
 
-    /** @return Whether the window covers the display. */
+    /**
+     * Read the full-screen flag of the window.
+     *
+     * @return Whether the window covers the display.
+     */
     bool Fullscreen() const {
         return (SDL_GetWindowFlags(m_window.get()) & SDL_WINDOW_FULLSCREEN) != 0;
     }
@@ -237,7 +304,11 @@ public:
      */
     bool SetFullscreen(bool fullscreen);
 
-    /** @return The present mode of the options or of the last SetPresentMode(). */
+    /**
+     * Report the requested present mode, before any fallback the window requires.
+     *
+     * @return The present mode of the options or of the last SetPresentMode().
+     */
     SDL_GPUPresentMode PresentMode() const {
         return m_options.presentMode;
     }
@@ -252,6 +323,9 @@ public:
     void SetPresentMode(SDL_GPUPresentMode mode);
 
     /**
+     * Compute the software pacing period from the current display mode of the window. A display
+     * without a known refresh rate is paced at 60 hertz.
+     *
      * @return The nanoseconds between the frames the game paces itself to, one refresh of the
      * display of the window when vertical sync presents to the mailbox, or 0 for no pacing.
      */
@@ -267,7 +341,7 @@ public:
     bool PresentClear(SDL_FColor color, const std::filesystem::path *capture = nullptr);
 
     /**
-     * Scale the frame texture to the window and submit @p commands, which drew the frame.
+     * Scale the frame texture to the window and submit @p commands, the draws of the frame.
      *
      * @param commands The command buffer of the frame, submitted here.
      * @param capture A PNG file a thread writes the frame to, logging the result.
@@ -278,22 +352,39 @@ public:
                  const std::filesystem::path *capture = nullptr,
                  const OutputOverlay &overlay = {});
 
-    /** @return The texture each frame is drawn into. */
+    /**
+     * Give the render target of the scene. UpdateFrameSize() replaces the texture when the frame
+     * size changes.
+     *
+     * @return The texture each frame is drawn into, managed by this object.
+     */
     SDL_GPUTexture *FrameTexture() const {
         return m_frame;
     }
 
-    /** @return The format of the frame texture. */
+    /**
+     * Give the format pipelines that draw into the frame texture must target.
+     *
+     * @return The format of the frame texture, 8-bit RGBA.
+     */
     static constexpr SDL_GPUTextureFormat FrameFormat() {
         return SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
     }
 
-    /** @return The width of the frame texture in pixels. */
+    /**
+     * Report the width of the internal frame.
+     *
+     * @return The width of the frame texture in pixels.
+     */
     Uint32 FrameWidth() const {
         return m_frameWidth;
     }
 
-    /** @return The height of the frame texture in pixels. */
+    /**
+     * Report the height of the internal frame.
+     *
+     * @return The height of the frame texture in pixels.
+     */
     Uint32 FrameHeight() const {
         return m_frameHeight;
     }
@@ -305,22 +396,38 @@ public:
      */
     void UpdateFrameSize();
 
-    /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
+    /**
+     * Report the multisample count of the scene.
+     *
+     * @return The samples of each pixel the options requested, 1 for no anti-aliasing.
+     */
     int Antialias() const {
         return m_antialias;
     }
 
-    /** @return How the textures the game filters are filtered. */
+    /**
+     * Report the texture filter of the options.
+     *
+     * @return How the textures the game filters are filtered.
+     */
     TextureFilter Filter() const {
         return m_options.textureFilter;
     }
 
-    /** @return Whether the alpha of cut texels covers the samples of a multisampled pixel. */
+    /**
+     * Report whether cut-out textures use alpha to coverage.
+     *
+     * @return Whether the alpha of cut texels covers the samples of a multisampled pixel.
+     */
     bool AlphaToCoverage() const {
         return m_options.alphaToCoverage;
     }
 
-    /** @return The most samples of anisotropic filtering of the options, 0 for no mipmaps. */
+    /**
+     * Report the anisotropic filtering of the options.
+     *
+     * @return The most samples of anisotropic filtering of the options, 0 for no mipmaps.
+     */
     int Anisotropy() const {
         return m_options.anisotropy;
     }
@@ -336,70 +443,100 @@ private:
     friend void ReleaseGpuBuffer(SDL_GPUDevice *device, SDL_GPUBuffer *buffer);
     friend void ReleaseGpuTransferBuffer(SDL_GPUDevice *device, SDL_GPUTransferBuffer *buffer);
 
+    // Find the window that created a GPU device, through a pointer property Create() records on
+    // the device. A device without one gives null.
     static GpuWindow *ForDevice(SDL_GPUDevice *device);
+    // Record the size of a created GPU object in GpuMemoryBytes(). A null object (failed
+    // creation) is not recorded.
     void AddGpuMemory(const void *object, Uint64 bytes);
+    // Subtract the recorded size of a released GPU object from GpuMemoryBytes(). An object not
+    // recorded by AddGpuMemory() is ignored.
     void RemoveGpuMemory(const void *object);
 
-    /** Release an SDL window owned by a smart pointer. */
     struct WindowDeleter {
-        /** Release @p window. */
         void operator()(SDL_Window *window) const {
             SDL_DestroyWindow(window);
         }
     };
-    /** Release an SDL GPU device owned by a smart pointer. */
     struct DeviceDeleter {
-        /** Release @p device. */
         void operator()(SDL_GPUDevice *device) const {
             SDL_DestroyGPUDevice(device);
         }
     };
 
+    // An empty window for Create() to fill.
     GpuWindow() = default;
+    // Copy a texture (in the format of FrameFormat()) to a transfer buffer, submit commands, wait
+    // for the GPU, and start a thread that writes the pixels to a PNG file without alpha, logging
+    // the result. At most four saves are pending, and a further save first waits for the oldest.
+    // The commands are submitted on every path. Returns whether the pixels were read back and the
+    // save started.
     bool SaveFrame(SDL_GPUCommandBuffer *commands,
                    SDL_GPUTexture *source,
                    Uint32 width,
                    Uint32 height,
                    const std::filesystem::path &path);
+    // Create the frame texture, and the anti-aliased texture when the anti-aliasing pass exists,
+    // releasing the textures before. On failure the textures before remain and the reason is
+    // logged.
     bool CreateFrame(Uint32 width, Uint32 height);
+    // Create the FXAA pipeline and the linear clamping sampler of the anti-aliasing pass, logging
+    // the reason on failure.
     bool CreatePostPasses();
+    // Record the FXAA pass from the frame texture into the anti-aliased texture when the options
+    // select it and its resources exist. Returns the frame texture when the pass does not run.
     SDL_GPUTexture *AntialiasFrame(SDL_GPUCommandBuffer *commands);
+    // Create the pipeline and sampler of the pass that scales the frame with the edge-adaptive
+    // filter and the screen shaders. Both are released and the reason logged when either fails.
     bool CreatePresentationPass();
+    // Create the pipeline and sampler that write the frame to a 16-bit floating-point HDR
+    // swapchain. Both are released and a warning logged when either fails.
     bool CreateHdrPass();
+    // Record the presentation pass from the frame or anti-aliased texture into the filtered
+    // texture, recreating it when the size changes. Returns null with the reason logged when the
+    // filtered texture cannot be created.
     SDL_GPUTexture *FilterFrame(SDL_GPUCommandBuffer *commands,
                                 SDL_GPUTexture *source,
                                 Uint32 width,
                                 Uint32 height);
 
+    // Bytes of each live GPU object the game created.
     std::unordered_map<const void *, Uint64> m_gpuMemoryObjects;
-    Uint64 m_gpuMemoryBytes = 0;
+    Uint64 m_gpuMemoryBytes = 0; // Sum of the bytes in m_gpuMemoryObjects.
+    // Every 32nd texture created since the last present waits for the GPU to go idle.
     unsigned m_texturesSincePresent = 0;
     std::unique_ptr<SDL_Window, WindowDeleter> m_window;
     std::unique_ptr<SDL_GPUDevice, DeviceDeleter> m_device;
-    SDL_GPUTexture *m_frame = nullptr;
-    // The frame after the anti-aliasing pass, its pipeline, and the sampler it reads the frame by.
+    SDL_GPUTexture *m_frame = nullptr; // The scene draws into this texture each frame.
+    // Null without the anti-aliasing pass.
     SDL_GPUTexture *m_antialiased = nullptr;
-    SDL_GPUGraphicsPipeline *m_antialiasPipeline = nullptr;
-    SDL_GPUSampler *m_postSampler = nullptr;
+    SDL_GPUGraphicsPipeline *m_antialiasPipeline = nullptr; // FXAA, or null.
+    SDL_GPUSampler *m_postSampler = nullptr;                // Linear sampler of the FXAA pass.
+    // Output of the presentation pass, or null before it first runs.
     SDL_GPUTexture *m_filtered = nullptr;
+    // Edge-adaptive filter and screen shaders, or null.
     SDL_GPUGraphicsPipeline *m_presentationPipeline = nullptr;
-    SDL_GPUSampler *m_presentationSampler = nullptr;
-    SDL_GPUGraphicsPipeline *m_hdrPipeline = nullptr;
-    SDL_GPUSampler *m_hdrSampler = nullptr;
+    SDL_GPUSampler *m_presentationSampler = nullptr;  // Linear.
+    SDL_GPUGraphicsPipeline *m_hdrPipeline = nullptr; // Null without an HDR swapchain.
+    SDL_GPUSampler *m_hdrSampler = nullptr;           // Linear.
     Uint32 m_filteredWidth = 0;
     Uint32 m_filteredHeight = 0;
+    // Window-sized texture an output overlay draws into, released when unused.
     SDL_GPUTexture *m_composite = nullptr;
     Uint32 m_compositeWidth = 0;
     Uint32 m_compositeHeight = 0;
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
-    DisplayOptions m_options;
-    Uint64 m_presentationWait = 0;
-    int m_antialias = 1;
+    DisplayOptions m_options;      // Updated by the setters.
+    Uint64 m_presentationWait = 0; // See PresentationWaitNanoseconds().
+    int m_antialias = 1;           // Multisample count of the options.
+    // Fixed when the window is created.
     bool m_exclusive = false;
+    // Hertz of the exclusive mode, fixed when the window is created.
     int m_refreshRate = 0;
+    // Whether Wayland vertical sync was replaced by the mailbox paced by RefreshPeriod().
     bool m_pacedToRefresh = false;
-    bool m_hdrActive = false;
+    bool m_hdrActive = false; // Whether the swapchain presents HDR through the HDR pass.
     // Pending PNG saves of captured frames, waited for before the window is destroyed.
     std::vector<std::future<void>> m_frameSaves;
 };

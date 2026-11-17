@@ -28,6 +28,8 @@ public:
     static std::optional<ConsoleSegment> Load(const std::filesystem::path &release);
 
     /**
+     * Test a range of console addresses against the segment, loaded at 0x80200000.
+     *
      * @param address An address of the console.
      * @param size The bytes from the address.
      * @return Whether the bytes are inside the segment.
@@ -35,43 +37,56 @@ public:
     bool Has(u32 address, u32 size) const;
 
     /**
+     * Read one byte of the segment.
+     *
      * @param address An address of the console.
      * @return The byte there, or 0 outside the segment.
      */
     u8 Byte(u32 address) const;
 
     /**
+     * Read four bytes of the segment. Bytes outside the segment read as 0.
+     *
      * @param address An address of the console.
      * @return The big-endian word there.
      */
     u32 Word(u32 address) const;
 
     /**
+     * Read four bytes of the segment as a two's-complement number.
+     *
      * @param address An address of the console.
      * @return The big-endian word there as a signed number.
      */
     s32 Signed(u32 address) const;
 
     /**
+     * Read four bytes of the segment as an IEEE 754 single-precision number.
+     *
      * @param address An address of the console.
      * @return The big-endian float there.
      */
     f32 Float(u32 address) const;
 
     /**
+     * Read a zero-terminated string of the segment, stopping at the end of the segment.
+     *
      * @param address An address of the console.
      * @return The string that ends at the first zero from the address.
      */
     std::string Text(u32 address) const;
 
     /**
+     * Look up an asset of the cartridge manifest by its start offset.
+     *
      * @param romStart Where an asset starts on the cartridge.
      * @return The name of the asset in the import, such as data/g_texLogo, or nothing.
      */
     std::optional<std::string> AssetName(u32 romStart) const;
 
 private:
-    std::vector<u8> m_bytes;
+    std::vector<u8> m_bytes; // The bytes of segment.bin, from address 0x80200000.
+    // The asset names of the cartridge manifest by start offset, without padding entries.
     std::map<u32, std::string> m_assets;
 };
 

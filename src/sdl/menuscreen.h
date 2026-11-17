@@ -57,8 +57,8 @@ struct MenuButtons {
     bool back = false;   /*!< B, to exit the screen. */
     bool held = false;   /*!< Whether any button is down, restarting the wait of the timeout. */
     bool cDown = false;  /*!< C down, to switch the look of a car on the car select screen. */
-    /** The ControllerButton bits held, without the directions the stick pushes, which the car
-     * select screen paints the car with. */
+    /** The ControllerButton bits down, without the directions the stick pushes, for the paint of
+     * the car on the car select screen. */
     std::uint16_t heldButtons = 0;
     std::int8_t stickY = 0; /*!< The stick, up positive, about -80 to 80. */
 };
@@ -131,7 +131,11 @@ public:
     ~MenuScreen();
     /** Prevent copying shared menu rendering and audio resources. */
     MenuScreen(const MenuScreen &) = delete;
-    /** Prevent assignment of shared menu rendering and audio resources. */
+    /**
+     * Prevent assignment of shared menu rendering and audio resources.
+     *
+     * @return This object. The operator is deleted and is never called.
+     */
     MenuScreen &operator=(const MenuScreen &) = delete;
 
     /**
@@ -161,7 +165,11 @@ public:
      * before another starts. The title picture is not cleared.
      */
     void Reset();
-    /** @return Whether inactivity initiated the current screen exit. Reset clears the result. */
+    /**
+     * Report an exit by the idle timeout. The first frame of a screen clears the result.
+     *
+     * @return Whether inactivity initiated the current screen exit. Reset clears the result.
+     */
     bool TimedOut() const;
 
     /**
@@ -185,7 +193,11 @@ public:
      */
     void SetPendingSelection(int item);
 
-    /** @return The item under the cursor on the last frame, g_nScreenLastActiveIndex. */
+    /**
+     * Read the item under the cursor, as a screen does after its choice.
+     *
+     * @return The item under the cursor on the last frame, g_nScreenLastActiveIndex.
+     */
     int LastActiveIndex() const;
 
     /**
@@ -195,19 +207,39 @@ public:
      */
     void SetLastActiveIndex(int item);
 
-    /** @return The player whose press chose the last item. */
+    /**
+     * Identify the player who made the last choice.
+     *
+     * @return The player whose press chose the last item, 0 for the first.
+     */
     int ChoosingPlayer() const;
 
-    /** @return The title picture of the main menu of the release. */
+    /**
+     * Access the title picture Load() read from the cartridge directory.
+     *
+     * @return The title picture of the main menu of the release.
+     */
     const RenderTexture &MainMenuTitle() const;
 
-    /** @return The plain title bar the other screens show. */
+    /**
+     * Access the title bar Load() read from the cartridge directory.
+     *
+     * @return The plain title bar the other screens show.
+     */
     const RenderTexture &TitleBar() const;
 
-    /** @return The fonts of the screens. */
+    /**
+     * Access the fonts Load() read from the cartridge directory.
+     *
+     * @return The fonts of the screens.
+     */
     const MenuText &Text() const;
 
-    /** @return The lights of the models of the screens. */
+    /**
+     * Access the lights Process() draws the item models with.
+     *
+     * @return The lights of the models of the screens.
+     */
     const Lighting &MenuLighting() const;
 
     /**
@@ -239,6 +271,8 @@ public:
     DrawFadeOverlay(SceneRenderer &renderer, float level, int x, int y, int width, int height);
 
     /**
+     * Build the projection of the flat 4:3 screen, centred in the frame of the renderer.
+     *
      * @param renderer The renderer of the frame.
      * @return The flat draws of the 640 by 480 screen in the frame.
      */
@@ -294,7 +328,11 @@ public:
      */
     void FadeSounds(float level);
 
-    /** @return Whether the fade of the sound effects has arrived, as HasSfxFadeFinished(). */
+    /**
+     * Report the end of the fade of the sound effects.
+     *
+     * @return Whether the fade of the sound effects has arrived, as HasSfxFadeFinished().
+     */
     bool SoundsFaded() const;
 
     /**
@@ -304,10 +342,18 @@ public:
      */
     void UpdateFade(float seconds);
 
-    /** @return Whether the screen fades out, as IsFadingOut() of the console. */
+    /**
+     * Report a fade of the picture towards black.
+     *
+     * @return Whether the screen fades out, as IsFadingOut() of the console.
+     */
     bool FadingOut() const;
 
-    /** @return Whether the fade has arrived at its target, as IsFadeComplete() of the console. */
+    /**
+     * Report the end of the fade of the picture.
+     *
+     * @return Whether the fade has arrived at its target, as IsFadeComplete() of the console.
+     */
     bool FadeComplete() const;
 
     /**
@@ -329,10 +375,17 @@ public:
 
 private:
     struct State;
+    // Take the models, textures, fonts, sounds, and cursor that Load() read.
     explicit MenuScreen(std::unique_ptr<State> state);
+    // Advance the fades, the turn of the item under the cursor, the slide of the items, the idle
+    // timeout, and the cursor by the presses of the players. Returns Chosen or Cancelled once the
+    // screen has faded out, Chosen on the frame an item with MENU_ITEM_IMMEDIATE is chosen, Up or
+    // Down for a push on an adjustable item, and otherwise None.
     MenuResult Update(float seconds, std::span<const MenuButtons> players, const MenuSetup &setup);
+    // Draw the background, the title, the stage or preDraw, the items, postDraw, and the fade,
+    // between Begin() and End() of the renderer.
     void Draw(SceneRenderer &renderer, const MenuSetup &setup) const;
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<State> m_state; // The resources and the cursor of the screens.
 };
 
 } // namespace coastline

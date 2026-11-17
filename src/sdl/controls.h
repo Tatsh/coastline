@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The gamepad bindings of the Controls section of BossRally.ini, their presets, and the device
+ * of each player.
+ */
+
 #include <array>
 #include <cstddef>
 #include <string>
@@ -115,6 +121,9 @@ inline constexpr ControlPreset DEFAULT_CONTROL_PRESET{"Default",
 inline constexpr std::size_t RACE_CONTROL_ACTIONS = CONTROL_CHASE_CAMERA + 1;
 
 /**
+ * Build a preset from DEFAULT_CONTROL_PRESET with the first RACE_CONTROL_ACTIONS bindings
+ * replaced.
+ *
  * @param name The value of the Preset key.
  * @param race The bindings of the actions of a race.
  * @return The default preset with the bindings of the actions of a race replaced.
@@ -261,16 +270,23 @@ public:
      */
     void Load(const GameConfig &config);
     /**
+     * Report the device selector of the Player1 or Player2 key.
+     *
      * @param player The player index, 0 or 1.
      * @return The lowercase selector, defaulting to 'auto', valid until Load() or destruction.
      */
     std::string_view PlayerDevice(std::size_t player) const;
     /**
+     * Test whether an action reads in proportion rather than as a full press.
+     *
      * @param action A valid action below CONTROL_ACTION_COUNT.
      * @return Whether at least one configured source for the action is an axis.
      */
     bool IsAnalog(ControlAction action) const;
     /**
+     * Read the sources of an action. A button gives CONTROL_FULL, and an axis gives its travel
+     * in the direction of the source, or 0 within the dead zone.
+     *
      * @param gamepad The gamepad to query; null produces zero through SDL input queries.
      * @param action A valid action below CONTROL_ACTION_COUNT.
      * @return The greatest source magnitude, from 0 to CONTROL_FULL, after dead-zone suppression.
@@ -278,8 +294,11 @@ public:
     int Read(SDL_Gamepad *gamepad, ControlAction action) const;
 
 private:
+    // Indexed by ControlAction.
     std::array<std::vector<ControlSource>, CONTROL_ACTION_COUNT> m_controls;
+    // The lowercase device selector of each player, from the Player1 and Player2 keys.
     std::array<std::string, PLAYER_DEVICE_KEYS.size()> m_playerDevices;
+    // The axis travel that reads as 0, in units of CONTROL_FULL.
     int m_deadZone = 0;
 };
 
@@ -294,6 +313,8 @@ private:
 void LoadControls(const GameConfig &config);
 
 /**
+ * Report the device selector of a player from the active input bindings.
+ *
  * @param player The player, 0 for the first.
  * @return The value of the Player1 or Player2 key in lowercase, `auto` when the key is absent or
  * empty.
@@ -301,15 +322,20 @@ void LoadControls(const GameConfig &config);
 std::string_view PlayerDevice(std::size_t player);
 
 /**
+ * Test whether an action reads in proportion through the active input bindings.
+ *
  * @param action The action.
- * @return Whether an axis drives the action.
+ * @return Whether an axis drives the action, false without active bindings.
  */
 bool IsControlAnalog(ControlAction action);
 
 /**
+ * Read an action of a gamepad through the active input bindings.
+ *
  * @param gamepad The gamepad.
  * @param action The action.
- * @return The greatest magnitude of the sources of the action, 0 to CONTROL_FULL.
+ * @return The greatest magnitude of the sources of the action, 0 to CONTROL_FULL, or 0 without
+ * active bindings.
  */
 int ReadControl(SDL_Gamepad *gamepad, ControlAction action);
 

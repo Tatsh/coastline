@@ -1,5 +1,11 @@
 #pragma once
 
+/**
+ * @file
+ * The strings of the game in each language, the string resources of Windows libraries, and UTF-8
+ * encoding and decoding.
+ */
+
 #include <cstdint>
 #include <filesystem>
 #include <map>
@@ -58,46 +64,71 @@ public:
     ~GameText();
     /** Prevent copying the registered catalogue. */
     GameText(const GameText &) = delete;
-    /** Prevent assignment of the registered catalogue. */
+    /**
+     * Prevent assignment of the registered catalogue.
+     *
+     * @return This catalogue; the operator is deleted and never called.
+     */
     GameText &operator=(const GameText &) = delete;
 
-    /** @return The active text catalogue, or null outside its lifetime. */
+    /**
+     * Get the catalogue registered in the global properties of SDL.
+     *
+     * @return The active text catalogue, or null outside its lifetime.
+     */
     static GameText *Active();
-    /** @return The selected language. */
+    /**
+     * Get the language the catalogue was loaded for.
+     *
+     * @return The selected language.
+     */
     const std::string &Language() const {
         return m_language;
     }
-    /** @return Whether the catalogue is empty. */
+    /**
+     * Report whether the language and en-us files did not give strings.
+     *
+     * @return Whether the catalogue is empty.
+     */
     bool Empty() const {
         return m_strings.empty();
     }
     /**
+     * Look up a string by key.
+     *
      * @param key The catalogue key to query without logging a missing translation.
      * @return The stored string, valid for the catalogue's lifetime, or null when unavailable.
      */
     const std::string *Find(std::string_view key) const;
     /**
+     * Look up a string by key, falling back to the key itself.
+     *
      * @param key The catalogue key, whose storage must outlast a returned fallback view.
      * @return The stored string or @p key, logging a missing key once per catalogue.
      */
     std::string_view Resolve(std::string_view key);
 
 private:
-    std::string m_language;
-    StringTable m_strings;
-    std::set<std::string, std::less<>> m_logged;
+    std::string m_language;                      // The language of the catalogue.
+    StringTable m_strings;                       // The strings by key, with en-us fallbacks.
+    std::set<std::string, std::less<>> m_logged; // The missing keys already logged.
 };
 
 /**
+ * Look up a string in the active catalogue without logging a missing key.
+ *
  * @param key The key of a string, such as 1 or n64.carSelect.rumblePakNote.
- * @return The active catalogue's string in UTF-8, or nothing.
+ * @return The active catalogue's string in UTF-8, or null without a catalogue or the key.
  */
 const std::string *FindString(std::string_view key);
 
 /**
+ * Resolve a string for display through the active catalogue.
+ *
  * @param key The key of a string, such as n64.carSelect.rumblePakNote.
  * @return The active catalogue's string in UTF-8, the string of the selected language or else of
- * en-us, or @p key when neither file has it, logged the first time.
+ * en-us, or @p key when neither file has it, logged the first time. Without an active catalogue,
+ * @p key.
  */
 std::string_view GameString(std::string_view key);
 

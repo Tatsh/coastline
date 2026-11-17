@@ -1,6 +1,11 @@
 #ifndef COASTLINE_RECORDING_FORMAT_H
 #define COASTLINE_RECORDING_FORMAT_H
 
+/**
+ * @file
+ * The layout of a recording of controller input.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

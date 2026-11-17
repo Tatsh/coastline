@@ -118,7 +118,11 @@ public:
     ~RaceSession();
     /** Prevent copying race progress and active engine resources. */
     RaceSession(const RaceSession &) = delete;
-    /** Prevent assignment of race progress and active engine resources. */
+    /**
+     * Prevent assignment of race progress and active engine resources.
+     *
+     * @return This session; the operator is deleted and never called.
+     */
     RaceSession &operator=(const RaceSession &) = delete;
 
     /**
@@ -142,13 +146,23 @@ public:
     /** End the race that Start() started without running it, and stop its music. */
     void Abandon();
 
-    /** @return The results of the race that ended last with RaceEnd::Results. */
+    /**
+     * Report the laps, times, positions, records, and Time Attack ghost of the last finished race.
+     *
+     * @return The results of the race that ended last with RaceEnd::Results.
+     */
     const RaceResults &Results() const;
-    /** @return Each player's selected camera, or -1 outside player-controlled races. */
+    /**
+     * Report the race camera each player last selected, for the settings to preserve.
+     *
+     * @return Each player's selected camera, or -1 outside player-controlled races.
+     */
     std::array<int, 2> CameraChoices() const {
         return m_cameraChoices;
     }
     /**
+     * Report whether the race changed the sound effect volume, for saving it as a manual choice.
+     *
      * @return Whether the pause menu changed SFX volume during the current race, even if restored.
      */
     bool SfxVolumeAdjusted() const {
@@ -156,34 +170,46 @@ public:
     }
 
 private:
+    // Stop the race music when Start() started it.
     void StopMusic();
+    // Copy the laps, times, records, and Time Attack ghost of the players into m_results.
     void ReadResults();
+    // Silence sound effects until the screen has faded in from black, then restore the volume and
+    // restart the race music from the beginning of its track.
     void HoldSoundUntilShown();
 
-    RaceResults m_results;
+    RaceResults m_results; // The results ReadResults() copied from the last finished race.
+    // The console ghost recording the second vehicle plays back, empty without a ghost.
     std::vector<u8> m_consoleGhostRecording;
+    // The camera of each player, restored on load and updated as the player changes it.
     std::array<int, 2> m_cameraChoices{-1, -1};
-    bool m_musicStarted = false;
-    bool m_waitForStart = false;
-    bool m_autopilot = false;
-    bool m_soundHeld = false;
-    int m_previousSfxVolume = 0;
-    bool m_sfxVolumeAdjusted = false;
+    bool m_musicStarted = false;      // Whether Start() started the race music.
+    bool m_waitForStart = false;      // Whether the countdown waits for the start binding.
+    bool m_autopilot = false;         // Whether the computer drives the first player's car.
+    bool m_soundHeld = false;         // Whether sound waits for the fade in from black.
+    int m_previousSfxVolume = 0;      // The SFX volume level last seen, from 0 to 9.
+    bool m_sfxVolumeAdjusted = false; // Whether the SFX volume changed during the race.
 };
 
 /**
+ * Report the volume levels of the last race for the options menu.
+ *
  * @return Music and sound effect levels of the race RaceSession::Start() started last, from 0 to 9,
  * as set by its pause menu.
  */
 std::array<int, 2> RaceVolumeLevels();
 
 /**
+ * Report the track of the last race loaded.
+ *
  * @return The track of the race that loaded last, an index of g_apszTrackFilenames: the track of
  * the race after a season in its mode.
  */
 int RaceTrack();
 
 /**
+ * Report the cars of the last race loaded.
+ *
  * @return The car of each vehicle of the race that loaded last, in the colour of the vehicle as
  * InitVehicleColorAndPhysics() paints it.
  */

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file
+ * The sound-bank table that maps the channels of each sample row to samples.
+ */
+
 #include <stdint.h>
 
 #include "common/soundsample.h"
