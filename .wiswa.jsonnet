@@ -408,6 +408,8 @@
       ],
     },
     'markdownlint-cli2'+: {
+      // The README shows screenshots side by side at half the width of the page.
+      config+: { MD033+: { allowed_elements: ['img', 'kbd'] } },
       // Only the root .gitignore, not one in every directory of the scratch builds.
       gitignore: '.gitignore',
       ignores: ['.claude/worktrees/**', '.wiswa-ci/**', '3rdparty/**'],

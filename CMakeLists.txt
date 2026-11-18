@@ -224,6 +224,12 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_STRIP_FROM_PATH "${CMAKE_SOURCE_DIR}")
   find_package(Doxygen REQUIRED COMPONENTS dot)
   doxygen_add_docs(docs README.md docs PROGRESS.md progress src ALL)
+  # The README shows screenshots with HTML img tags, whose paths Doxygen does not rewrite.
+  add_custom_command(
+    TARGET docs
+    POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${CMAKE_SOURCE_DIR}/docs/images"
+            "${CMAKE_BINARY_DIR}/html/docs/images")
   if(INSTALL_DOCS)
     install(
       DIRECTORY "${CMAKE_BINARY_DIR}/html"

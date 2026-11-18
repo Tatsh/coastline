@@ -27,11 +27,8 @@ Vulkan, Metal, or Direct3D 12.
 The repository does not include the data of the games. Coastline imports it from your Boss
 Rally disc and Top Gear Rally cartridge images on the first start.
 
-![Race on Coastline](docs/images/race.webp)
-
-![First season](docs/images/season.webp)
-
-![Car selection](docs/images/car-select.webp)
+<img src="docs/images/race.webp" width="49%" alt="Race on Coastline">
+<img src="docs/images/car-select.webp" width="49%" alt="Car selection">
 
 ## Features
 
@@ -62,7 +59,8 @@ Rally disc and Top Gear Rally cartridge images on the first start.
 3. Start Coastline. The setup wizard finds the images and imports them;
    [First run](docs/first-run.md) shows each step.
 
-![Setup wizard](docs/images/setup-start.png)
+<img src="docs/images/setup-start.png" width="49%" alt="Setup wizard">
+<img src="docs/images/setup-search-results.png" width="49%" alt="Search results of the setup wizard">
 
 A gamepad drives the menus and the races. On the keyboard, the arrow keys move through the menus,
 X selects, C goes back, and Enter is Start. A race uses the keyboard bindings of Boss Rally. The
