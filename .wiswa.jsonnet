@@ -415,6 +415,9 @@
       gitignore: '.gitignore',
       ignores: ['.claude/worktrees/**', '.wiswa-ci/**', '3rdparty/**'],
     },
+    scripts+: {
+      build: 'cmake --preset coastline -DBUILD_DOCS=ON && cmake --build --preset coastline',
+    },
   },
   pre_commit_config+: {
     exclude: '^3rdparty/|^src/n64/asm/',
@@ -464,6 +467,7 @@
           'argparse',
           'boost-pfr',
           'bzip2',
+          { host: true, name: 'directx-dxc', platform: 'windows' },
           'drlibs',
           'fmt',
           { features: ['tools'], host: true, name: 'glslang' },
@@ -593,56 +597,5 @@
       'search.exclude': { '**/.wiswa-ci': true },
     },
   },
-}
-+ {
-  want_scan_build: true,
-  github+: { workflows+: {
-    scan_build+: {
-      build_command: 'cmake --build --preset coastline --clean-first --parallel 2',
-      configure_command: 'cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON',
-      documentation_steps: [
-        {
-          name: 'Install dependencies',
-          run: |||
-            sudo apt-get update
-            sudo apt-get install -y doxygen graphviz
-          |||,
-        },
-        {
-          name: 'Configure',
-          run: 'cmake -B "$GITHUB_WORKSPACE/build" -DBUILD_DOCS_ONLY=ON',
-        },
-        {
-          name: 'Build documentation',
-          run: 'cmake --build "$GITHUB_WORKSPACE/build" --target docs',
-        },
-        {
-          name: 'Page count',
-          run: |||
-            COUNT=$(find "$GITHUB_WORKSPACE/build/html" -name '*.html' | wc -l)
-            echo "Generated $COUNT page(s)"
-            test "$COUNT" -gt 0
-          |||,
-        },
-      ],
-      env: {
-        VCPKG_ROOT: '${{ github.workspace }}/.vcpkg',
-      },
-      setup_steps: [
-        {
-          name: 'Install SDL build dependencies',
-          run: |||
-            sudo apt-get update
-            sudo apt-get install -y autoconf-archive cmake libasound2-dev libavcodec-dev \
-              libavformat-dev libavutil-dev libegl1-mesa-dev libltdl-dev libswresample-dev \
-              libswscale-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev \
-              libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev ninja-build \
-              pkg-config wayland-protocols
-            git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
-          |||,
-        },
-      ],
-    },
-  } },
 }
 + { static_analysis_paths: ['src', 'tests'] }
