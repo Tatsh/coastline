@@ -7,6 +7,7 @@
 [![License](https://img.shields.io/github/license/Tatsh/coastline)](https://github.com/Tatsh/coastline/blob/master/LICENSE.txt)
 [![GitHub commits since latest release (by SemVer including pre-releases)](https://img.shields.io/github/commits-since/Tatsh/coastline/v0.0.4/master)](https://github.com/Tatsh/coastline/compare/v0.0.4...master)
 [![Dependabot](https://img.shields.io/badge/Dependabot-enabled-blue?logo=dependabot)](https://github.com/dependabot)
+[![GitHub Pages](https://github.com/Tatsh/coastline/actions/workflows/pages.yml/badge.svg)](https://tatsh.github.io/coastline/)
 [![Stargazers](https://img.shields.io/github/stars/Tatsh/coastline?logo=github&style=flat)](https://github.com/Tatsh/coastline/stargazers)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Tatsh/coastline/master.svg)](https://results.pre-commit.ci/latest/github/Tatsh/coastline/master)
 [![CMake](https://img.shields.io/badge/CMake-6E6E6E?logo=cmake)](https://cmake.org/)
